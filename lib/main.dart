@@ -8,4 +8,5 @@ import 'src/app.dart';
 
 void main() {
   runApp(DashboardApp.mock());
+  //runApp(DashboardApp.firebase());
 }

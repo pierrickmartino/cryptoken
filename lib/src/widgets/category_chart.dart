@@ -15,25 +15,26 @@ import 'dialogs.dart';
 const _daysBefore = 10;
 
 class CategoryChart extends StatelessWidget {
-  final Category category;
-  final DashboardApi api;
-
-  CategoryChart({
+  const CategoryChart({
     @required this.category,
     @required this.api,
   });
 
+  final Category category;
+  final DashboardApi api;
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+          padding: const EdgeInsets.only(left: 8, right: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(category.name),
               IconButton(
-                icon: Icon(Icons.settings),
+                icon: const Icon(Icons.settings),
                 onPressed: () {
                   showDialog<EditCategoryDialog>(
                     context: context,
@@ -73,14 +74,14 @@ class CategoryChart extends StatelessWidget {
   }
 
   Widget _buildLoadingIndicator() {
-    return Center(child: CircularProgressIndicator());
+    return const Center(child: CircularProgressIndicator());
   }
 }
 
 class _BarChart extends StatelessWidget {
-  final List<Entry> entries;
+  const _BarChart({this.entries});
 
-  _BarChart({this.entries});
+  final List<Entry> entries;
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +98,7 @@ class _BarChart extends StatelessWidget {
       domainFn: (entryTotal, _) {
         if (entryTotal == null) return null;
 
-        var format = intl.DateFormat.Md();
+        final format = intl.DateFormat.Md();
         return format.format(entryTotal.day);
       },
       measureFn: (total, _) {

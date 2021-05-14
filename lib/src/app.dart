@@ -30,9 +30,9 @@ typedef DashboardApi ApiBuilder(User user);
 
 /// An app that displays a personalized dashboard.
 class DashboardApp extends StatefulWidget {
-  static ApiBuilder _mockApiBuilder =
+  static final ApiBuilder _mockApiBuilder =
       (user) => MockDashboardApi()..fillWithMockData();
-  static ApiBuilder _apiBuilder =
+  static final ApiBuilder _apiBuilder =
       (user) => FirebaseDashboardApi(Firestore.instance, user.uid);
 
   final Auth auth;
@@ -55,6 +55,7 @@ class DashboardApp extends StatefulWidget {
 class _DashboardAppState extends State<DashboardApp> {
   AppState _appState;
 
+  @override
   void initState() {
     super.initState();
     _appState = AppState(widget.auth);
@@ -77,13 +78,13 @@ class _DashboardAppState extends State<DashboardApp> {
 /// Switches between showing the [SignInPage] or [HomePage], depending on
 /// whether or not the user is signed in.
 class SignInSwitcher extends StatefulWidget {
-  final AppState appState;
-  final ApiBuilder apiBuilder;
-
-  SignInSwitcher({
+  const SignInSwitcher({
     this.appState,
     this.apiBuilder,
   });
+
+  final AppState appState;
+  final ApiBuilder apiBuilder;
 
   @override
   _SignInSwitcherState createState() => _SignInSwitcherState();
@@ -97,7 +98,7 @@ class _SignInSwitcherState extends State<SignInSwitcher> {
     return AnimatedSwitcher(
       switchInCurve: Curves.easeOut,
       switchOutCurve: Curves.easeOut,
-      duration: Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 200),
       child: _isSignedIn
           ? HomePage(
               onSignOut: _handleSignOut,
@@ -117,7 +118,7 @@ class _SignInSwitcherState extends State<SignInSwitcher> {
     });
   }
 
-  Future _handleSignOut() async {
+  Future<void> _handleSignOut() async {
     await widget.appState.auth.signOut();
     setState(() {
       _isSignedIn = false;

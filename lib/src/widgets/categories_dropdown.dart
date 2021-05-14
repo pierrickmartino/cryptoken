@@ -10,13 +10,13 @@ import '../api/api.dart';
 /// Subscribes to the latest list of categories and allows the user to select
 /// one.
 class CategoryDropdown extends StatefulWidget {
-  final CategoryApi api;
-  final ValueChanged<Category> onSelected;
-
-  CategoryDropdown({
+  const CategoryDropdown({
     @required this.api,
     @required this.onSelected,
   });
+
+  final CategoryApi api;
+  final ValueChanged<Category> onSelected;
 
   @override
   _CategoryDropdownState createState() => _CategoryDropdownState();
@@ -27,6 +27,7 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
   Future<List<Category>> _future;
   Stream<List<Category>> _stream;
 
+  @override
   void initState() {
     super.initState();
 
@@ -69,14 +70,14 @@ class _CategoryDropdownState extends State<CategoryDropdown> {
       builder: (context, futureSnapshot) {
         // Show an empty dropdown while the data is loading.
         if (!futureSnapshot.hasData) {
-          return DropdownButton<Category>(items: [], onChanged: null);
+          return DropdownButton<Category>(items: []);
         }
 
         return StreamBuilder<List<Category>>(
           initialData: futureSnapshot.hasData ? futureSnapshot.data : [],
           stream: _stream,
           builder: (context, snapshot) {
-            var data = snapshot.hasData ? snapshot.data : <Category>[];
+            final data = snapshot.hasData ? snapshot.data : <Category>[];
             return DropdownButton<Category>(
               value: _selected,
               items: data.map(_buildDropdownItem).toList(),

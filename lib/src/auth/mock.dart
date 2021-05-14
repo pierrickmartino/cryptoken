@@ -7,12 +7,13 @@ import 'dart:math';
 import 'auth.dart';
 
 class MockAuthService implements Auth {
+  @override
   Future<bool> get isSignedIn async => false;
 
   @override
   Future<User> signIn() async {
     // Sign in will randomly fail 25% of the time.
-    var random = Random();
+    final random = Random();
     if (random.nextInt(4) == 0) {
       throw SignInException();
     }
@@ -20,11 +21,12 @@ class MockAuthService implements Auth {
   }
 
   @override
-  Future signOut() async {
+  Future<dynamic> signOut() async {
     return null;
   }
 }
 
 class MockUser implements User {
-  String get uid => "123";
+  @override
+  String get uid => '123';
 }

@@ -7,29 +7,32 @@ import 'package:provider/provider.dart';
 
 import '../api/api.dart';
 import '../app.dart';
-import '../widgets/category_chart.dart';
+import '../widgets/portfolio_widget.dart';
 
 class DashboardPage extends StatelessWidget {
+  const DashboardPage({Key key}) : super(key: key);
+
+  @override
   Widget build(BuildContext context) {
-    var appState = Provider.of<AppState>(context);
-    return FutureBuilder<List<Category>>(
-      future: appState.api.categories.list(),
+    final appState = Provider.of<AppState>(context);
+    return FutureBuilder<List<Portfolio>>(
+      future: appState.api.portfolios.list(),
       builder: (context, futureSnapshot) {
         if (!futureSnapshot.hasData) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         }
-        return StreamBuilder<List<Category>>(
+        return StreamBuilder<List<Portfolio>>(
           initialData: futureSnapshot.data,
-          stream: appState.api.categories.subscribe(),
+          stream: appState.api.portfolios.subscribe(),
           builder: (context, snapshot) {
             if (snapshot.data == null) {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             }
-            return Dashboard(snapshot.data);
+            return Dashboard(portfolios: snapshot.data);
           },
         );
       },
@@ -38,27 +41,31 @@ class DashboardPage extends StatelessWidget {
 }
 
 class Dashboard extends StatelessWidget {
-  final List<Category> categories;
+  const Dashboard({Key key, this.portfolios}) : super(key: key);
 
-  Dashboard(this.categories);
+  final List<Portfolio> portfolios;
 
   @override
   Widget build(BuildContext context) {
-    var api = Provider.of<AppState>(context).api;
+    final api = Provider.of<AppState>(context).api;
     return Scrollbar(
       child: GridView(
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           childAspectRatio: 2,
           maxCrossAxisExtent: 500,
         ),
         children: [
-          ...categories.map(
-            (category) => Card(
-              child: CategoryChart(
-                category: category,
-                api: api,
-              ),
-            ),
+          ...portfolios.map(
+            (portfolio) => Card(
+                child: PortfolioWidget(
+              api: api,
+              portfolio: portfolio,
+            )
+                // CategoryChart(
+                //   category: category,
+                //   api: api,
+                // ),
+                ),
           )
         ],
       ),
