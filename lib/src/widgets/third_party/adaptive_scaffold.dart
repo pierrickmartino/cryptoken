@@ -14,28 +14,21 @@ bool _isMediumScreen(BuildContext context) {
 
 /// See bottomNavigationBarItem or NavigationRailDestination
 class AdaptiveScaffoldDestination {
-  final String title;
-  final IconData icon;
-
   const AdaptiveScaffoldDestination({
     @required this.title,
     @required this.icon,
   });
+
+  final String title;
+  final IconData icon;
 }
 
 /// A widget that adapts to the current display size, displaying a [Drawer],
 /// [NavigationRail], or [BottomNavigationBar]. Navigation destinations are
 /// defined in the [destinations] parameter.
 class AdaptiveScaffold extends StatefulWidget {
-  final Widget title;
-  final List<Widget> actions;
-  final Widget body;
-  final int currentIndex;
-  final List<AdaptiveScaffoldDestination> destinations;
-  final ValueChanged<int> onNavigationIndexChange;
-  final FloatingActionButton floatingActionButton;
-
-  AdaptiveScaffold({
+  const AdaptiveScaffold({
+    Key key,
     this.title,
     this.body,
     this.actions = const [],
@@ -43,7 +36,15 @@ class AdaptiveScaffold extends StatefulWidget {
     @required this.destinations,
     this.onNavigationIndexChange,
     this.floatingActionButton,
-  });
+  }) : super(key: key);
+
+  final Widget title;
+  final List<Widget> actions;
+  final Widget body;
+  final int currentIndex;
+  final List<AdaptiveScaffoldDestination> destinations;
+  final ValueChanged<int> onNavigationIndexChange;
+  final FloatingActionButton floatingActionButton;
 
   @override
   _AdaptiveScaffoldState createState() => _AdaptiveScaffoldState();

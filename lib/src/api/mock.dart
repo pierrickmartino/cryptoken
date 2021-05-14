@@ -13,9 +13,6 @@ class MockDashboardApi implements DashboardApi {
   MockDashboardApi();
 
   @override
-  final EntryApi entries = MockEntryApi();
-
-  @override
   final PortfolioApi portfolios = MockPortfolioApi();
 
   @override
@@ -23,9 +20,6 @@ class MockDashboardApi implements DashboardApi {
 
   @override
   final TransactionApi transactions = MockTransactionApi();
-
-  @override
-  final CategoryApi categories = MockCategoryApi();
 
   /// Creates a [MockDashboardApi] filled with mock data for the last 30 days.
   Future<void> fillWithMockData() async {
@@ -88,109 +82,6 @@ class MockPortfolioApi implements PortfolioApi {
 
   void _emit() {
     _streamController.add(_storage.values.toList());
-  }
-}
-
-class MockCategoryApi implements CategoryApi {
-  final Map<String, Category> _storage = {};
-  final StreamController<List<Category>> _streamController =
-      StreamController<List<Category>>.broadcast();
-
-  @override
-  Future<Category> delete(String id) async {
-    final removed = _storage.remove(id);
-    _emit();
-    return removed;
-  }
-
-  @override
-  Future<Category> get(String id) async {
-    return _storage[id];
-  }
-
-  @override
-  Future<Category> insert(Category category) async {
-    final id = uuid.Uuid().v4();
-    final newCategory = Category(category.name)..id = id;
-    _storage[id] = newCategory;
-    _emit();
-    return newCategory;
-  }
-
-  @override
-  Future<List<Category>> list() async {
-    return _storage.values.toList();
-  }
-
-  @override
-  Future<Category> update(Category category, String id) async {
-    _storage[id] = category;
-    _emit();
-    return category..id = id;
-  }
-
-  @override
-  Stream<List<Category>> subscribe() => _streamController.stream;
-
-  void _emit() {
-    _streamController.add(_storage.values.toList());
-  }
-}
-
-class MockEntryApi implements EntryApi {
-  final Map<String, Entry> _storage = {};
-  final StreamController<_EntriesEvent> _streamController =
-      StreamController.broadcast();
-
-  @override
-  Future<Entry> delete(String categoryId, String id) async {
-    _emit(categoryId);
-    return _storage.remove('$categoryId-$id');
-  }
-
-  @override
-  Future<Entry> insert(String categoryId, Entry entry) async {
-    final id = uuid.Uuid().v4();
-    final newEntry = Entry(entry.value, entry.time)..id = id;
-    _storage['$categoryId-$id'] = newEntry;
-    _emit(categoryId);
-    return newEntry;
-  }
-
-  @override
-  Future<List<Entry>> list(String categoryId) async {
-    return _storage.keys
-        .where((k) => k.startsWith(categoryId))
-        .map((k) => _storage[k])
-        .toList();
-  }
-
-  @override
-  Future<Entry> update(String categoryId, String id, Entry entry) async {
-    _storage['$categoryId-$id'] = entry;
-    _emit(categoryId);
-    return entry..id = id;
-  }
-
-  @override
-  Stream<List<Entry>> subscribe(String categoryId) {
-    return _streamController.stream
-        .where((event) => event.categoryId == categoryId)
-        .map((event) => event.entries);
-  }
-
-  void _emit(String categoryId) {
-    final entries = _storage.keys
-        .where((k) => k.startsWith(categoryId))
-        .map((k) => _storage[k])
-        .toList();
-
-    _streamController.add(_EntriesEvent(categoryId, entries));
-  }
-
-  @override
-  Future<Entry> get(String categoryId, String id) async {
-    return _storage['$categoryId-$id'];
   }
 }
 
@@ -309,13 +200,6 @@ class MockTransactionApi implements TransactionApi {
   Future<Transaction> get(String positionId, String id) async {
     return _storage['$positionId-$id'];
   }
-}
-
-class _EntriesEvent {
-  _EntriesEvent(this.categoryId, this.entries);
-
-  final String categoryId;
-  final List<Entry> entries;
 }
 
 class _PositionsEvent {

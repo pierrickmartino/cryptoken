@@ -7,14 +7,15 @@ import 'package:flutter/material.dart';
 import '../widgets/dialogs.dart';
 import '../widgets/third_party/adaptive_scaffold.dart';
 import 'dashboard.dart';
-import 'entries.dart';
+import 'transactions.dart';
 
 class HomePage extends StatefulWidget {
-  final VoidCallback onSignOut;
-
-  HomePage({
+  const HomePage({
+    Key key,
     @required this.onSignOut,
-  });
+  }) : super(key: key);
+
+  final VoidCallback onSignOut;
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -26,21 +27,21 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return AdaptiveScaffold(
-      title: Text('Cryptoken'),
+      title: const Text('Cryptoken'),
       actions: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8),
           child: TextButton(
             style: TextButton.styleFrom(primary: Colors.white),
-            onPressed: () => _handleSignOut(),
-            child: Text('Sign Out'),
+            onPressed: _handleSignOut,
+            child: const Text('Sign Out'),
           ),
         )
       ],
       currentIndex: _pageIndex,
-      destinations: [
+      destinations: const [
         AdaptiveScaffoldDestination(title: 'Home', icon: Icons.home),
-        AdaptiveScaffoldDestination(title: 'Entries', icon: Icons.list),
+        AdaptiveScaffoldDestination(title: 'Transactions', icon: Icons.list),
         AdaptiveScaffoldDestination(title: 'Settings', icon: Icons.settings),
       ],
       body: _pageAtIndex(_pageIndex),
@@ -61,46 +62,46 @@ class _HomePageState extends State<HomePage> {
 
   FloatingActionButton _buildFab(BuildContext context) {
     return FloatingActionButton(
-      child: Icon(Icons.add),
-      onPressed: () => _handleFabPressed(),
+      onPressed: _handleFabPressed,
+      child: const Icon(Icons.add),
     );
   }
 
   void _handleFabPressed() {
     if (_pageIndex == 0) {
-      showDialog<NewCategoryDialog>(
+      showDialog<NewPortfolioDialog>(
         context: context,
-        builder: (context) => NewCategoryDialog(),
+        builder: (context) => const NewPortfolioDialog(),
       );
       return;
     }
 
     if (_pageIndex == 1) {
-      showDialog<NewEntryDialog>(
+      showDialog<NewTransactionDialog>(
         context: context,
-        builder: (context) => NewEntryDialog(),
+        builder: (context) => const NewTransactionDialog(),
       );
       return;
     }
   }
 
   Future<void> _handleSignOut() async {
-    var shouldSignOut = await showDialog<bool>(
+    final shouldSignOut = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Are you sure you want to sign out?'),
+        title: const Text('Are you sure you want to sign out?'),
         actions: [
           TextButton(
-            child: Text('No'),
             onPressed: () {
               Navigator.of(context).pop(false);
             },
+            child: const Text('No'),
           ),
           TextButton(
-            child: Text('Yes'),
             onPressed: () {
               Navigator.of(context).pop(true);
             },
+            child: const Text('Yes'),
           ),
         ],
       ),
@@ -115,13 +116,13 @@ class _HomePageState extends State<HomePage> {
 
   static Widget _pageAtIndex(int index) {
     if (index == 0) {
-      return DashboardPage();
+      return const DashboardPage();
     }
 
     if (index == 1) {
-      return EntriesPage();
+      return TransactionsPage();
     }
 
-    return Center(child: Text('Settings page'));
+    return const Center(child: Text('Settings page'));
   }
 }

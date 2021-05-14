@@ -11,9 +11,9 @@ void main() {
   group('chart utils', () {
     test('totals entries by day', () async {
       var entries = [
-        Entry(10, DateTime(2020, 3, 1)),
-        Entry(10, DateTime(2020, 3, 1)),
-        Entry(10, DateTime(2020, 3, 2)),
+        Transaction(10, DateTime(2020, 3, 1)),
+        Transaction(10, DateTime(2020, 3, 1)),
+        Transaction(10, DateTime(2020, 3, 2)),
       ];
       var totals = entryTotalsByDay(entries, 2, today: DateTime(2020, 3, 2));
       expect(totals, hasLength(3));

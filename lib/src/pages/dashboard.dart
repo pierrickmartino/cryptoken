@@ -57,15 +57,11 @@ class Dashboard extends StatelessWidget {
         children: [
           ...portfolios.map(
             (portfolio) => Card(
-                child: PortfolioWidget(
-              api: api,
-              portfolio: portfolio,
-            )
-                // CategoryChart(
-                //   category: category,
-                //   api: api,
-                // ),
-                ),
+              child: PortfolioWidget(
+                api: api,
+                portfolio: portfolio,
+              ),
+            ),
           )
         ],
       ),

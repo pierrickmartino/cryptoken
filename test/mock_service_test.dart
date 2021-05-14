@@ -17,81 +17,84 @@ void main() {
 
     group('items', () {
       test('insert', () async {
-        var category = await api.categories.insert(Category('Coffees Drank'));
-        expect(category.name, 'Coffees Drank');
+        var portfolio = await api.portfolios.insert(Portfolio('Coffees Drank'));
+        expect(portfolio.name, 'Coffees Drank');
       });
 
       test('delete', () async {
-        await api.categories.insert(Category('Coffees Drank'));
-        var category = await api.categories.insert(Category('Miles Ran'));
-        var removed = await api.categories.delete(category.id);
+        await api.portfolios.insert(Portfolio('Coffees Drank'));
+        var portfolio = await api.portfolios.insert(Portfolio('Miles Ran'));
+        var removed = await api.portfolios.delete(portfolio.id);
 
         expect(removed.name, 'Miles Ran');
 
-        var categories = await api.categories.list();
-        expect(categories, hasLength(1));
+        var portfolios = await api.portfolios.list();
+        expect(portfolios, hasLength(1));
       });
 
       test('update', () async {
-        var category = await api.categories.insert(Category('Coffees Drank'));
-        await api.categories.update(Category('Bagels Consumed'), category.id);
+        var portfolio = await api.portfolios.insert(Portfolio('Coffees Drank'));
+        await api.portfolios.update(Portfolio('Bagels Consumed'), portfolio.id);
 
-        var latest = await api.categories.get(category.id);
+        var latest = await api.portfolios.get(portfolio.id);
         expect(latest.name, equals('Bagels Consumed'));
       });
       test('subscribe', () async {
-        var stream = api.categories.subscribe();
+        var stream = api.portfolios.subscribe();
 
         stream.listen(expectAsync1((x) {
           expect(x, hasLength(1));
           expect(x.first.name, equals('Coffees Drank'));
         }, count: 1));
-        await api.categories.insert(Category('Coffees Drank'));
+        await api.portfolios.insert(Portfolio('Coffees Drank'));
       });
     });
 
     group('entry service', () {
-      Category category;
+      Portfolio portfolio;
       DateTime dateTime = DateTime(2020, 1, 1, 30, 45);
 
       setUp(() async {
-        category =
-            await api.categories.insert(Category('Lines of code committed'));
+        portfolio =
+            await api.portfolios.insert(Portfolio('Lines of code committed'));
       });
 
       test('insert', () async {
-        var entry = await api.entries.insert(category.id, Entry(1, dateTime));
+        var transaction = await api.transactions
+            .insert(portfolio.id, Transaction(1, dateTime));
 
-        expect(entry.value, 1);
-        expect(entry.time, dateTime);
+        expect(transaction.value, 1);
+        expect(transaction.time, dateTime);
       });
 
       test('delete', () async {
-        await api.entries.insert(category.id, Entry(1, dateTime));
-        var entry2 = await api.entries.insert(category.id, Entry(2, dateTime));
+        await api.transactions.insert(portfolio.id, Transaction(1, dateTime));
+        var transaction2 = await api.transactions
+            .insert(portfolio.id, Transaction(2, dateTime));
 
-        await api.entries.delete(category.id, entry2.id);
+        await api.transactions.delete(portfolio.id, transaction2.id);
 
-        var entries = await api.entries.list(category.id);
-        expect(entries, hasLength(1));
+        var transactions = await api.transactions.list(portfolio.id);
+        expect(transactions, hasLength(1));
       });
 
       test('update', () async {
-        var entry = await api.entries.insert(category.id, Entry(1, dateTime));
-        var updated =
-            await api.entries.update(category.id, entry.id, Entry(2, dateTime));
+        var transaction = await api.transactions
+            .insert(portfolio.id, Transaction(1, dateTime));
+        var updated = await api.transactions
+            .update(portfolio.id, transaction.id, Transaction(2, dateTime));
         expect(updated.value, 2);
       });
 
       test('subscribe', () async {
-        var stream = api.entries.subscribe(category.id);
+        var stream = api.transactions.subscribe(portfolio.id);
 
         stream.listen(expectAsync1((x) {
           expect(x, hasLength(1));
           expect(x.first.value, equals(1));
         }, count: 1));
 
-        await api.entries.insert(category.id, Entry(1, dateTime));
+        await api.transactions.insert(portfolio.id, Transaction(1, dateTime));
       });
     });
   });

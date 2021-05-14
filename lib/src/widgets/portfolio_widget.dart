@@ -4,15 +4,8 @@
 
 import 'package:flutter/material.dart';
 
-// import 'package:charts_flutter/flutter.dart' as charts;
-// import 'package:intl/intl.dart' as intl;
-
 import '../api/api.dart';
-//import '../utils/chart_utils.dart' as utils;
 import 'dialogs.dart';
-
-// The number of days to show in the chart
-//const _daysBefore = 10;
 
 class PortfolioWidget extends StatelessWidget {
   const PortfolioWidget({
@@ -37,11 +30,10 @@ class PortfolioWidget extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: () {
-                  showDialog<EditCategoryDialog>(
+                  showDialog<EditPortfolioDialog>(
                     context: context,
                     builder: (context) {
-                      return null;
-                      //EditCategoryDialog(category: portfolio);
+                      return EditPortfolioDialog(portfolio: portfolio);
                     },
                   );
                 },
@@ -111,36 +103,3 @@ class _ListPositions extends StatelessWidget {
         });
   }
 }
-
-// class _BarChart extends StatelessWidget {
-//   final List<ap.Position> entries;
-
-//   _BarChart({this.entries});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return charts.BarChart(
-//       [_seriesData()],
-//       animate: false,
-//     );
-//   }
-
-//   charts.Series<utils.EntryTotal, String> _seriesData() {
-//     return charts.Series<utils.EntryTotal, String>(
-//       id: 'Entries',
-//       colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-//       domainFn: (entryTotal, _) {
-//         if (entryTotal == null) return null;
-
-//         var format = intl.DateFormat.Md();
-//         return format.format(entryTotal.day);
-//       },
-//       measureFn: (total, _) {
-//         if (total == null) return null;
-
-//         return total.value;
-//       },
-//       data: utils.entryTotalsByDay(entries, _daysBefore),
-//     );
-//   }
-// }

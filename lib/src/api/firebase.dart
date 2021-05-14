@@ -8,17 +8,9 @@ import 'api.dart';
 
 class FirebaseDashboardApi implements DashboardApi {
   FirebaseDashboardApi(fire.Firestore firestore, String userId)
-      : entries = FirebaseEntryApi(firestore, userId), // TO_DELETE
-        categories = FirebaseCategoryApi(firestore, userId), // TO_DELETE
-        portfolios = FirebasePortfolioApi(firestore, userId),
+      : portfolios = FirebasePortfolioApi(firestore, userId),
         transactions = FirebaseTransactionApi(firestore, userId),
         positions = FirebasePositionApi(firestore, userId);
-
-  @override
-  final EntryApi entries;
-
-  @override
-  final CategoryApi categories;
 
   @override
   final PortfolioApi portfolios;
@@ -28,136 +20,6 @@ class FirebaseDashboardApi implements DashboardApi {
 
   @override
   final TransactionApi transactions;
-}
-
-class FirebaseEntryApi implements EntryApi {
-  final fire.Firestore firestore;
-  final String userId;
-  final fire.CollectionReference _categoriesRef;
-
-  FirebaseEntryApi(this.firestore, this.userId)
-      : _categoriesRef = firestore.collection('users/$userId/categories');
-
-  @override
-  Stream<List<Entry>> subscribe(String categoryId) {
-    final snapshots =
-        _categoriesRef.document(categoryId).collection('entries').snapshots();
-    final result = snapshots.map((querySnapshot) {
-      return querySnapshot.documents.map((snapshot) {
-        return Entry.fromJson(snapshot.data)..id = snapshot.documentID;
-      }).toList();
-    });
-
-    return result;
-  }
-
-  @override
-  Future<Entry> delete(String categoryId, String id) async {
-    final document = _categoriesRef.document('$categoryId/entries/$id');
-    final entry = await get(categoryId, document.documentID);
-
-    await document.delete();
-
-    return entry;
-  }
-
-  @override
-  Future<Entry> insert(String categoryId, Entry entry) async {
-    final document = await _categoriesRef
-        .document(categoryId)
-        .collection('entries')
-        .add(entry.toJson());
-    return await get(categoryId, document.documentID);
-  }
-
-  @override
-  Future<List<Entry>> list(String categoryId) async {
-    final entriesRef =
-        _categoriesRef.document(categoryId).collection('entries');
-    final querySnapshot = await entriesRef.getDocuments();
-    final entries = querySnapshot.documents
-        .map((doc) => Entry.fromJson(doc.data)..id = doc.documentID)
-        .toList();
-
-    return entries;
-  }
-
-  @override
-  Future<Entry> update(String categoryId, String id, Entry entry) async {
-    final document = _categoriesRef.document('$categoryId/entries/$id');
-    await document.setData(entry.toJson());
-    final snapshot = await document.get();
-    return Entry.fromJson(snapshot.data)..id = snapshot.documentID;
-  }
-
-  @override
-  Future<Entry> get(String categoryId, String id) async {
-    final document = _categoriesRef.document('$categoryId/entries/$id');
-    final snapshot = await document.get();
-    return Entry.fromJson(snapshot.data)..id = snapshot.documentID;
-  }
-}
-
-class FirebaseCategoryApi implements CategoryApi {
-  final fire.Firestore firestore;
-  final String userId;
-  final fire.CollectionReference _categoriesRef;
-
-  FirebaseCategoryApi(this.firestore, this.userId)
-      : _categoriesRef = firestore.collection('users/$userId/categories');
-
-  @override
-  Stream<List<Category>> subscribe() {
-    final snapshots = _categoriesRef.snapshots();
-    final result = snapshots.map((querySnapshot) {
-      return querySnapshot.documents.map((snapshot) {
-        return Category.fromJson(snapshot.data)..id = snapshot.documentID;
-      }).toList();
-    });
-
-    return result;
-  }
-
-  @override
-  Future<Category> delete(String id) async {
-    final document = _categoriesRef.document(id);
-    final categories = await get(document.documentID);
-
-    await document.delete();
-
-    return categories;
-  }
-
-  @override
-  Future<Category> get(String id) async {
-    final document = _categoriesRef.document(id);
-    final snapshot = await document.get();
-    return Category.fromJson(snapshot.data)..id = snapshot.documentID;
-  }
-
-  @override
-  Future<Category> insert(Category category) async {
-    final document = await _categoriesRef.add(category.toJson());
-    return await get(document.documentID);
-  }
-
-  @override
-  Future<List<Category>> list() async {
-    final querySnapshot = await _categoriesRef.getDocuments();
-    final categories = querySnapshot.documents
-        .map((doc) => Category.fromJson(doc.data)..id = doc.documentID)
-        .toList();
-
-    return categories;
-  }
-
-  @override
-  Future<Category> update(Category category, String id) async {
-    final document = _categoriesRef.document(id);
-    await document.setData(category.toJson());
-    final snapshot = await document.get();
-    return Category.fromJson(snapshot.data)..id = snapshot.documentID;
-  }
 }
 
 class FirebasePortfolioApi implements PortfolioApi {

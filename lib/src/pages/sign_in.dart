@@ -7,13 +7,14 @@ import 'package:flutter/material.dart';
 import '../auth/auth.dart';
 
 class SignInPage extends StatelessWidget {
-  final Auth auth;
-  final ValueChanged<User> onSuccess;
-
-  SignInPage({
+  const SignInPage({
+    Key key,
     @required this.auth,
     @required this.onSuccess,
-  });
+  }) : super(key: key);
+
+  final Auth auth;
+  final ValueChanged<User> onSuccess;
 
   @override
   Widget build(BuildContext context) {
@@ -26,13 +27,14 @@ class SignInPage extends StatelessWidget {
 }
 
 class SignInButton extends StatefulWidget {
-  final Auth auth;
-  final ValueChanged<User> onSuccess;
-
-  SignInButton({
+  const SignInButton({
+    Key key,
     @required this.auth,
     @required this.onSuccess,
-  });
+  }) : super(key: key);
+
+  final Auth auth;
+  final ValueChanged<User> onSuccess;
 
   @override
   _SignInButtonState createState() => _SignInButtonState();
@@ -51,9 +53,9 @@ class _SignInButtonState extends State<SignInButton> {
   // example, if they signed in and refreshed the page), invoke the `onSuccess`
   // callback right away.
   Future<bool> _checkIfSignedIn() async {
-    var alreadySignedIn = await widget.auth.isSignedIn;
+    final alreadySignedIn = await widget.auth.isSignedIn;
     if (alreadySignedIn) {
-      var user = await widget.auth.signIn();
+      final user = await widget.auth.signIn();
       widget.onSuccess(user);
     }
     return alreadySignedIn;
@@ -61,7 +63,7 @@ class _SignInButtonState extends State<SignInButton> {
 
   Future<void> _signIn() async {
     try {
-      var user = await widget.auth.signIn();
+      final user = await widget.auth.signIn();
       widget.onSuccess(user);
     } on SignInException {
       _showError();
@@ -75,10 +77,10 @@ class _SignInButtonState extends State<SignInButton> {
       builder: (context, snapshot) {
         // If signed in, or the future is incomplete, show a circular
         // progress indicator.
-        var alreadySignedIn = snapshot.data;
+        final alreadySignedIn = snapshot.data;
         if (snapshot.connectionState != ConnectionState.done ||
             alreadySignedIn == true) {
-          return CircularProgressIndicator();
+          return const CircularProgressIndicator();
         }
 
         // If sign in failed, show toast and the login button
@@ -87,8 +89,8 @@ class _SignInButtonState extends State<SignInButton> {
         }
 
         return ElevatedButton(
-          child: Text('Sign In with Google'),
-          onPressed: () => _signIn(),
+          onPressed: _signIn,
+          child: const Text('Sign In with Google'),
         );
       },
     );
@@ -96,7 +98,7 @@ class _SignInButtonState extends State<SignInButton> {
 
   void _showError() {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Text('Unable to sign in.'),
       ),
     );

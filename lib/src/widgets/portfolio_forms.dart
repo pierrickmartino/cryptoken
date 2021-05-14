@@ -7,22 +7,24 @@ import 'package:provider/provider.dart';
 import 'package:web_dashboard/src/api/api.dart';
 import 'package:web_dashboard/src/app.dart';
 
-class NewCategoryForm extends StatefulWidget {
+class NewPortfolioForm extends StatefulWidget {
+  const NewPortfolioForm({Key key}) : super(key: key);
+
   @override
-  _NewCategoryFormState createState() => _NewCategoryFormState();
+  _NewPortfolioFormState createState() => _NewPortfolioFormState();
 }
 
-class _NewCategoryFormState extends State<NewCategoryForm> {
-  Category _category = Category('');
+class _NewPortfolioFormState extends State<NewPortfolioForm> {
+  final Portfolio _portfolio = Portfolio('');
 
   @override
   Widget build(BuildContext context) {
-    var api = Provider.of<AppState>(context).api;
-    return EditCategoryForm(
-      category: _category,
+    final api = Provider.of<AppState>(context).api;
+    return EditPortfolioForm(
+      portfolio: _portfolio,
       onDone: (shouldInsert) {
         if (shouldInsert) {
-          api.categories.insert(_category);
+          api.portfolios.insert(_portfolio);
         }
         Navigator.of(context).pop();
       },
@@ -30,20 +32,21 @@ class _NewCategoryFormState extends State<NewCategoryForm> {
   }
 }
 
-class EditCategoryForm extends StatefulWidget {
-  final Category category;
+class EditPortfolioForm extends StatefulWidget {
+  const EditPortfolioForm({
+    Key key,
+    @required this.portfolio,
+    @required this.onDone,
+  }) : super(key: key);
+
+  final Portfolio portfolio;
   final ValueChanged<bool> onDone;
 
-  EditCategoryForm({
-    @required this.category,
-    @required this.onDone,
-  });
-
   @override
-  _EditCategoryFormState createState() => _EditCategoryFormState();
+  _EditPortfolioFormState createState() => _EditPortfolioFormState();
 }
 
-class _EditCategoryFormState extends State<EditCategoryForm> {
+class _EditPortfolioFormState extends State<EditPortfolioForm> {
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -54,14 +57,14 @@ class _EditCategoryFormState extends State<EditCategoryForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8),
             child: TextFormField(
-              initialValue: widget.category.name,
-              decoration: InputDecoration(
+              initialValue: widget.portfolio.name,
+              decoration: const InputDecoration(
                 labelText: 'Name',
               ),
               onChanged: (newValue) {
-                widget.category.name = newValue;
+                widget.portfolio.name = newValue;
               },
               validator: (value) {
                 if (value.isEmpty) {
@@ -75,23 +78,23 @@ class _EditCategoryFormState extends State<EditCategoryForm> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                padding: const EdgeInsets.only(left: 8, right: 8),
                 child: ElevatedButton(
-                  child: Text('Cancel'),
                   onPressed: () {
                     widget.onDone(false);
                   },
+                  child: const Text('Cancel'),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                padding: const EdgeInsets.only(left: 8, right: 8),
                 child: ElevatedButton(
-                  child: Text('OK'),
                   onPressed: () {
                     if (_formKey.currentState.validate()) {
                       widget.onDone(true);
                     }
                   },
+                  child: const Text('OK'),
                 ),
               ),
             ],

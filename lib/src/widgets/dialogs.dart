@@ -5,42 +5,45 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:web_dashboard/src/api/api.dart';
-import 'package:web_dashboard/src/widgets/category_forms.dart';
+import 'package:web_dashboard/src/widgets/transaction_forms.dart';
+import 'package:web_dashboard/src/widgets/portfolio_forms.dart';
 
 import '../app.dart';
-import 'edit_entry.dart';
 
-class NewCategoryDialog extends StatelessWidget {
+class NewPortfolioDialog extends StatelessWidget {
+  const NewPortfolioDialog({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return SimpleDialog(
-      title: Text('New Category'),
+    return const SimpleDialog(
+      title: Text('New Portfolio'),
       children: <Widget>[
-        NewCategoryForm(),
+        NewPortfolioForm(),
       ],
     );
   }
 }
 
-class EditCategoryDialog extends StatelessWidget {
-  final Category category;
+class EditPortfolioDialog extends StatelessWidget {
+  const EditPortfolioDialog({
+    Key key,
+    @required this.portfolio,
+  }) : super(key: key);
 
-  EditCategoryDialog({
-    @required this.category,
-  });
+  final Portfolio portfolio;
 
   @override
   Widget build(BuildContext context) {
-    var api = Provider.of<AppState>(context).api;
+    final api = Provider.of<AppState>(context).api;
 
     return SimpleDialog(
-      title: Text('Edit Category'),
+      title: const Text('Edit Portfolio'),
       children: [
-        EditCategoryForm(
-          category: category,
+        EditPortfolioForm(
+          portfolio: portfolio,
           onDone: (shouldUpdate) {
             if (shouldUpdate) {
-              api.categories.update(category, category.id);
+              api.portfolios.update(portfolio, portfolio.id);
             }
             Navigator.of(context).pop();
           },
@@ -50,44 +53,48 @@ class EditCategoryDialog extends StatelessWidget {
   }
 }
 
-class NewEntryDialog extends StatefulWidget {
+class NewTransactionDialog extends StatefulWidget {
+  const NewTransactionDialog({Key key}) : super(key: key);
+
   @override
-  _NewEntryDialogState createState() => _NewEntryDialogState();
+  _NewTransactionDialogState createState() => _NewTransactionDialogState();
 }
 
-class _NewEntryDialogState extends State<NewEntryDialog> {
+class _NewTransactionDialogState extends State<NewTransactionDialog> {
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
-      title: Text('New Entry'),
+      title: const Text('New Transaction'),
       children: [
-        NewEntryForm(),
+        NewTransactionForm(),
       ],
     );
   }
 }
 
-class EditEntryDialog extends StatelessWidget {
-  final Category category;
-  final Entry entry;
+class EditTransactionDialog extends StatelessWidget {
+  const EditTransactionDialog({
+    Key key,
+    this.portfolio,
+    this.transaction,
+  }) : super(key: key);
 
-  EditEntryDialog({
-    this.category,
-    this.entry,
-  });
+  final Portfolio portfolio;
+  final Transaction transaction;
 
   @override
   Widget build(BuildContext context) {
-    var api = Provider.of<AppState>(context).api;
+    final api = Provider.of<AppState>(context).api;
 
     return SimpleDialog(
-      title: Text('Edit Entry'),
+      title: const Text('Edit Transaction'),
       children: [
-        EditEntryForm(
-          entry: entry,
+        EditTransactionForm(
+          transaction: transaction,
           onDone: (shouldUpdate) {
             if (shouldUpdate) {
-              api.entries.update(category.id, entry.id, entry);
+              api.transactions
+                  .update(portfolio.id, transaction.id, transaction);
             }
             Navigator.of(context).pop();
           },

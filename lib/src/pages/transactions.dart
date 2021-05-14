@@ -8,31 +8,32 @@ import 'package:intl/intl.dart' as intl;
 
 import '../api/api.dart';
 import '../app.dart';
-import '../widgets/categories_dropdown.dart';
 import '../widgets/dialogs.dart';
+import '../widgets/portfolios_dropdown.dart';
 
-class EntriesPage extends StatefulWidget {
+class TransactionsPage extends StatefulWidget {
+  const TransactionsPage({Key key}) : super(key: key);
   @override
-  _EntriesPageState createState() => _EntriesPageState();
+  _TransactionsPageState createState() => _TransactionsPageState();
 }
 
-class _EntriesPageState extends State<EntriesPage> {
-  Category _selected;
+class _TransactionsPageState extends State<TransactionsPage> {
+  Portfolio _selected;
 
   @override
   Widget build(BuildContext context) {
-    var appState = Provider.of<AppState>(context);
+    final appState = Provider.of<AppState>(context);
     return Column(
       children: [
-        CategoryDropdown(
-            api: appState.api.categories,
-            onSelected: (category) => setState(() => _selected = category)),
+        PortfolioDropdown(
+            api: appState.api.portfolios,
+            onSelected: (portfolio) => setState(() => _selected = portfolio)),
         Expanded(
           child: _selected == null
-              ? Center(child: CircularProgressIndicator())
-              : EntriesList(
-                  category: _selected,
-                  api: appState.api.entries,
+              ? const Center(child: CircularProgressIndicator())
+              : TransactionsList(
+                  portfolio: _selected,
+                  api: appState.api.transactions,
                 ),
         ),
       ],
@@ -40,44 +41,44 @@ class _EntriesPageState extends State<EntriesPage> {
   }
 }
 
-class EntriesList extends StatefulWidget {
-  final Category category;
-  final EntryApi api;
-
-  EntriesList({
-    @required this.category,
+class TransactionsList extends StatefulWidget {
+  TransactionsList({
+    @required this.portfolio,
     @required this.api,
-  }) : super(key: ValueKey(category.id));
+  }) : super(key: ValueKey(portfolio.id));
+
+  final Portfolio portfolio;
+  final TransactionApi api;
 
   @override
-  _EntriesListState createState() => _EntriesListState();
+  _TransactionsListState createState() => _TransactionsListState();
 }
 
-class _EntriesListState extends State<EntriesList> {
+class _TransactionsListState extends State<TransactionsList> {
   @override
   Widget build(BuildContext context) {
-    if (widget.category == null) {
+    if (widget.portfolio == null) {
       return _buildLoadingIndicator();
     }
 
-    return FutureBuilder<List<Entry>>(
-      future: widget.api.list(widget.category.id),
+    return FutureBuilder<List<Transaction>>(
+      future: widget.api.list(widget.portfolio.id),
       builder: (context, futureSnapshot) {
         if (!futureSnapshot.hasData) {
           return _buildLoadingIndicator();
         }
-        return StreamBuilder<List<Entry>>(
+        return StreamBuilder<List<Transaction>>(
           initialData: futureSnapshot.data,
-          stream: widget.api.subscribe(widget.category.id),
+          stream: widget.api.subscribe(widget.portfolio.id),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return _buildLoadingIndicator();
             }
             return ListView.builder(
               itemBuilder: (context, index) {
-                return EntryTile(
-                  category: widget.category,
-                  entry: snapshot.data[index],
+                return TransactionTile(
+                  portfolio: widget.portfolio,
+                  transaction: snapshot.data[index],
                 );
               },
               itemCount: snapshot.data.length,
@@ -89,53 +90,55 @@ class _EntriesListState extends State<EntriesList> {
   }
 
   Widget _buildLoadingIndicator() {
-    return Center(child: CircularProgressIndicator());
+    return const Center(child: CircularProgressIndicator());
   }
 }
 
-class EntryTile extends StatelessWidget {
-  final Category category;
-  final Entry entry;
+class TransactionTile extends StatelessWidget {
+  const TransactionTile({
+    Key key,
+    this.portfolio,
+    this.transaction,
+  }) : super(key: key);
 
-  EntryTile({
-    this.category,
-    this.entry,
-  });
+  final Portfolio portfolio;
+  final Transaction transaction;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(entry.value.toString()),
-      subtitle: Text(intl.DateFormat('MM/dd/yy h:mm a').format(entry.time)),
+      title: Text(transaction.value.toString()),
+      subtitle:
+          Text(intl.DateFormat('dd/MM/yy h:mm a').format(transaction.time)),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextButton(
-            child: Text('Edit'),
             onPressed: () {
               showDialog<void>(
                 context: context,
                 builder: (context) {
-                  return EditEntryDialog(category: category, entry: entry);
+                  return EditTransactionDialog(
+                      portfolio: portfolio, transaction: transaction);
                 },
               );
             },
+            child: const Text('Edit'),
           ),
           TextButton(
-            child: Text('Delete'),
             onPressed: () async {
-              var shouldDelete = await showDialog<bool>(
+              final shouldDelete = await showDialog<bool>(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: Text('Delete entry?'),
+                  title: const Text('Delete transaction?'),
                   actions: [
                     TextButton(
-                      child: Text('Cancel'),
                       onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text('Cancel'),
                     ),
                     TextButton(
-                      child: Text('Delete'),
                       onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text('Delete'),
                     ),
                   ],
                 ),
@@ -143,16 +146,17 @@ class EntryTile extends StatelessWidget {
               if (shouldDelete) {
                 await Provider.of<AppState>(context, listen: false)
                     .api
-                    .entries
-                    .delete(category.id, entry.id);
+                    .transactions
+                    .delete(portfolio.id, transaction.id);
 
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Entry deleted'),
+                  const SnackBar(
+                    content: Text('Transaction deleted'),
                   ),
                 );
               }
             },
+            child: const Text('Delete'),
           ),
         ],
       ),
