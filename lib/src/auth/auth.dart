@@ -4,10 +4,11 @@
 
 abstract class Auth {
   Future<bool> get isSignedIn;
-  Future<User> signIn();
-  Future signOut();
+  Future<User?> signIn();
+  Future<dynamic> signOut();
 }
 
+// todo : improve to match the google User
 abstract class User {
   String get uid;
 }

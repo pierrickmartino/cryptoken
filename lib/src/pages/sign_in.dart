@@ -8,9 +8,9 @@ import '../auth/auth.dart';
 
 class SignInPage extends StatelessWidget {
   const SignInPage({
-    Key key,
-    @required this.auth,
-    @required this.onSuccess,
+    Key? key,
+    required this.auth,
+    required this.onSuccess,
   }) : super(key: key);
 
   final Auth auth;
@@ -28,9 +28,9 @@ class SignInPage extends StatelessWidget {
 
 class SignInButton extends StatefulWidget {
   const SignInButton({
-    Key key,
-    @required this.auth,
-    @required this.onSuccess,
+    Key? key,
+    required this.auth,
+    required this.onSuccess,
   }) : super(key: key);
 
   final Auth auth;
@@ -41,7 +41,7 @@ class SignInButton extends StatefulWidget {
 }
 
 class _SignInButtonState extends State<SignInButton> {
-  Future<bool> _checkSignInFuture;
+  late Future<bool> _checkSignInFuture;
 
   @override
   void initState() {
@@ -56,7 +56,7 @@ class _SignInButtonState extends State<SignInButton> {
     final alreadySignedIn = await widget.auth.isSignedIn;
     if (alreadySignedIn) {
       final user = await widget.auth.signIn();
-      widget.onSuccess(user);
+      widget.onSuccess(user!);
     }
     return alreadySignedIn;
   }
@@ -64,7 +64,7 @@ class _SignInButtonState extends State<SignInButton> {
   Future<void> _signIn() async {
     try {
       final user = await widget.auth.signIn();
-      widget.onSuccess(user);
+      widget.onSuccess(user!);
     } on SignInException {
       _showError();
     }

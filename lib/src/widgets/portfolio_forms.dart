@@ -8,7 +8,7 @@ import 'package:web_dashboard/src/api/api.dart';
 import 'package:web_dashboard/src/app.dart';
 
 class NewPortfolioForm extends StatefulWidget {
-  const NewPortfolioForm({Key key}) : super(key: key);
+  const NewPortfolioForm({Key? key}) : super(key: key);
 
   @override
   _NewPortfolioFormState createState() => _NewPortfolioFormState();
@@ -34,9 +34,9 @@ class _NewPortfolioFormState extends State<NewPortfolioForm> {
 
 class EditPortfolioForm extends StatefulWidget {
   const EditPortfolioForm({
-    Key key,
-    @required this.portfolio,
-    @required this.onDone,
+    Key? key,
+    required this.portfolio,
+    required this.onDone,
   }) : super(key: key);
 
   final Portfolio portfolio;
@@ -67,7 +67,7 @@ class _EditPortfolioFormState extends State<EditPortfolioForm> {
                 widget.portfolio.name = newValue;
               },
               validator: (value) {
-                if (value.isEmpty) {
+                if (value!.isEmpty) {
                   return 'Please enter a name';
                 }
                 return null;
@@ -90,7 +90,7 @@ class _EditPortfolioFormState extends State<EditPortfolioForm> {
                 padding: const EdgeInsets.only(left: 8, right: 8),
                 child: ElevatedButton(
                   onPressed: () {
-                    if (_formKey.currentState.validate()) {
+                    if (_formKey.currentState!.validate()) {
                       widget.onDone(true);
                     }
                   },

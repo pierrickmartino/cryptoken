@@ -33,7 +33,8 @@ class MockDashboardApi implements DashboardApi {
       for (var i = 0; i < 30; i++) {
         final date = monthAgo.add(Duration(days: i));
         final value = Random().nextInt(6) + 1;
-        await positions.insert(portfolio.id, Position(value, date));
+        await positions.insert(
+            portfolio.id, Position('BTC', value.roundToDouble(), date));
       }
     }
   }
@@ -48,17 +49,17 @@ class MockPortfolioApi implements PortfolioApi {
   Future<Portfolio> delete(String id) async {
     final removed = _storage.remove(id);
     _emit();
-    return removed;
+    return removed!;
   }
 
   @override
   Future<Portfolio> get(String id) async {
-    return _storage[id];
+    return _storage[id]!;
   }
 
   @override
   Future<Portfolio> insert(Portfolio portfolio) async {
-    final id = uuid.Uuid().v4();
+    final id = const uuid.Uuid().v4();
     final newPortfolio = Portfolio(portfolio.name)..id = id;
     _storage[id] = newPortfolio;
     _emit();
@@ -93,13 +94,14 @@ class MockPositionApi implements PositionApi {
   @override
   Future<Position> delete(String portfolioId, String id) async {
     _emit(portfolioId);
-    return _storage.remove('$portfolioId-$id');
+    return _storage.remove('$portfolioId-$id')!;
   }
 
   @override
   Future<Position> insert(String portfolioId, Position position) async {
-    final id = uuid.Uuid().v4();
-    final newPosition = Position(position.value, position.time)..id = id;
+    final id = const uuid.Uuid().v4();
+    final newPosition = Position(position.token, position.amount, position.time)
+      ..id = id;
     _storage['$portfolioId-$id'] = newPosition;
     _emit(portfolioId);
     return newPosition;
@@ -109,7 +111,7 @@ class MockPositionApi implements PositionApi {
   Future<List<Position>> list(String portfolioId) async {
     return _storage.keys
         .where((k) => k.startsWith(portfolioId))
-        .map((k) => _storage[k])
+        .map((k) => _storage[k]!)
         .toList();
   }
 
@@ -131,7 +133,7 @@ class MockPositionApi implements PositionApi {
   void _emit(String portfolioId) {
     final positions = _storage.keys
         .where((k) => k.startsWith(portfolioId))
-        .map((k) => _storage[k])
+        .map((k) => _storage[k]!)
         .toList();
 
     _streamController.add(_PositionsEvent(portfolioId, positions));
@@ -139,7 +141,7 @@ class MockPositionApi implements PositionApi {
 
   @override
   Future<Position> get(String portfolioId, String id) async {
-    return _storage['$portfolioId-$id'];
+    return _storage['$portfolioId-$id']!;
   }
 }
 
@@ -151,16 +153,41 @@ class MockTransactionApi implements TransactionApi {
   @override
   Future<Transaction> delete(String positionId, String id) async {
     _emit(positionId);
-    return _storage.remove('$positionId-$id');
+    return _storage.remove('$positionId-$id')!;
   }
 
   @override
   Future<Transaction> insert(String positionId, Transaction transaction) async {
-    final id = uuid.Uuid().v4();
-    final newTransaction = Transaction(transaction.value, transaction.time)
+    final id = const uuid.Uuid().v4();
+    final newTransaction = Transaction(
+        transaction.tokenCredit,
+        transaction.tokenDebit,
+        transaction.amountCredit,
+        transaction.amountDebit,
+        transaction.time)
       ..id = id;
     _storage['$positionId-$id'] = newTransaction;
     _emit(positionId);
+    return newTransaction;
+  }
+
+// todo
+  @override
+  Future<Transaction> insertFromPortfolio(
+      String portfolioId, Transaction transaction) async {
+    final id = const uuid.Uuid().v4();
+    final newTransaction = Transaction(
+        transaction.tokenCredit,
+        transaction.tokenDebit,
+        transaction.amountCredit,
+        transaction.amountDebit,
+        transaction.time)
+      ..id = id;
+
+    // todo : test if position already exists then insert if not
+
+    _storage['$portfolioId-$id'] = newTransaction;
+    _emit(portfolioId);
     return newTransaction;
   }
 
@@ -168,7 +195,7 @@ class MockTransactionApi implements TransactionApi {
   Future<List<Transaction>> list(String positionId) async {
     return _storage.keys
         .where((k) => k.startsWith(positionId))
-        .map((k) => _storage[k])
+        .map((k) => _storage[k]!)
         .toList();
   }
 
@@ -190,7 +217,7 @@ class MockTransactionApi implements TransactionApi {
   void _emit(String positionId) {
     final transactions = _storage.keys
         .where((k) => k.startsWith(positionId))
-        .map((k) => _storage[k])
+        .map((k) => _storage[k]!)
         .toList();
 
     _streamController.add(_TransactionsEvent(positionId, transactions));
@@ -198,7 +225,7 @@ class MockTransactionApi implements TransactionApi {
 
   @override
   Future<Transaction> get(String positionId, String id) async {
-    return _storage['$positionId-$id'];
+    return _storage['$positionId-$id']!;
   }
 }
 

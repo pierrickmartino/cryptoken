@@ -12,13 +12,13 @@ import '../widgets/dialogs.dart';
 import '../widgets/portfolios_dropdown.dart';
 
 class TransactionsPage extends StatefulWidget {
-  const TransactionsPage({Key key}) : super(key: key);
+  const TransactionsPage({Key? key}) : super(key: key);
   @override
   _TransactionsPageState createState() => _TransactionsPageState();
 }
 
 class _TransactionsPageState extends State<TransactionsPage> {
-  Portfolio _selected;
+  Portfolio? _selected;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
           child: _selected == null
               ? const Center(child: CircularProgressIndicator())
               : TransactionsList(
-                  portfolio: _selected,
+                  portfolio: _selected!,
                   api: appState.api.transactions,
                 ),
         ),
@@ -43,8 +43,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
 
 class TransactionsList extends StatefulWidget {
   TransactionsList({
-    @required this.portfolio,
-    @required this.api,
+    required this.portfolio,
+    required this.api,
   }) : super(key: ValueKey(portfolio.id));
 
   final Portfolio portfolio;
@@ -67,7 +67,7 @@ class _TransactionsListState extends State<TransactionsList> {
         if (!futureSnapshot.hasData) {
           return _buildLoadingIndicator();
         }
-        return StreamBuilder<List<Transaction>>(
+        return StreamBuilder<List<Transaction?>>(
           initialData: futureSnapshot.data,
           stream: widget.api.subscribe(widget.portfolio.id),
           builder: (context, snapshot) {
@@ -78,10 +78,10 @@ class _TransactionsListState extends State<TransactionsList> {
               itemBuilder: (context, index) {
                 return TransactionTile(
                   portfolio: widget.portfolio,
-                  transaction: snapshot.data[index],
+                  transaction: snapshot.data![index]!,
                 );
               },
-              itemCount: snapshot.data.length,
+              itemCount: snapshot.data!.length,
             );
           },
         );
@@ -96,9 +96,9 @@ class _TransactionsListState extends State<TransactionsList> {
 
 class TransactionTile extends StatelessWidget {
   const TransactionTile({
-    Key key,
-    this.portfolio,
-    this.transaction,
+    Key? key,
+    required this.portfolio,
+    required this.transaction,
   }) : super(key: key);
 
   final Portfolio portfolio;
@@ -107,9 +107,10 @@ class TransactionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(transaction.value.toString()),
+      title: Text(
+          '${transaction.amountCredit} ${transaction.tokenCredit} vs ${transaction.amountDebit} ${transaction.tokenDebit}'),
       subtitle:
-          Text(intl.DateFormat('dd/MM/yy h:mm a').format(transaction.time)),
+          Text(intl.DateFormat('dd/MM/yy hh:mm').format(transaction.time)),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -143,7 +144,7 @@ class TransactionTile extends StatelessWidget {
                   ],
                 ),
               );
-              if (shouldDelete) {
+              if (shouldDelete!) {
                 await Provider.of<AppState>(context, listen: false)
                     .api
                     .transactions

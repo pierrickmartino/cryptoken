@@ -11,7 +11,7 @@ import 'package:web_dashboard/src/widgets/portfolio_forms.dart';
 import '../app.dart';
 
 class NewPortfolioDialog extends StatelessWidget {
-  const NewPortfolioDialog({Key key}) : super(key: key);
+  const NewPortfolioDialog({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +26,8 @@ class NewPortfolioDialog extends StatelessWidget {
 
 class EditPortfolioDialog extends StatelessWidget {
   const EditPortfolioDialog({
-    Key key,
-    @required this.portfolio,
+    Key? key,
+    required this.portfolio,
   }) : super(key: key);
 
   final Portfolio portfolio;
@@ -54,7 +54,7 @@ class EditPortfolioDialog extends StatelessWidget {
 }
 
 class NewTransactionDialog extends StatefulWidget {
-  const NewTransactionDialog({Key key}) : super(key: key);
+  const NewTransactionDialog({Key? key}) : super(key: key);
 
   @override
   _NewTransactionDialogState createState() => _NewTransactionDialogState();
@@ -63,8 +63,8 @@ class NewTransactionDialog extends StatefulWidget {
 class _NewTransactionDialogState extends State<NewTransactionDialog> {
   @override
   Widget build(BuildContext context) {
-    return SimpleDialog(
-      title: const Text('New Transaction'),
+    return const SimpleDialog(
+      title: Text('New Transaction'),
       children: [
         NewTransactionForm(),
       ],
@@ -74,13 +74,13 @@ class _NewTransactionDialogState extends State<NewTransactionDialog> {
 
 class EditTransactionDialog extends StatelessWidget {
   const EditTransactionDialog({
-    Key key,
+    Key? key,
     this.portfolio,
     this.transaction,
   }) : super(key: key);
 
-  final Portfolio portfolio;
-  final Transaction transaction;
+  final Portfolio? portfolio;
+  final Transaction? transaction;
 
   @override
   Widget build(BuildContext context) {
@@ -90,11 +90,11 @@ class EditTransactionDialog extends StatelessWidget {
       title: const Text('Edit Transaction'),
       children: [
         EditTransactionForm(
-          transaction: transaction,
+          transaction: transaction!,
           onDone: (shouldUpdate) {
             if (shouldUpdate) {
               api.transactions
-                  .update(portfolio.id, transaction.id, transaction);
+                  .update(portfolio!.id, transaction!.id, transaction!);
             }
             Navigator.of(context).pop();
           },

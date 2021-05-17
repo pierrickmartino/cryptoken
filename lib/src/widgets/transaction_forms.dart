@@ -11,15 +11,15 @@ import '../app.dart';
 import 'portfolios_dropdown.dart';
 
 class NewTransactionForm extends StatefulWidget {
-  const NewTransactionForm({Key key}) : super(key: key);
+  const NewTransactionForm({Key? key}) : super(key: key);
 
   @override
   _NewTransactionFormState createState() => _NewTransactionFormState();
 }
 
 class _NewTransactionFormState extends State<NewTransactionForm> {
-  Portfolio _selected;
-  final Transaction _transaction = Transaction(0, DateTime.now());
+  Portfolio? _selected;
+  final Transaction _transaction = Transaction('', '', 0, 0, DateTime.now());
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
           transaction: _transaction,
           onDone: (shouldInsert) {
             if (shouldInsert) {
-              api.transactions.insert(_selected.id, _transaction);
+              api.transactions.insert(_selected!.id, _transaction);
             }
             Navigator.of(context).pop();
           },
@@ -55,9 +55,9 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
 
 class EditTransactionForm extends StatefulWidget {
   const EditTransactionForm({
-    Key key,
-    @required this.transaction,
-    @required this.onDone,
+    Key? key,
+    required this.transaction,
+    required this.onDone,
   }) : super(key: key);
 
   final Transaction transaction;
@@ -80,12 +80,24 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
           Padding(
             padding: const EdgeInsets.all(8),
             child: TextFormField(
-              initialValue: widget.transaction.value.toString(),
-              decoration: const InputDecoration(labelText: 'Value'),
-              keyboardType: TextInputType.number,
+              initialValue: widget.transaction.tokenCredit.toString(),
+              decoration: const InputDecoration(labelText: 'Token'),
+              keyboardType: TextInputType.text,
+              onChanged: (newValue) {
+                widget.transaction.tokenCredit = newValue;
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: TextFormField(
+              initialValue: widget.transaction.amountCredit.toString(),
+              decoration: const InputDecoration(labelText: 'Amount'),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               validator: (value) {
                 try {
-                  int.parse(value);
+                  double.parse(value!);
                 } catch (e) {
                   return 'Please enter a whole number';
                 }
@@ -93,7 +105,43 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
               },
               onChanged: (newValue) {
                 try {
-                  widget.transaction.value = int.parse(newValue);
+                  widget.transaction.amountCredit = double.parse(newValue);
+                } on FormatException {
+                  print(
+                      'Transaction cannot contain "$newValue". Expected a number');
+                }
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: TextFormField(
+              initialValue: widget.transaction.tokenDebit.toString(),
+              decoration: const InputDecoration(labelText: 'Token 2'),
+              keyboardType: TextInputType.text,
+              onChanged: (newValue) {
+                widget.transaction.tokenDebit = newValue;
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: TextFormField(
+              initialValue: widget.transaction.amountDebit.toString(),
+              decoration: const InputDecoration(labelText: 'Amount'),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              validator: (value) {
+                try {
+                  double.parse(value!);
+                } catch (e) {
+                  return 'Please enter a whole number';
+                }
+                return null;
+              },
+              onChanged: (newValue) {
+                try {
+                  widget.transaction.amountDebit = double.parse(newValue);
                 } on FormatException {
                   print(
                       'Transaction cannot contain "$newValue". Expected a number');
@@ -106,7 +154,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(intl.DateFormat('dd/MM/yyyy')
+                Text(intl.DateFormat('dd/MM/yyyy hh:mm')
                     .format(widget.transaction.time)),
                 ElevatedButton(
                   onPressed: () async {
@@ -144,7 +192,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                 padding: const EdgeInsets.only(left: 8, right: 8),
                 child: ElevatedButton(
                   onPressed: () {
-                    if (_formKey.currentState.validate()) {
+                    if (_formKey.currentState!.validate()) {
                       widget.onDone(true);
                     }
                   },

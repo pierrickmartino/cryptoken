@@ -11,9 +11,9 @@ import '../api/api.dart';
 /// one.
 class PortfolioDropdown extends StatefulWidget {
   const PortfolioDropdown({
-    Key key,
-    @required this.api,
-    @required this.onSelected,
+    Key? key,
+    required this.api,
+    required this.onSelected,
   }) : super(key: key);
 
   final PortfolioApi api;
@@ -24,9 +24,9 @@ class PortfolioDropdown extends StatefulWidget {
 }
 
 class _PortfolioDropdownState extends State<PortfolioDropdown> {
-  Portfolio _selected;
-  Future<List<Portfolio>> _future;
-  Stream<List<Portfolio>> _stream;
+  Portfolio? _selected;
+  Future<List<Portfolio>>? _future;
+  Stream<List<Portfolio>>? _stream;
 
   @override
   void initState() {
@@ -81,9 +81,9 @@ class _PortfolioDropdownState extends State<PortfolioDropdown> {
             final data = snapshot.hasData ? snapshot.data : <Portfolio>[];
             return DropdownButton<Portfolio>(
               value: _selected,
-              items: data.map(_buildDropdownItem).toList(),
+              items: data!.map(_buildDropdownItem).toList(),
               onChanged: (portfolio) {
-                _setSelected(portfolio);
+                _setSelected(portfolio!);
               },
             );
           },
@@ -100,7 +100,7 @@ class _PortfolioDropdownState extends State<PortfolioDropdown> {
       _selected = portfolio;
     });
 
-    widget.onSelected(_selected);
+    widget.onSelected(_selected!);
   }
 
   DropdownMenuItem<Portfolio> _buildDropdownItem(Portfolio portfolio) {

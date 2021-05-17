@@ -50,7 +50,10 @@ abstract class TransactionApi {
 
   Future<Transaction> get(String positionId, String id);
 
+  /// A transaction could be inserted from a Portfolio (check if position already exists) or from a Position (direct parent)
   Future<Transaction> insert(String positionId, Transaction transaction);
+  Future<Transaction> insertFromPortfolio(
+      String portfolioId, Transaction transaction);
 
   Future<List<Transaction>> list(String positionId);
 
@@ -65,13 +68,13 @@ abstract class TransactionApi {
 class Portfolio {
   Portfolio(this.name);
 
+  factory Portfolio.fromJson(Map<String, dynamic> json) =>
+      _$PortfolioFromJson(json);
+
   String name;
 
   @JsonKey(ignore: true)
-  String id;
-
-  factory Portfolio.fromJson(Map<String, dynamic> json) =>
-      _$PortfolioFromJson(json);
+  late String id;
 
   Map<String, dynamic> toJson() => _$PortfolioToJson(this);
 
@@ -88,18 +91,20 @@ class Portfolio {
 /// A transaction ...
 @JsonSerializable()
 class Transaction {
-  Transaction(this.value, this.time);
+  Transaction(this.tokenCredit, this.tokenDebit, this.amountCredit,
+      this.amountDebit, this.time);
 
-  int value;
+  factory Transaction.fromJson(Map<String, dynamic> json) =>
+      _$TransactionFromJson(json);
+
+  String tokenCredit, tokenDebit;
+  double amountCredit, amountDebit;
 
   @JsonKey(fromJson: _timestampToDateTime, toJson: _dateTimeToTimestamp)
   DateTime time;
 
-  @JsonKey(ignore: true)
-  String id;
-
-  factory Transaction.fromJson(Map<String, dynamic> json) =>
-      _$TransactionFromJson(json);
+  //@JsonKey(ignore: true)
+  late String id;
 
   Map<String, dynamic> toJson() => _$TransactionToJson(this);
 
@@ -125,21 +130,21 @@ class Transaction {
   }
 }
 
-/// A position ...
+/// todo : modify the definition of the position (token, amount, etc..)
 @JsonSerializable()
 class Position {
-  int value;
+  Position(this.token, this.amount, this.time);
+  factory Position.fromJson(Map<String, dynamic> json) =>
+      _$PositionFromJson(json);
+
+  String token;
+  double amount;
 
   @JsonKey(fromJson: _timestampToDateTime, toJson: _dateTimeToTimestamp)
   DateTime time;
 
-  @JsonKey(ignore: true)
-  String id;
-
-  Position(this.value, this.time);
-
-  factory Position.fromJson(Map<String, dynamic> json) =>
-      _$PositionFromJson(json);
+  //@JsonKey(ignore: true)
+  late String id;
 
   Map<String, dynamic> toJson() => _$PositionToJson(this);
 

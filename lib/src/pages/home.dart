@@ -11,8 +11,8 @@ import 'transactions.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
-    Key key,
-    @required this.onSignOut,
+    Key? key,
+    required this.onSignOut,
   }) : super(key: key);
 
   final VoidCallback onSignOut;
@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
         AdaptiveScaffoldDestination(title: 'Transactions', icon: Icons.list),
         AdaptiveScaffoldDestination(title: 'Settings', icon: Icons.settings),
       ],
-      body: _pageAtIndex(_pageIndex),
+      body: _pageAtIndex(_pageIndex, context),
       onNavigationIndexChange: (newIndex) {
         setState(() {
           _pageIndex = newIndex;
@@ -107,20 +107,20 @@ class _HomePageState extends State<HomePage> {
       ),
     );
 
-    if (!shouldSignOut) {
+    if (!shouldSignOut!) {
       return;
     }
 
     widget.onSignOut();
   }
 
-  static Widget _pageAtIndex(int index) {
+  static Widget _pageAtIndex(int index, BuildContext context) {
     if (index == 0) {
-      return const DashboardPage();
+      return DashboardPage(contextParent: context);
     }
 
     if (index == 1) {
-      return TransactionsPage();
+      return const TransactionsPage();
     }
 
     return const Center(child: Text('Settings page'));

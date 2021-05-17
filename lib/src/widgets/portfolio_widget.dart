@@ -9,9 +9,9 @@ import 'dialogs.dart';
 
 class PortfolioWidget extends StatelessWidget {
   const PortfolioWidget({
-    Key key,
-    @required this.portfolio,
-    @required this.api,
+    Key? key,
+    required this.portfolio,
+    required this.api,
   }) : super(key: key);
 
   final Portfolio portfolio;
@@ -50,7 +50,7 @@ class PortfolioWidget extends StatelessWidget {
               if (!futureSnapshot.hasData) {
                 return _buildLoadingIndicator();
               }
-              return StreamBuilder<List<Position>>(
+              return StreamBuilder<List<Position?>?>(
                 initialData: futureSnapshot.data,
                 stream: api.positions.subscribe(portfolio.id),
                 builder: (context, snapshot) {
@@ -75,9 +75,9 @@ class PortfolioWidget extends StatelessWidget {
 }
 
 class _ListPositions extends StatelessWidget {
-  const _ListPositions({Key key, this.positions}) : super(key: key);
+  const _ListPositions({Key? key, this.positions}) : super(key: key);
 
-  final List<Position> positions;
+  final List<Position?>? positions;
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +88,7 @@ class _ListPositions extends StatelessWidget {
           // crossAxisSpacing: 20,
           // mainAxisSpacing: 5
         ),
-        itemCount: positions.length,
+        itemCount: positions!.length,
         itemBuilder: (BuildContext context, int index) {
           return Container(
             height: 20,
@@ -96,8 +96,8 @@ class _ListPositions extends StatelessWidget {
             child: Card(
               color: Colors.blue,
               elevation: 2,
-              child:
-                  Center(child: Text('Positions : ${positions[index].value}')),
+              child: Center(
+                  child: Text('Positions : ${positions![index]!.amount}')),
             ),
           );
         });

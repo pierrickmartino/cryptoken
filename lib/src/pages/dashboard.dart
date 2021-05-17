@@ -10,11 +10,14 @@ import '../app.dart';
 import '../widgets/portfolio_widget.dart';
 
 class DashboardPage extends StatelessWidget {
-  const DashboardPage({Key key}) : super(key: key);
+  const DashboardPage({Key? key, required this.contextParent})
+      : super(key: key);
+
+  final BuildContext contextParent;
 
   @override
   Widget build(BuildContext context) {
-    final appState = Provider.of<AppState>(context);
+    final appState = Provider.of<AppState>(contextParent);
     return FutureBuilder<List<Portfolio>>(
       future: appState.api.portfolios.list(),
       builder: (context, futureSnapshot) {
@@ -41,9 +44,9 @@ class DashboardPage extends StatelessWidget {
 }
 
 class Dashboard extends StatelessWidget {
-  const Dashboard({Key key, this.portfolios}) : super(key: key);
+  const Dashboard({Key? key, this.portfolios}) : super(key: key);
 
-  final List<Portfolio> portfolios;
+  final List<Portfolio>? portfolios;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +58,7 @@ class Dashboard extends StatelessWidget {
           maxCrossAxisExtent: 500,
         ),
         children: [
-          ...portfolios.map(
+          ...portfolios!.map(
             (portfolio) => Card(
               child: PortfolioWidget(
                 api: api,
