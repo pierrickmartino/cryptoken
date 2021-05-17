@@ -71,7 +71,7 @@ class _PortfolioDropdownState extends State<PortfolioDropdown> {
       builder: (context, futureSnapshot) {
         // Show an empty dropdown while the data is loading.
         if (!futureSnapshot.hasData) {
-          return DropdownButton<Portfolio>(items: []);
+          return DropdownButton<Portfolio>(items: const []);
         }
 
         return StreamBuilder<List<Portfolio>>(

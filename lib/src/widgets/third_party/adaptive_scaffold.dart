@@ -153,7 +153,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
   }
 
   void _destinationTapped(AdaptiveScaffoldDestination destination) {
-    var idx = widget.destinations.indexOf(destination);
+    final idx = widget.destinations.indexOf(destination);
     if (idx != widget.currentIndex) {
       widget.onNavigationIndexChange!(idx);
     }

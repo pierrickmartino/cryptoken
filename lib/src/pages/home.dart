@@ -56,7 +56,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   bool get _hasFloatingActionButton {
-    if (_pageIndex == 2) return false;
+    if (_pageIndex == 2) {
+      return false;
+    }
     return true;
   }
 

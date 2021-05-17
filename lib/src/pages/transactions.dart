@@ -57,9 +57,9 @@ class TransactionsList extends StatefulWidget {
 class _TransactionsListState extends State<TransactionsList> {
   @override
   Widget build(BuildContext context) {
-    if (widget.portfolio == null) {
-      return _buildLoadingIndicator();
-    }
+    // if (widget.portfolio == null) {
+    //   return _buildLoadingIndicator();
+    // }
 
     return FutureBuilder<List<Transaction>>(
       future: widget.api.list(widget.portfolio.id),
