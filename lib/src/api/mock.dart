@@ -3,11 +3,23 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:core';
 import 'dart:math';
 
 import 'package:uuid/uuid.dart' as uuid;
 
 import 'api.dart';
+
+const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+String randomString(int strlen) {
+  final Random rnd = Random(DateTime.now().millisecondsSinceEpoch);
+  final result = StringBuffer();
+  for (var i = 0; i < strlen; i++) {
+    result.write(chars[rnd.nextInt(chars.length)]);
+  }
+  return result.toString();
+}
 
 class MockDashboardApi implements DashboardApi {
   MockDashboardApi();
@@ -24,17 +36,59 @@ class MockDashboardApi implements DashboardApi {
   /// Creates a [MockDashboardApi] filled with mock data for the last 30 days.
   Future<void> fillWithMockData() async {
     await Future<void>.delayed(const Duration(seconds: 1));
-    final portfolio1 = await portfolios.insert(Portfolio('Coffee (oz)'));
-    final portfolio2 = await portfolios.insert(Portfolio('Running (miles)'));
-    final portfolio3 = await portfolios.insert(Portfolio('Git Commits'));
+    final portfolio1 =
+        await portfolios.insert(Portfolio('PTF ${randomString(7)}'));
+    final portfolio2 =
+        await portfolios.insert(Portfolio('PTF ${randomString(9)}'));
+    final portfolio3 =
+        await portfolios.insert(Portfolio('PTF ${randomString(9)}'));
     final monthAgo = DateTime.now().subtract(const Duration(days: 30));
 
     for (final portfolio in [portfolio1, portfolio2, portfolio3]) {
-      for (var i = 0; i < 30; i++) {
-        final date = monthAgo.add(Duration(days: i));
-        final value = Random().nextInt(6) + 1;
-        await positions.insert(
-            portfolio.id, Position('BTC', value.roundToDouble(), date));
+      for (var i = 0; i < 3; i++) {
+        final date = monthAgo.add(Duration(days: 1));
+        final valueCredit = Random().nextInt(100);
+        final valueDebit = -Random().nextInt(100);
+        final tokenCredit = randomString(3);
+        final tokenDebit = randomString(4);
+
+        // first regarding the Credit part of the transaction
+        try {
+          // try to find if the position already exists
+          final oldPositionCredit =
+              await positions.get(portfolio.id, tokenCredit);
+          final newPositionCredit = Position(oldPositionCredit.token,
+              oldPositionCredit.amount + valueCredit, oldPositionCredit.time);
+
+          // if we find the position, we need to update it
+          await positions.update(portfolio.id, tokenCredit, newPositionCredit);
+        } catch (e) {
+          // if not, we should get an error then insert the new position
+          await positions.insert(portfolio.id,
+              Position(tokenCredit, valueCredit.toDouble(), date));
+        }
+
+        // then regarding the Debit part of the transaction
+        try {
+          // try to find if the position already exists
+          final oldPositionDebit =
+              await positions.get(portfolio.id, tokenDebit);
+          final newPositionDebit = Position(oldPositionDebit.token,
+              oldPositionDebit.amount + valueDebit, oldPositionDebit.time);
+
+          // if we find the position, we need to update it
+          await positions.update(portfolio.id, tokenDebit, newPositionDebit);
+        } catch (e) {
+          // if not, we should get an error then insert the new position
+          await positions.insert(
+              portfolio.id, Position(tokenDebit, valueDebit.toDouble(), date));
+        }
+
+        // finally insert the transaction linked to the portfolio
+        await transactions.insert(
+            portfolio.id,
+            Transaction(tokenCredit, tokenDebit, valueCredit.toDouble(),
+                valueDebit.toDouble(), date));
       }
     }
   }
@@ -99,10 +153,17 @@ class MockPositionApi implements PositionApi {
 
   @override
   Future<Position> insert(String portfolioId, Position position) async {
-    final id = const uuid.Uuid().v4();
+    //final id = const uuid.Uuid().v4();
     final newPosition = Position(position.token, position.amount, position.time)
-      ..id = id;
-    _storage['$portfolioId-$id'] = newPosition;
+      ..id = position.token;
+    //..id = id;
+
+    if (_storage['$portfolioId-${position.token}'] != null) {
+      return newPosition;
+    }
+    //_storage['$portfolioId-$id'] = newPosition;
+    _storage['$portfolioId-${position.token}'] = newPosition;
+
     _emit(portfolioId);
     return newPosition;
   }
@@ -166,28 +227,9 @@ class MockTransactionApi implements TransactionApi {
         transaction.amountDebit,
         transaction.time)
       ..id = id;
+
     _storage['$positionId-$id'] = newTransaction;
     _emit(positionId);
-    return newTransaction;
-  }
-
-// todo
-  @override
-  Future<Transaction> insertFromPortfolio(
-      String portfolioId, Transaction transaction) async {
-    final id = const uuid.Uuid().v4();
-    final newTransaction = Transaction(
-        transaction.tokenCredit,
-        transaction.tokenDebit,
-        transaction.amountCredit,
-        transaction.amountDebit,
-        transaction.time)
-      ..id = id;
-
-    // todo : test if position already exists then insert if not
-
-    _storage['$portfolioId-$id'] = newTransaction;
-    _emit(portfolioId);
     return newTransaction;
   }
 

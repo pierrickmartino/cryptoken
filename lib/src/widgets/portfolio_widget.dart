@@ -97,7 +97,8 @@ class _ListPositions extends StatelessWidget {
               color: Colors.blue,
               elevation: 2,
               child: Center(
-                  child: Text('Positions : ${positions![index]!.amount}')),
+                  child: Text(
+                      '${positions![index]!.token} : ${positions![index]!.amount}')),
             ),
           );
         });

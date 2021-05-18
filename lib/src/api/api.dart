@@ -50,10 +50,7 @@ abstract class TransactionApi {
 
   Future<Transaction> get(String positionId, String id);
 
-  /// A transaction could be inserted from a Portfolio (check if position already exists) or from a Position (direct parent)
   Future<Transaction> insert(String positionId, Transaction transaction);
-  Future<Transaction> insertFromPortfolio(
-      String portfolioId, Transaction transaction);
 
   Future<List<Transaction>> list(String positionId);
 

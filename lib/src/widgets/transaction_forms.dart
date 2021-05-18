@@ -41,9 +41,65 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
         ),
         EditTransactionForm(
           transaction: _transaction,
-          onDone: (shouldInsert) {
+          onDone: (shouldInsert) async {
             if (shouldInsert) {
-              api.transactions.insert(_selected!.id, _transaction);
+              // first regarding the Credit part of the transaction
+              try {
+                // try to find if the position already exists
+                final oldPositionCredit = await api.positions
+                    .get(_selected!.id, _transaction.tokenCredit);
+                final newPositionCredit = Position(
+                    oldPositionCredit.token,
+                    oldPositionCredit.amount + _transaction.amountCredit,
+                    oldPositionCredit.time);
+
+                // if we find the position, we need to update it
+                await api.positions.update(
+                    _selected!.id, _transaction.tokenCredit, newPositionCredit);
+              } catch (e) {
+                // if not, we should get an error then insert the new position
+                await api.positions.insert(
+                    _selected!.id,
+                    Position(
+                        _transaction.tokenCredit,
+                        _transaction.amountCredit.toDouble(),
+                        _transaction.time));
+              }
+
+              // then regarding the Debit part of the transaction
+              try {
+                // try to find if the position already exists
+                final oldPositionDebit = await api.positions
+                    .get(_selected!.id, _transaction.tokenDebit);
+                final newPositionDebit = Position(
+                    oldPositionDebit.token,
+                    oldPositionDebit.amount - _transaction.amountDebit,
+                    oldPositionDebit.time);
+
+                // if we find the position, we need to update it
+                await api.positions.update(
+                    _selected!.id, _transaction.tokenDebit, newPositionDebit);
+              } catch (e) {
+                // if not, we should get an error then insert the new position
+                await api.positions.insert(
+                    _selected!.id,
+                    Position(
+                        _transaction.tokenDebit,
+                        -_transaction.amountDebit.toDouble(),
+                        _transaction.time));
+              }
+
+              // finally insert the transaction linked to the portfolio
+              await api.transactions.insert(
+                  _selected!.id,
+                  Transaction(
+                      _transaction.tokenCredit,
+                      _transaction.tokenDebit,
+                      _transaction.amountCredit.toDouble(),
+                      _transaction.amountDebit.toDouble(),
+                      _transaction.time));
+
+              //api.transactions.insert(_selected!.id, _transaction);
             }
             Navigator.of(context).pop();
           },
