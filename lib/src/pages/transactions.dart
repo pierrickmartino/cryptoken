@@ -110,7 +110,7 @@ class TransactionTile extends StatelessWidget {
       title: Text(
           '${transaction.amountCredit} ${transaction.tokenCredit} vs ${transaction.amountDebit} ${transaction.tokenDebit}'),
       subtitle:
-          Text(intl.DateFormat('dd/MM/yy hh:mm').format(transaction.time)),
+          Text(intl.DateFormat('dd/MM/yy HH:mm').format(transaction.time)),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

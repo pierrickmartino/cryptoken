@@ -3,7 +3,9 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 import 'package:web_dashboard/src/api/api.dart';
 import 'package:intl/intl.dart' as intl;
 
@@ -27,6 +29,7 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.all(8),
@@ -135,6 +138,18 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8),
+            child:
+                // Here, default theme colors are used for activeBgColor, activeFgColor, inactiveBgColor and inactiveFgColor
+                ToggleSwitch(
+              initialLabelIndex: 0,
+              labels: ['Buy', 'Sell', 'Deposit', 'Withdrawal'],
+              onToggle: (index) {
+                print('switched to: $index');
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
             child: TextFormField(
               initialValue: widget.transaction.tokenCredit.toString(),
               decoration: const InputDecoration(labelText: 'Token'),
@@ -210,25 +225,27 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(intl.DateFormat('dd/MM/yyyy hh:mm')
+                Text(intl.DateFormat('dd/MM/yyyy HH:mm')
                     .format(widget.transaction.time)),
-                ElevatedButton(
-                  onPressed: () async {
-                    final result = await showDatePicker(
-                        context: context,
-                        initialDate: widget.transaction.time,
-                        firstDate:
-                            DateTime.now().subtract(const Duration(days: 365)),
-                        lastDate: DateTime.now());
-                    if (result == null) {
-                      return;
-                    }
-                    setState(() {
-                      widget.transaction.time = result;
-                    });
-                  },
-                  child: const Text('Edit'),
-                )
+                OutlinedButton(
+                    onPressed: () {
+                      DatePicker.showDateTimePicker(context,
+                          showTitleActions: true, onChanged: (date) {
+                        // print('change $date in time zone ' +
+                        //     date.timeZoneOffset.inHours.toString());
+                      }, onConfirm: (date) {
+                        setState(() {
+                          widget.transaction.time = date;
+                        });
+                        //print('confirm $date');
+                      },
+                          currentTime: widget.transaction.time,
+                          locale: LocaleType.fr);
+                    },
+                    child: const Text(
+                      'Edit',
+                      style: TextStyle(color: Colors.blue),
+                    )),
               ],
             ),
           ),
