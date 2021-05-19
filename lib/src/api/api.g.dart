@@ -20,8 +20,12 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) {
   return Transaction(
     json['tokenCredit'] as String,
     json['tokenDebit'] as String,
+    json['tokenFee'] as String,
+    json['tokenPrice'] as String,
     (json['amountCredit'] as num).toDouble(),
     (json['amountDebit'] as num).toDouble(),
+    (json['amountFee'] as num).toDouble(),
+    (json['price'] as num).toDouble(),
     Transaction._timestampToDateTime(json['time'] as Timestamp),
   )..id = json['id'] as String;
 }
@@ -30,8 +34,12 @@ Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
     <String, dynamic>{
       'tokenCredit': instance.tokenCredit,
       'tokenDebit': instance.tokenDebit,
+      'tokenFee': instance.tokenFee,
+      'tokenPrice': instance.tokenPrice,
       'amountCredit': instance.amountCredit,
       'amountDebit': instance.amountDebit,
+      'amountFee': instance.amountFee,
+      'price': instance.price,
       'time': Transaction._dateTimeToTimestamp(instance.time),
       'id': instance.id,
     };

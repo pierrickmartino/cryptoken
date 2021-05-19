@@ -46,9 +46,10 @@ class MockDashboardApi implements DashboardApi {
 
     for (final portfolio in [portfolio1, portfolio2, portfolio3]) {
       for (var i = 0; i < 3; i++) {
-        final date = monthAgo.add(Duration(days: 1));
+        final date = monthAgo.add(const Duration(days: 1));
         final valueCredit = Random().nextInt(100);
-        final valueDebit = -Random().nextInt(100);
+        final valueDebit = Random().nextInt(100);
+        final valueFee = Random().nextInt(9);
         final tokenCredit = randomString(3);
         final tokenDebit = randomString(4);
 
@@ -74,7 +75,7 @@ class MockDashboardApi implements DashboardApi {
           final oldPositionDebit =
               await positions.get(portfolio.id, tokenDebit);
           final newPositionDebit = Position(oldPositionDebit.token,
-              oldPositionDebit.amount + valueDebit, oldPositionDebit.time);
+              oldPositionDebit.amount - valueDebit, oldPositionDebit.time);
 
           // if we find the position, we need to update it
           await positions.update(portfolio.id, tokenDebit, newPositionDebit);
@@ -87,8 +88,16 @@ class MockDashboardApi implements DashboardApi {
         // finally insert the transaction linked to the portfolio
         await transactions.insert(
             portfolio.id,
-            Transaction(tokenCredit, tokenDebit, valueCredit.toDouble(),
-                valueDebit.toDouble(), date));
+            Transaction(
+                tokenCredit,
+                tokenDebit,
+                tokenDebit,
+                tokenDebit,
+                valueCredit.toDouble(),
+                valueDebit.toDouble(),
+                valueFee.toDouble(),
+                valueDebit.toDouble() / valueCredit.toDouble(),
+                date));
       }
     }
   }
@@ -223,8 +232,12 @@ class MockTransactionApi implements TransactionApi {
     final newTransaction = Transaction(
         transaction.tokenCredit,
         transaction.tokenDebit,
+        transaction.tokenFee,
+        transaction.tokenPrice,
         transaction.amountCredit,
         transaction.amountDebit,
+        transaction.amountFee,
+        transaction.price,
         transaction.time)
       ..id = id;
 

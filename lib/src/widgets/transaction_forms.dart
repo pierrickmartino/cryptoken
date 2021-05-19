@@ -21,7 +21,8 @@ class NewTransactionForm extends StatefulWidget {
 
 class _NewTransactionFormState extends State<NewTransactionForm> {
   Portfolio? _selected;
-  final Transaction _transaction = Transaction('', '', 0, 0, DateTime.now());
+  final Transaction _transaction =
+      Transaction('', '', '', '', 0, 0, 0, 0, DateTime.now());
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,7 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(0),
           child: PortfolioDropdown(
             api: api.portfolios,
             onSelected: (portfolio) {
@@ -42,6 +43,7 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
             },
           ),
         ),
+        const SizedBox(height: 14),
         EditTransactionForm(
           transaction: _transaction,
           onDone: (shouldInsert) async {
@@ -98,8 +100,12 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                   Transaction(
                       _transaction.tokenCredit,
                       _transaction.tokenDebit,
+                      _transaction.tokenFee,
+                      _transaction.tokenPrice,
                       _transaction.amountCredit.toDouble(),
                       _transaction.amountDebit.toDouble(),
+                      _transaction.amountFee.toDouble(),
+                      _transaction.price.toDouble(),
                       _transaction.time));
 
               //api.transactions.insert(_selected!.id, _transaction);
@@ -138,96 +144,276 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
         children: [
           Padding(
             padding: const EdgeInsets.all(0),
-            child:
-                // Here, default theme colors are used for activeBgColor, activeFgColor, inactiveBgColor and inactiveFgColor
-                ToggleSwitch(
-              labels: const ['Buy', 'Sell'],
-              minHeight: 30,
-              //minWidth: MediaQuery.of(context).size.width,
-              onToggle: (index) {
-                print('switched to: $index');
-              },
+            child: Center(
+              child: ToggleSwitch(
+                //fontSize: 14,
+                labels: const ['Buy', 'Sell', 'Deposit', 'Withdrawal'],
+                minHeight: 30,
+                //minWidth: MediaQuery.of(context).size.width,
+                onToggle: (index) {
+                  print('switched to: $index');
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 6),
+            //dense: true,
+            leading: const SizedBox(
+              width: 100,
+              child: Text(
+                'Amount',
+                style: TextStyle(fontSize: 14),
+              ),
+            ),
+            title: Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    style: const TextStyle(fontSize: 14),
+                    textAlign: TextAlign.end,
+                    initialValue: widget.transaction.amountCredit.toString(),
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      hintText: 'Amount',
+                    ),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    validator: (value) {
+                      try {
+                        double.parse(value!);
+                      } catch (e) {
+                        return 'Please enter a whole number';
+                      }
+                      return null;
+                    },
+                    onChanged: (newValue) {
+                      try {
+                        widget.transaction.amountCredit =
+                            double.parse(newValue);
+                      } on FormatException {
+                        print(
+                            'Transaction cannot contain "$newValue". Expected a number');
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                SizedBox(
+                  width: 70,
+                  child: TextFormField(
+                    style: const TextStyle(fontSize: 14),
+                    initialValue: widget.transaction.tokenCredit.toString(),
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      hintText: 'Token',
+                    ),
+                    keyboardType: TextInputType.text,
+                    onChanged: (newValue) {
+                      widget.transaction.tokenDebit = newValue;
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 6),
+              leading: const SizedBox(
+                width: 100,
+                child: Text(
+                  'Price',
+                  style: TextStyle(fontSize: 14),
+                ),
+              ),
+              title: Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      style: const TextStyle(fontSize: 14),
+                      textAlign: TextAlign.end,
+                      initialValue: widget.transaction.price.toStringAsFixed(6),
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        hintText: 'Price',
+                      ),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      validator: (value) {
+                        try {
+                          double.parse(value!);
+                        } catch (e) {
+                          return 'Please enter a whole number';
+                        }
+                        return null;
+                      },
+                      onChanged: (newValue) {
+                        try {
+                          widget.transaction.price = double.parse(newValue);
+                        } on FormatException {
+                          print(
+                              'Transaction cannot contain "$newValue". Expected a number');
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  SizedBox(
+                    width: 70,
+                    child: TextFormField(
+                      style: const TextStyle(fontSize: 14),
+                      initialValue: widget.transaction.tokenPrice.toString(),
+                      keyboardType: TextInputType.text,
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        hintText: 'Token',
+                      ),
+                      onChanged: (newValue) {
+                        widget.transaction.tokenPrice = newValue;
+                      },
+                    ),
+                  ),
+                ],
+              )),
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 6),
+            leading: const SizedBox(
+              width: 100,
+              child: Text(
+                'Total',
+                style: TextStyle(fontSize: 14),
+              ),
+            ),
+            title: Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    style: const TextStyle(fontSize: 14),
+                    textAlign: TextAlign.end,
+                    initialValue: widget.transaction.amountDebit.toString(),
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      hintText: 'Total Amount',
+                    ),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    validator: (value) {
+                      try {
+                        double.parse(value!);
+                      } catch (e) {
+                        return 'Please enter a whole number';
+                      }
+                      return null;
+                    },
+                    onChanged: (newValue) {
+                      try {
+                        widget.transaction.price = double.parse(newValue) /
+                            widget.transaction.amountCredit;
+                        widget.transaction.amountDebit = double.parse(newValue);
+                      } on FormatException {
+                        print(
+                            'Transaction cannot contain "$newValue". Expected a number');
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                SizedBox(
+                  width: 70,
+                  child: TextFormField(
+                    style: const TextStyle(fontSize: 14),
+                    initialValue: widget.transaction.tokenDebit.toString(),
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      hintText: 'Token',
+                    ),
+                    keyboardType: TextInputType.text,
+                    onChanged: (newValue) {
+                      widget.transaction.tokenDebit = newValue;
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 6),
+            leading: const SizedBox(
+              width: 100,
+              child: Text(
+                'Fees (incl.)',
+                style: TextStyle(fontSize: 14),
+              ),
+            ),
+            title: Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    textAlign: TextAlign.end,
+                    initialValue: widget.transaction.amountFee.toString(),
+                    style: const TextStyle(fontSize: 14),
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      hintText: 'Fees amount incl.',
+                      hintStyle: TextStyle(fontSize: 14),
+                    ),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    validator: (value) {
+                      try {
+                        double.parse(value!);
+                      } catch (e) {
+                        return 'Please enter a whole number';
+                      }
+                      return null;
+                    },
+                    onChanged: (newValue) {
+                      try {
+                        widget.transaction.amountFee = double.parse(newValue);
+                      } on FormatException {
+                        print(
+                            'Transaction cannot contain "$newValue". Expected a number');
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                SizedBox(
+                  width: 70,
+                  child: TextFormField(
+                    style: const TextStyle(fontSize: 14),
+                    initialValue: widget.transaction.tokenFee.toString(),
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      hintText: 'Token',
+                    ),
+                    keyboardType: TextInputType.text,
+                    onChanged: (newValue) {
+                      widget.transaction.tokenFee = newValue;
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: TextFormField(
-              initialValue: widget.transaction.tokenCredit.toString(),
-              decoration: const InputDecoration(labelText: 'Token'),
-              keyboardType: TextInputType.text,
-              onChanged: (newValue) {
-                widget.transaction.tokenCredit = newValue;
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: TextFormField(
-              initialValue: widget.transaction.amountCredit.toString(),
-              decoration: const InputDecoration(labelText: 'Amount'),
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              validator: (value) {
-                try {
-                  double.parse(value!);
-                } catch (e) {
-                  return 'Please enter a whole number';
-                }
-                return null;
-              },
-              onChanged: (newValue) {
-                try {
-                  widget.transaction.amountCredit = double.parse(newValue);
-                } on FormatException {
-                  print(
-                      'Transaction cannot contain "$newValue". Expected a number');
-                }
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: TextFormField(
-              initialValue: widget.transaction.tokenDebit.toString(),
-              decoration: const InputDecoration(labelText: 'Token 2'),
-              keyboardType: TextInputType.text,
-              onChanged: (newValue) {
-                widget.transaction.tokenDebit = newValue;
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: TextFormField(
-              initialValue: widget.transaction.amountDebit.toString(),
-              decoration: const InputDecoration(labelText: 'Amount'),
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              validator: (value) {
-                try {
-                  double.parse(value!);
-                } catch (e) {
-                  return 'Please enter a whole number';
-                }
-                return null;
-              },
-              onChanged: (newValue) {
-                try {
-                  widget.transaction.amountDebit = double.parse(newValue);
-                } on FormatException {
-                  print(
-                      'Transaction cannot contain "$newValue". Expected a number');
-                }
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(intl.DateFormat('dd/MM/yyyy HH:mm')
-                    .format(widget.transaction.time)),
+                Text(
+                  intl.DateFormat('dd/MM/yyyy HH:mm')
+                      .format(widget.transaction.time),
+                ),
                 OutlinedButton(
                     onPressed: () {
                       DatePicker.showDateTimePicker(context,
