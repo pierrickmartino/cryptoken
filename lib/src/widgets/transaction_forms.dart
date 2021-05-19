@@ -142,7 +142,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                 // Here, default theme colors are used for activeBgColor, activeFgColor, inactiveBgColor and inactiveFgColor
                 ToggleSwitch(
               initialLabelIndex: 0,
-              labels: ['Buy', 'Sell', 'Deposit', 'Withdrawal'],
+              labels: ['Buy', 'Sell'],
               onToggle: (index) {
                 print('switched to: $index');
               },
