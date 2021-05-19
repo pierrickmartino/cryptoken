@@ -4,12 +4,28 @@
 
 import 'dart:math';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'auth.dart';
 
 class MockAuthService implements Auth {
   @override
   Future<bool> get isSignedIn async {
     return false;
+  }
+
+  // To check if the user is already signed into the
+// app using Google Sign In
+  @override
+  Future<dynamic> getUser() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final bool authSignedIn = prefs.getBool('auth') ?? false;
+
+    final User user = MockUser();
+
+    if (authSignedIn == true) {
+      return user;
+    }
   }
 
   @override
@@ -31,4 +47,10 @@ class MockAuthService implements Auth {
 class MockUser implements User {
   @override
   String get uid => '123';
+  @override
+  String get name => 'John Doe';
+  @override
+  String get userEmail => 'john.doe@gmail.com';
+  @override
+  String get imageUrl => 'https://picsum.photos/250?image=9';
 }

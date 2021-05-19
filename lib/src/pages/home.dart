@@ -3,9 +3,11 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:web_dashboard/src/auth/auth.dart';
 
 import '../widgets/dialogs.dart';
 import '../widgets/third_party/adaptive_scaffold.dart';
+import '../auth/mock.dart';
 import 'dashboard.dart';
 import 'transactions.dart';
 
@@ -24,13 +26,25 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _pageIndex = 0;
 
+  final User user = MockUser();
+
   @override
   Widget build(BuildContext context) {
     return AdaptiveScaffold(
       title: const Text('Cryptoken'),
       actions: [
+        CircleAvatar(
+          radius: 15,
+          backgroundImage: NetworkImage(user.imageUrl),
+          child: Container(),
+        ),
+        const SizedBox(width: 5),
+        Center(
+          child: Text(user.name),
+        ),
+        const SizedBox(width: 10),
         Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(12),
           child: TextButton(
             style: TextButton.styleFrom(primary: Colors.white),
             onPressed: _handleSignOut,

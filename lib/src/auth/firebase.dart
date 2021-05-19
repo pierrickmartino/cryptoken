@@ -29,6 +29,7 @@ class FirebaseAuthService implements auth.Auth {
 
 // To check if the user is already signed into the
 // app using Google Sign In
+  @override
   Future<dynamic> getUser() async {
     await Firebase.initializeApp();
 
@@ -88,7 +89,7 @@ class FirebaseAuthService implements auth.Auth {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('auth', true);
 
-      final _User _user = _User(user.uid);
+      final _User _user = _User(uid!, name!, userEmail!, imageUrl!);
 
       return _user;
     }
@@ -241,8 +242,8 @@ class FirebaseAuthService implements auth.Auth {
 }
 
 class _User implements auth.User {
-  _User(this.uid);
+  _User(this.uid, this.name, this.userEmail, this.imageUrl);
 
   @override
-  final String uid;
+  final String uid, name, userEmail, imageUrl;
 }
