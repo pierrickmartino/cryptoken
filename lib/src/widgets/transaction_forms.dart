@@ -137,19 +137,20 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(0),
             child:
                 // Here, default theme colors are used for activeBgColor, activeFgColor, inactiveBgColor and inactiveFgColor
                 ToggleSwitch(
-              initialLabelIndex: 0,
-              labels: ['Buy', 'Sell'],
+              labels: const ['Buy', 'Sell'],
+              minHeight: 30,
+              //minWidth: MediaQuery.of(context).size.width,
               onToggle: (index) {
                 print('switched to: $index');
               },
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: TextFormField(
               initialValue: widget.transaction.tokenCredit.toString(),
               decoration: const InputDecoration(labelText: 'Token'),
@@ -160,7 +161,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: TextFormField(
               initialValue: widget.transaction.amountCredit.toString(),
               decoration: const InputDecoration(labelText: 'Amount'),
@@ -185,7 +186,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: TextFormField(
               initialValue: widget.transaction.tokenDebit.toString(),
               decoration: const InputDecoration(labelText: 'Token 2'),
@@ -196,7 +197,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: TextFormField(
               initialValue: widget.transaction.amountDebit.toString(),
               decoration: const InputDecoration(labelText: 'Amount'),
@@ -221,7 +222,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -262,7 +263,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 8, right: 8),
+                padding: const EdgeInsets.only(left: 8),
                 child: ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {

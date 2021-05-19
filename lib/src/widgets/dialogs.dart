@@ -88,17 +88,25 @@ class EditTransactionDialog extends StatelessWidget {
 
     return SimpleDialog(
       title: const Text('Edit Transaction'),
+      contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
       children: [
-        EditTransactionForm(
-          transaction: transaction!,
-          onDone: (shouldUpdate) {
-            if (shouldUpdate) {
-              api.transactions
-                  .update(portfolio!.id, transaction!.id, transaction!);
-            }
-            Navigator.of(context).pop();
-          },
-        )
+        Container(
+          width: MediaQuery.of(context).size.width - 50,
+          child: Column(
+            children: [
+              EditTransactionForm(
+                transaction: transaction!,
+                onDone: (shouldUpdate) {
+                  if (shouldUpdate) {
+                    api.transactions
+                        .update(portfolio!.id, transaction!.id, transaction!);
+                  }
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
