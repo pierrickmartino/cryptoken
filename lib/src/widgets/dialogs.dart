@@ -63,10 +63,18 @@ class NewTransactionDialog extends StatefulWidget {
 class _NewTransactionDialogState extends State<NewTransactionDialog> {
   @override
   Widget build(BuildContext context) {
-    return const SimpleDialog(
-      title: Text('New Transaction'),
+    return SimpleDialog(
+      title: const Text('New Transaction'),
+      contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
       children: [
-        NewTransactionForm(),
+        Container(
+          width: MediaQuery.of(context).size.width - 50,
+          child: Column(
+            children: const [
+              NewTransactionForm(),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -88,7 +96,7 @@ class EditTransactionDialog extends StatelessWidget {
 
     return SimpleDialog(
       title: const Text('Edit Transaction'),
-      contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+      contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
       children: [
         Container(
           width: MediaQuery.of(context).size.width - 50,

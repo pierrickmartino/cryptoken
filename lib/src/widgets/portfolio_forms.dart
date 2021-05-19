@@ -57,7 +57,7 @@ class _EditPortfolioFormState extends State<EditPortfolioForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(0),
             child: TextFormField(
               initialValue: widget.portfolio.name,
               decoration: const InputDecoration(
