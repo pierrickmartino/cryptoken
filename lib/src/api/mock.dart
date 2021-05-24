@@ -36,6 +36,61 @@ class MockDashboardApi implements DashboardApi {
   /// Creates a [MockDashboardApi] filled with mock data for the last 30 days.
   Future<void> fillWithMockData() async {
     await Future<void>.delayed(const Duration(seconds: 1));
+
+    // PORTFOLIO BENCHMARK
+    final portfolio0 = await portfolios.insert(Portfolio('Benchmark'));
+
+    // POSITION BTC
+    final dateBTC = DateTime.utc(2021, 4);
+    const valueCreditBTC = 1;
+    const valueDebitBTC = 58740;
+    const valueFeeBTC = 0;
+    const tokenCreditBTC = 'BTC';
+    const tokenDebitBTC = 'USDT';
+
+    await positions.insert(portfolio0.id,
+        Position(tokenCreditBTC, valueCreditBTC.toDouble(), dateBTC));
+    await positions.insert(portfolio0.id,
+        Position(tokenDebitBTC, valueDebitBTC.toDouble(), dateBTC));
+    await transactions.insert(
+        portfolio0.id,
+        Transaction(
+            tokenCreditBTC,
+            tokenDebitBTC,
+            tokenDebitBTC,
+            tokenDebitBTC,
+            valueCreditBTC.toDouble(),
+            valueDebitBTC.toDouble(),
+            valueFeeBTC.toDouble(),
+            valueDebitBTC.toDouble() / valueCreditBTC.toDouble(),
+            dateBTC));
+
+    // POSITION ETH
+    final dateETH = DateTime.utc(2021, 4);
+    const valueCreditETH = 1;
+    const valueDebitETH = 1968;
+    const valueFeeETH = 0;
+    const tokenCreditETH = 'ETH';
+    const tokenDebitETH = 'USDT';
+
+    await positions.insert(portfolio0.id,
+        Position(tokenCreditETH, valueCreditETH.toDouble(), dateETH));
+    await positions.insert(portfolio0.id,
+        Position(tokenDebitETH, valueDebitETH.toDouble(), dateETH));
+    await transactions.insert(
+        portfolio0.id,
+        Transaction(
+            tokenCreditETH,
+            tokenDebitETH,
+            tokenDebitETH,
+            tokenDebitETH,
+            valueCreditETH.toDouble(),
+            valueDebitETH.toDouble(),
+            valueFeeETH.toDouble(),
+            valueDebitETH.toDouble() / valueCreditETH.toDouble(),
+            dateETH));
+
+    // Other examples
     final portfolio1 =
         await portfolios.insert(Portfolio('PTF ${randomString(7)}'));
     final portfolio2 =

@@ -2,17 +2,61 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
+import 'package:http/http.dart' as http;
 
 import '../api/api.dart';
 import '../app.dart';
 import '../pages/transactions.dart';
 import 'dialogs.dart';
+import 'position_widget.dart';
 
 final _numberFormat =
     NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 2);
+
+Future<Price> fetchPrice(String symbol) async {
+  if (symbol == 'INIT') {
+    symbol = 'BTCUSDT';
+  } else {
+    symbol = '${symbol}USDT';
+  }
+
+  final response = await http.get(
+      Uri.parse('https://api3.binance.com/api/v3/ticker/price?symbol=$symbol'));
+
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    return Price.fromJson(jsonDecode(response.body));
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load price');
+  }
+}
+
+class Price {
+  Price({
+    required this.symbol,
+    required this.price,
+  });
+
+  factory Price.fromJson(Map<String, dynamic> json) {
+    return Price(
+      symbol: json['symbol'],
+      price: double.parse(json['price']),
+    );
+  }
+
+  final String symbol;
+  final double price;
+}
 
 class PortfolioWidget extends StatelessWidget {
   const PortfolioWidget({
@@ -34,10 +78,6 @@ class PortfolioWidget extends StatelessWidget {
             children: [
               Text(portfolio.name),
               const Spacer(),
-              const IconButton(
-                icon: Icon(Icons.refresh),
-                onPressed: null,
-              ),
               IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: () {
@@ -90,12 +130,25 @@ class PortfolioWidget extends StatelessWidget {
   }
 }
 
-class _ListPositions extends StatelessWidget {
+class _ListPositions extends StatefulWidget {
   const _ListPositions({Key? key, this.positions, this.portfolio})
       : super(key: key);
 
   final List<Position?>? positions;
   final Portfolio? portfolio;
+
+  @override
+  _ListPositionsState createState() => _ListPositionsState();
+}
+
+class _ListPositionsState extends State<_ListPositions> {
+  late Future<Price> futurePrice;
+
+  @override
+  void initState() {
+    super.initState();
+    futurePrice = fetchPrice('INIT');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,79 +161,11 @@ class _ListPositions extends StatelessWidget {
           // mainAxisSpacing: 5
         ),
         scrollDirection: Axis.horizontal,
-        itemCount: positions!.length,
+        itemCount: widget.positions!.length,
         itemBuilder: (BuildContext context, int index) {
-          return Container(
-            height: 20,
-            child: Card(
-              color: Colors.cyan,
-              elevation: 2,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10, right: 4),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          positions![index]!.token,
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.list),
-                          onPressed: () {
-                            final appState =
-                                Provider.of<AppState>(context, listen: false);
-
-                            showModalBottomSheet<void>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Container(
-                                  height: MediaQuery.of(context).size.height,
-                                  child: Column(
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.all(8),
-                                        child: Row(
-                                          children: [
-                                            const Text('Transactions'),
-                                            const Spacer(),
-                                            OutlinedButton(
-                                              onPressed: () =>
-                                                  Navigator.pop(context),
-                                              child: const Text('Close'),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: TransactionsList(
-                                          portfolio: portfolio!,
-                                          api: appState.api.transactions,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8, right: 4),
-                    child: Row(
-                      children: [
-                        Text(
-                          _numberFormat.format(positions![index]!.amount),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          return PositionWidget(
+            position: widget.positions![index]!,
+            portfolio: widget.portfolio,
           );
         });
   }
