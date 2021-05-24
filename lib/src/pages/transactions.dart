@@ -95,17 +95,16 @@ class TransactionTile extends StatelessWidget {
     Key? key,
     required this.portfolio,
     required this.transaction,
-    //required this.oldTransaction,
   }) : super(key: key);
 
   final Portfolio portfolio;
-  final Transaction transaction; //, oldTransaction;
+  final Transaction transaction;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(
-          '${transaction.amountCredit} ${transaction.tokenCredit} vs ${transaction.amountDebit} ${transaction.tokenDebit}'),
+          '${transaction.amountCredit} ${transaction.tokenCredit} at ${transaction.price.toStringAsFixed(4)} ${transaction.tokenPrice}'),
       subtitle:
           Text(intl.DateFormat('dd/MM/yy HH:mm').format(transaction.time)),
       trailing: Row(
@@ -119,7 +118,6 @@ class TransactionTile extends StatelessWidget {
                   return EditTransactionDialog(
                     portfolio: portfolio,
                     transaction: transaction,
-                    //oldTransaction: oldTransaction,
                   );
                 },
               );

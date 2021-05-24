@@ -115,8 +115,6 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                       _transaction.price.toDouble(),
                       _transaction.time));
 
-              //api.transactions.insert(_selected!.id, _transaction);
-
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Transaction inserted'),
@@ -150,10 +148,10 @@ class EditTransactionForm extends StatefulWidget {
 class _EditTransactionFormState extends State<EditTransactionForm> {
   final _formKey = GlobalKey<FormState>();
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  // }
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -511,16 +509,19 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                       .format(widget.transaction.time),
                 ),
                 OutlinedButton(
-                  onPressed: () {
-                    DatePicker.showDateTimePicker(context,
+                  onPressed: () async {
+                    final result = await DatePicker.showDateTimePicker(context,
                         //showTitleActions: true,
-                        onChanged: (date) {}, onConfirm: (date) {
-                      setState(() {
-                        _time = date;
-                      });
-                    },
-                        currentTime: widget.transaction.time,
+                        onChanged: (date) {},
+                        onConfirm: (date) {},
+                        currentTime: _time,
                         locale: LocaleType.fr);
+                    if (result == null) {
+                      return;
+                    }
+                    setState(() {
+                      widget.transaction.time = result;
+                    });
                   },
                   child: const Text(
                     'Edit',
@@ -597,10 +598,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                             .api
                             .transactions
                             .delete(widget.portfolio.id, widget.transaction.id);
-                      } catch (e) {
-                        print(e);
-                      }
-
+                      } catch (_) {}
                       // new transaction
                       widget.transaction.amountCredit = _amountCredit;
                       widget.transaction.tokenCredit = _tokenCredit;
@@ -610,7 +608,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                       widget.transaction.tokenFee = _tokenFee;
                       widget.transaction.price = _price;
                       widget.transaction.tokenPrice = _tokenPrice;
-                      widget.transaction.time = _time;
+                      //widget.transaction.time = _time;
                       //widget.transaction.id = widget.transaction.id;
 
                       widget.onDone(true);
