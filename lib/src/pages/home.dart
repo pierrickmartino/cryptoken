@@ -34,12 +34,6 @@ class _HomePageState extends State<HomePage> {
     return AdaptiveScaffold(
       title: const Text('Cryptoken'),
       actions: [
-        CircleAvatar(
-          //radius: 10,
-          backgroundImage: NetworkImage(user.imageUrl),
-          child: Container(),
-        ),
-        const SizedBox(width: 5),
         Center(
           child: Text(user.name),
         ),
