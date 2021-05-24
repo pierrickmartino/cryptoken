@@ -81,7 +81,6 @@ class FirebaseAuthService implements auth.Auth {
       imageUrl = user.photoURL;
 
       assert(!user.isAnonymous);
-      assert(await user.getIdToken() != null);
 
       final User? currentUser = _auth.currentUser;
       assert(user.uid == currentUser!.uid);
@@ -136,7 +135,6 @@ class FirebaseAuthService implements auth.Auth {
       imageUrl = user.photoURL;
 
       assert(!user.isAnonymous);
-      assert(await user.getIdToken() != null);
 
       final User currentUser = _auth.currentUser!;
       assert(user.uid == currentUser.uid);
@@ -170,7 +168,6 @@ class FirebaseAuthService implements auth.Auth {
       userEmail = user.email;
 
       assert(!user.isAnonymous);
-      assert(await user.getIdToken() != null);
 
       return 'Successfully registered, User UID: ${user.uid}';
     }
@@ -197,7 +194,6 @@ class FirebaseAuthService implements auth.Auth {
       userEmail = user.email;
 
       assert(!user.isAnonymous);
-      assert(await user.getIdToken() != null);
 
       final User? currentUser = _auth.currentUser;
       assert(user.uid == currentUser!.uid);

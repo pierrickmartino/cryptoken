@@ -55,27 +55,30 @@ class PortfolioWidget extends StatelessWidget {
         Expanded(
           // Load the initial snapshot using a FutureBuilder, and subscribe to
           // additional updates with a StreamBuilder.
-          child: FutureBuilder<List<Position>>(
-            future: api.positions.list(portfolio.id),
-            builder: (context, futureSnapshot) {
-              if (!futureSnapshot.hasData) {
-                return _buildLoadingIndicator();
-              }
-              return StreamBuilder<List<Position?>?>(
-                initialData: futureSnapshot.data,
-                stream: api.positions.subscribe(portfolio.id),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return _buildLoadingIndicator();
-                  }
-                  return _ListPositions(
-                    portfolio:
-                        portfolio, // TODO : Temporary as we need to find transactions based on positions
-                    positions: snapshot.data,
-                  );
-                },
-              );
-            },
+          child: Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 4),
+            child: FutureBuilder<List<Position>>(
+              future: api.positions.list(portfolio.id),
+              builder: (context, futureSnapshot) {
+                if (!futureSnapshot.hasData) {
+                  return _buildLoadingIndicator();
+                }
+                return StreamBuilder<List<Position?>?>(
+                  initialData: futureSnapshot.data,
+                  stream: api.positions.subscribe(portfolio.id),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return _buildLoadingIndicator();
+                    }
+                    return _ListPositions(
+                      portfolio:
+                          portfolio, // TODO : Temporary as we need to find transactions based on positions
+                      positions: snapshot.data,
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ),
       ],
@@ -115,7 +118,7 @@ class _ListPositions extends StatelessWidget {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 8, right: 4),
+                    padding: const EdgeInsets.only(left: 10, right: 4),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

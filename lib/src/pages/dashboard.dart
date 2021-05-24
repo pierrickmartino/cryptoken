@@ -10,14 +10,13 @@ import '../app.dart';
 import '../widgets/portfolio_widget.dart';
 
 class DashboardPage extends StatelessWidget {
-  const DashboardPage({Key? key, required this.contextParent})
-      : super(key: key);
-
-  final BuildContext contextParent;
+  const DashboardPage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final appState = Provider.of<AppState>(contextParent);
+    final appState = Provider.of<AppState>(context);
     return FutureBuilder<List<Portfolio>>(
       future: appState.api.portfolios.list(),
       builder: (context, futureSnapshot) {

@@ -25,6 +25,12 @@ class _NewPortfolioFormState extends State<NewPortfolioForm> {
       onDone: (shouldInsert) {
         if (shouldInsert) {
           api.portfolios.insert(_portfolio);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Portfolio inserted'),
+            ),
+          );
         }
         Navigator.of(context).pop();
       },
@@ -57,11 +63,13 @@ class _EditPortfolioFormState extends State<EditPortfolioForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(0),
+            padding: const EdgeInsets.only(bottom: 16),
             child: TextFormField(
+              style: const TextStyle(fontSize: 14),
               initialValue: widget.portfolio.name,
               decoration: const InputDecoration(
-                labelText: 'Name',
+                isDense: true,
+                hintText: 'Name',
               ),
               onChanged: (newValue) {
                 widget.portfolio.name = newValue;

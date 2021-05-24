@@ -5,9 +5,10 @@
 import 'package:flutter/material.dart';
 import 'package:web_dashboard/src/auth/auth.dart';
 
+import '../auth/mock.dart';
 import '../widgets/dialogs.dart';
 import '../widgets/third_party/adaptive_scaffold.dart';
-import '../auth/mock.dart';
+
 import 'dashboard.dart';
 import 'transactions.dart';
 
@@ -34,7 +35,7 @@ class _HomePageState extends State<HomePage> {
       title: const Text('Cryptoken'),
       actions: [
         CircleAvatar(
-          radius: 15,
+          //radius: 10,
           backgroundImage: NetworkImage(user.imageUrl),
           child: Container(),
         ),
@@ -132,7 +133,7 @@ class _HomePageState extends State<HomePage> {
 
   static Widget _pageAtIndex(int index, BuildContext context) {
     if (index == 0) {
-      return DashboardPage(contextParent: context);
+      return const DashboardPage();
     }
 
     if (index == 1) {

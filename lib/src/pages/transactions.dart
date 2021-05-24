@@ -57,10 +57,6 @@ class TransactionsList extends StatefulWidget {
 class _TransactionsListState extends State<TransactionsList> {
   @override
   Widget build(BuildContext context) {
-    // if (widget.portfolio == null) {
-    //   return _buildLoadingIndicator();
-    // }
-
     return FutureBuilder<List<Transaction>>(
       future: widget.api.list(widget.portfolio.id),
       builder: (context, futureSnapshot) {
@@ -99,10 +95,11 @@ class TransactionTile extends StatelessWidget {
     Key? key,
     required this.portfolio,
     required this.transaction,
+    //required this.oldTransaction,
   }) : super(key: key);
 
   final Portfolio portfolio;
-  final Transaction transaction;
+  final Transaction transaction; //, oldTransaction;
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +117,10 @@ class TransactionTile extends StatelessWidget {
                 context: context,
                 builder: (context) {
                   return EditTransactionDialog(
-                      portfolio: portfolio, transaction: transaction);
+                    portfolio: portfolio,
+                    transaction: transaction,
+                    //oldTransaction: oldTransaction,
+                  );
                 },
               );
             },
@@ -145,6 +145,45 @@ class TransactionTile extends StatelessWidget {
                 ),
               );
               if (shouldDelete!) {
+                // To delete an existing transaction we also need to adjust the positions
+
+                // 1. Find the positions (credit and debit) in relation with the transaction
+                final oldPositionCredit =
+                    await Provider.of<AppState>(context, listen: false)
+                        .api
+                        .positions
+                        .get(portfolio.id, transaction.tokenCredit);
+
+                final newPositionCredit = Position(
+                    oldPositionCredit.token,
+                    oldPositionCredit.amount - transaction.amountCredit,
+                    oldPositionCredit.time);
+
+                final oldPositionDebit =
+                    await Provider.of<AppState>(context, listen: false)
+                        .api
+                        .positions
+                        .get(portfolio.id, transaction.tokenDebit);
+
+                final newPositionDebit = Position(
+                    oldPositionDebit.token,
+                    oldPositionDebit.amount + transaction.amountDebit,
+                    oldPositionDebit.time);
+
+                // 2. Update the positions
+                await Provider.of<AppState>(context, listen: false)
+                    .api
+                    .positions
+                    .update(portfolio.id, transaction.tokenCredit,
+                        newPositionCredit);
+
+                await Provider.of<AppState>(context, listen: false)
+                    .api
+                    .positions
+                    .update(
+                        portfolio.id, transaction.tokenDebit, newPositionDebit);
+
+                // 3. Delete the transaction
                 await Provider.of<AppState>(context, listen: false)
                     .api
                     .transactions
