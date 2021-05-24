@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:provider/provider.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:web_dashboard/src/api/api.dart';
@@ -20,9 +21,14 @@ class NewTransactionForm extends StatefulWidget {
 }
 
 class _NewTransactionFormState extends State<NewTransactionForm> {
-  Portfolio? _selected;
+  Portfolio? _selected = Portfolio('');
   final Transaction _transaction =
-      Transaction('', '', '', '', 0, 0, 0, 0, DateTime.now());
+      Transaction('BTC', 'USDT', 'USDT', 'USDT', 0, 0, 0, 0, DateTime.now());
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +52,7 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
         const SizedBox(height: 14),
         EditTransactionForm(
           transaction: _transaction,
+          portfolio: _selected!,
           onDone: (shouldInsert) async {
             if (shouldInsert) {
               // first regarding the Credit part of the transaction
@@ -109,6 +116,12 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                       _transaction.time));
 
               //api.transactions.insert(_selected!.id, _transaction);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Transaction inserted'),
+                ),
+              );
             }
             Navigator.of(context).pop();
           },
@@ -122,10 +135,12 @@ class EditTransactionForm extends StatefulWidget {
   const EditTransactionForm({
     Key? key,
     required this.transaction,
+    required this.portfolio,
     required this.onDone,
   }) : super(key: key);
 
   final Transaction transaction;
+  final Portfolio portfolio;
   final ValueChanged<bool> onDone;
 
   @override
@@ -135,8 +150,24 @@ class EditTransactionForm extends StatefulWidget {
 class _EditTransactionFormState extends State<EditTransactionForm> {
   final _formKey = GlobalKey<FormState>();
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  // }
+
   @override
   Widget build(BuildContext context) {
+    final Transaction _transaction = widget.transaction;
+    double _amountCredit = _transaction.amountCredit,
+        _amountDebit = _transaction.amountDebit,
+        _amountFee = _transaction.amountFee,
+        _price = _transaction.price;
+    String _tokenCredit = _transaction.tokenCredit,
+        _tokenDebit = _transaction.tokenDebit,
+        _tokenFee = _transaction.tokenFee,
+        _tokenPrice = _transaction.tokenPrice;
+    DateTime _time = _transaction.time;
+
     return Form(
       key: _formKey,
       child: Column(
@@ -151,6 +182,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                 minHeight: 30,
                 //minWidth: MediaQuery.of(context).size.width,
                 onToggle: (index) {
+                  // ignore: avoid_print
                   print('switched to: $index');
                 },
               ),
@@ -173,16 +205,29 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   child: TextFormField(
                     style: const TextStyle(fontSize: 14),
                     textAlign: TextAlign.end,
-                    initialValue: widget.transaction.amountCredit.toString(),
+                    initialValue:
+                        widget.transaction.amountCredit.toCurrencyString(
+                      mantissaLength: 6,
+                      thousandSeparator:
+                          ThousandSeparator.SpaceAndPeriodMantissa,
+                    ),
                     decoration: const InputDecoration(
                       isDense: true,
                       hintText: 'Amount',
                     ),
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      MoneyInputFormatter(
+                        mantissaLength: 6,
+                        thousandSeparator:
+                            ThousandSeparator.SpaceAndPeriodMantissa,
+                      )
+                    ],
                     validator: (value) {
                       try {
-                        double.parse(value!);
+                        double.parse(value!.toCurrencyString(
+                            mantissaLength: 6,
+                            thousandSeparator: ThousandSeparator.None));
                       } catch (e) {
                         return 'Please enter a whole number';
                       }
@@ -190,9 +235,11 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     },
                     onChanged: (newValue) {
                       try {
-                        widget.transaction.amountCredit =
-                            double.parse(newValue);
+                        _amountCredit = double.parse(newValue.toCurrencyString(
+                            mantissaLength: 6,
+                            thousandSeparator: ThousandSeparator.None));
                       } on FormatException {
+                        // ignore: avoid_print
                         print(
                             'Transaction cannot contain "$newValue". Expected a number');
                       }
@@ -203,17 +250,17 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   width: 10,
                 ),
                 SizedBox(
-                  width: 70,
+                  width: 60,
                   child: TextFormField(
                     style: const TextStyle(fontSize: 14),
-                    initialValue: widget.transaction.tokenCredit.toString(),
+                    initialValue: widget.transaction.tokenCredit,
                     decoration: const InputDecoration(
                       isDense: true,
                       hintText: 'Token',
                     ),
                     keyboardType: TextInputType.text,
                     onChanged: (newValue) {
-                      widget.transaction.tokenDebit = newValue;
+                      _tokenCredit = newValue;
                     },
                   ),
                 ),
@@ -235,16 +282,28 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     child: TextFormField(
                       style: const TextStyle(fontSize: 14),
                       textAlign: TextAlign.end,
-                      initialValue: widget.transaction.price.toStringAsFixed(6),
+                      initialValue: widget.transaction.price.toCurrencyString(
+                        mantissaLength: 6,
+                        thousandSeparator:
+                            ThousandSeparator.SpaceAndPeriodMantissa,
+                      ),
                       decoration: const InputDecoration(
                         isDense: true,
                         hintText: 'Price',
                       ),
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        MoneyInputFormatter(
+                          mantissaLength: 6,
+                          thousandSeparator:
+                              ThousandSeparator.SpaceAndPeriodMantissa,
+                        )
+                      ],
                       validator: (value) {
                         try {
-                          double.parse(value!);
+                          double.parse(value!.toCurrencyString(
+                              mantissaLength: 6,
+                              thousandSeparator: ThousandSeparator.None));
                         } catch (e) {
                           return 'Please enter a whole number';
                         }
@@ -252,8 +311,11 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                       },
                       onChanged: (newValue) {
                         try {
-                          widget.transaction.price = double.parse(newValue);
+                          _price = double.parse(newValue.toCurrencyString(
+                              mantissaLength: 6,
+                              thousandSeparator: ThousandSeparator.None));
                         } on FormatException {
+                          // ignore: avoid_print
                           print(
                               'Transaction cannot contain "$newValue". Expected a number');
                         }
@@ -264,17 +326,17 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     width: 10,
                   ),
                   SizedBox(
-                    width: 70,
+                    width: 60,
                     child: TextFormField(
                       style: const TextStyle(fontSize: 14),
-                      initialValue: widget.transaction.tokenPrice.toString(),
+                      initialValue: widget.transaction.tokenPrice,
                       keyboardType: TextInputType.text,
                       decoration: const InputDecoration(
                         isDense: true,
                         hintText: 'Token',
                       ),
                       onChanged: (newValue) {
-                        widget.transaction.tokenPrice = newValue;
+                        _tokenPrice = newValue;
                       },
                     ),
                   ),
@@ -295,16 +357,29 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   child: TextFormField(
                     style: const TextStyle(fontSize: 14),
                     textAlign: TextAlign.end,
-                    initialValue: widget.transaction.amountDebit.toString(),
+                    initialValue:
+                        widget.transaction.amountDebit.toCurrencyString(
+                      mantissaLength: 6,
+                      thousandSeparator:
+                          ThousandSeparator.SpaceAndPeriodMantissa,
+                    ),
                     decoration: const InputDecoration(
                       isDense: true,
                       hintText: 'Total Amount',
                     ),
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      MoneyInputFormatter(
+                        mantissaLength: 6,
+                        thousandSeparator:
+                            ThousandSeparator.SpaceAndPeriodMantissa,
+                      )
+                    ],
                     validator: (value) {
                       try {
-                        double.parse(value!);
+                        double.parse(value!.toCurrencyString(
+                            mantissaLength: 6,
+                            thousandSeparator: ThousandSeparator.None));
                       } catch (e) {
                         return 'Please enter a whole number';
                       }
@@ -312,10 +387,16 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     },
                     onChanged: (newValue) {
                       try {
-                        widget.transaction.price = double.parse(newValue) /
-                            widget.transaction.amountCredit;
-                        widget.transaction.amountDebit = double.parse(newValue);
+                        _price = double.parse(newValue.toCurrencyString(
+                                mantissaLength: 6,
+                                thousandSeparator: ThousandSeparator.None)) /
+                            _amountCredit;
+
+                        _amountDebit = double.parse(newValue.toCurrencyString(
+                            mantissaLength: 6,
+                            thousandSeparator: ThousandSeparator.None));
                       } on FormatException {
+                        // ignore: avoid_print
                         print(
                             'Transaction cannot contain "$newValue". Expected a number');
                       }
@@ -326,17 +407,17 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   width: 10,
                 ),
                 SizedBox(
-                  width: 70,
+                  width: 60,
                   child: TextFormField(
                     style: const TextStyle(fontSize: 14),
-                    initialValue: widget.transaction.tokenDebit.toString(),
+                    initialValue: widget.transaction.tokenDebit,
                     decoration: const InputDecoration(
                       isDense: true,
                       hintText: 'Token',
                     ),
                     keyboardType: TextInputType.text,
                     onChanged: (newValue) {
-                      widget.transaction.tokenDebit = newValue;
+                      _tokenDebit = newValue;
                     },
                   ),
                 ),
@@ -357,18 +438,30 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                 Expanded(
                   child: TextFormField(
                     textAlign: TextAlign.end,
-                    initialValue: widget.transaction.amountFee.toString(),
+                    initialValue: widget.transaction.amountFee.toCurrencyString(
+                      mantissaLength: 6,
+                      thousandSeparator:
+                          ThousandSeparator.SpaceAndPeriodMantissa,
+                    ),
                     style: const TextStyle(fontSize: 14),
                     decoration: const InputDecoration(
                       isDense: true,
                       hintText: 'Fees amount incl.',
                       hintStyle: TextStyle(fontSize: 14),
                     ),
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      MoneyInputFormatter(
+                        mantissaLength: 6,
+                        thousandSeparator:
+                            ThousandSeparator.SpaceAndPeriodMantissa,
+                      )
+                    ],
                     validator: (value) {
                       try {
-                        double.parse(value!);
+                        double.parse(value!.toCurrencyString(
+                            mantissaLength: 6,
+                            thousandSeparator: ThousandSeparator.None));
                       } catch (e) {
                         return 'Please enter a whole number';
                       }
@@ -376,8 +469,11 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     },
                     onChanged: (newValue) {
                       try {
-                        widget.transaction.amountFee = double.parse(newValue);
+                        _amountFee = double.parse(newValue.toCurrencyString(
+                            mantissaLength: 6,
+                            thousandSeparator: ThousandSeparator.None));
                       } on FormatException {
+                        // ignore: avoid_print
                         print(
                             'Transaction cannot contain "$newValue". Expected a number');
                       }
@@ -388,17 +484,17 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   width: 10,
                 ),
                 SizedBox(
-                  width: 70,
+                  width: 60,
                   child: TextFormField(
                     style: const TextStyle(fontSize: 14),
-                    initialValue: widget.transaction.tokenFee.toString(),
+                    initialValue: widget.transaction.tokenFee,
                     decoration: const InputDecoration(
                       isDense: true,
                       hintText: 'Token',
                     ),
                     keyboardType: TextInputType.text,
                     onChanged: (newValue) {
-                      widget.transaction.tokenFee = newValue;
+                      _tokenFee = newValue;
                     },
                   ),
                 ),
@@ -415,24 +511,22 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                       .format(widget.transaction.time),
                 ),
                 OutlinedButton(
-                    onPressed: () {
-                      DatePicker.showDateTimePicker(context,
-                          showTitleActions: true, onChanged: (date) {
-                        // print('change $date in time zone ' +
-                        //     date.timeZoneOffset.inHours.toString());
-                      }, onConfirm: (date) {
-                        setState(() {
-                          widget.transaction.time = date;
-                        });
-                        //print('confirm $date');
-                      },
-                          currentTime: widget.transaction.time,
-                          locale: LocaleType.fr);
+                  onPressed: () {
+                    DatePicker.showDateTimePicker(context,
+                        //showTitleActions: true,
+                        onChanged: (date) {}, onConfirm: (date) {
+                      setState(() {
+                        _time = date;
+                      });
                     },
-                    child: const Text(
-                      'Edit',
-                      style: TextStyle(color: Colors.blue),
-                    )),
+                        currentTime: widget.transaction.time,
+                        locale: LocaleType.fr);
+                  },
+                  child: const Text(
+                    'Edit',
+                    style: TextStyle(color: Colors.blue),
+                  ),
+                ),
               ],
             ),
           ),
@@ -451,8 +545,74 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
               Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
+                      try {
+                        // 1. Find the positions (credit and debit) in relation with the transaction
+                        final oldPositionCredit =
+                            await Provider.of<AppState>(context, listen: false)
+                                .api
+                                .positions
+                                .get(widget.portfolio.id,
+                                    widget.transaction.tokenCredit);
+
+                        final newPositionCredit = Position(
+                            oldPositionCredit.token,
+                            oldPositionCredit.amount -
+                                widget.transaction.amountCredit,
+                            oldPositionCredit.time);
+
+                        final oldPositionDebit =
+                            await Provider.of<AppState>(context, listen: false)
+                                .api
+                                .positions
+                                .get(widget.portfolio.id,
+                                    widget.transaction.tokenDebit);
+
+                        final newPositionDebit = Position(
+                            oldPositionDebit.token,
+                            oldPositionDebit.amount +
+                                widget.transaction.amountDebit,
+                            oldPositionDebit.time);
+
+                        // 2. Update the positions
+                        await Provider.of<AppState>(context, listen: false)
+                            .api
+                            .positions
+                            .update(
+                                widget.portfolio.id,
+                                widget.transaction.tokenCredit,
+                                newPositionCredit);
+
+                        await Provider.of<AppState>(context, listen: false)
+                            .api
+                            .positions
+                            .update(
+                                widget.portfolio.id,
+                                widget.transaction.tokenDebit,
+                                newPositionDebit);
+
+                        // 3. Delete the transaction
+                        await Provider.of<AppState>(context, listen: false)
+                            .api
+                            .transactions
+                            .delete(widget.portfolio.id, widget.transaction.id);
+                      } catch (e) {
+                        print(e);
+                      }
+
+                      // new transaction
+                      widget.transaction.amountCredit = _amountCredit;
+                      widget.transaction.tokenCredit = _tokenCredit;
+                      widget.transaction.amountDebit = _amountDebit;
+                      widget.transaction.tokenDebit = _tokenDebit;
+                      widget.transaction.amountFee = _amountFee;
+                      widget.transaction.tokenFee = _tokenFee;
+                      widget.transaction.price = _price;
+                      widget.transaction.tokenPrice = _tokenPrice;
+                      widget.transaction.time = _time;
+                      //widget.transaction.id = widget.transaction.id;
+
                       widget.onDone(true);
                     }
                   },
