@@ -235,28 +235,32 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                                 widget.transaction.time));
                       }
 
+                      if (widget.transaction.withImpactOnSecondPosition)
                       // then regarding the Debit part of the transaction
-                      try {
-                        // try to find if the position already exists
-                        final oldPositionDebit = await api.positions.get(
-                            widget.portfolio.id, widget.transaction.tokenDebit);
-                        final newPositionDebit = Position(
-                            oldPositionDebit.token,
-                            oldPositionDebit.amount -
-                                widget.transaction.amountDebit,
-                            oldPositionDebit.time);
+                      {
+                        try {
+                          // try to find if the position already exists
+                          final oldPositionDebit = await api.positions.get(
+                              widget.portfolio.id,
+                              widget.transaction.tokenDebit);
+                          final newPositionDebit = Position(
+                              oldPositionDebit.token,
+                              oldPositionDebit.amount -
+                                  widget.transaction.amountDebit,
+                              oldPositionDebit.time);
 
-                        // if we find the position, we need to update it
-                        await api.positions.update(widget.portfolio.id,
-                            widget.transaction.tokenDebit, newPositionDebit);
-                      } catch (e) {
-                        // if not, we should get an error then insert the new position
-                        await api.positions.insert(
-                            widget.portfolio.id,
-                            Position(
-                                widget.transaction.tokenDebit,
-                                -widget.transaction.amountDebit.toDouble(),
-                                widget.transaction.time));
+                          // if we find the position, we need to update it
+                          await api.positions.update(widget.portfolio.id,
+                              widget.transaction.tokenDebit, newPositionDebit);
+                        } catch (e) {
+                          // if not, we should get an error then insert the new position
+                          await api.positions.insert(
+                              widget.portfolio.id,
+                              Position(
+                                  widget.transaction.tokenDebit,
+                                  -widget.transaction.amountDebit.toDouble(),
+                                  widget.transaction.time));
+                        }
                       }
 
                       // finally insert the transaction linked to the portfolio
@@ -271,7 +275,8 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                               widget.transaction.amountDebit.toDouble(),
                               widget.transaction.amountFee.toDouble(),
                               widget.transaction.price.toDouble(),
-                              widget.transaction.time));
+                              widget.transaction.time,
+                              widget.transaction.withImpactOnSecondPosition));
 
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -326,28 +331,31 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                               widget.transaction.time));
                     }
 
+                    if (widget.transaction.withImpactOnSecondPosition)
                     // then regarding the Debit part of the transaction
-                    try {
-                      // try to find if the position already exists
-                      final oldPositionDebit = await api.positions.get(
-                          widget.portfolio.id, widget.transaction.tokenDebit);
-                      final newPositionDebit = Position(
-                          oldPositionDebit.token,
-                          oldPositionDebit.amount -
-                              widget.transaction.amountDebit,
-                          oldPositionDebit.time);
+                    {
+                      try {
+                        // try to find if the position already exists
+                        final oldPositionDebit = await api.positions.get(
+                            widget.portfolio.id, widget.transaction.tokenDebit);
+                        final newPositionDebit = Position(
+                            oldPositionDebit.token,
+                            oldPositionDebit.amount -
+                                widget.transaction.amountDebit,
+                            oldPositionDebit.time);
 
-                      // if we find the position, we need to update it
-                      await api.positions.update(widget.portfolio.id,
-                          widget.transaction.tokenDebit, newPositionDebit);
-                    } catch (e) {
-                      // if not, we should get an error then insert the new position
-                      await api.positions.insert(
-                          widget.portfolio.id,
-                          Position(
-                              widget.transaction.tokenDebit,
-                              -widget.transaction.amountDebit.toDouble(),
-                              widget.transaction.time));
+                        // if we find the position, we need to update it
+                        await api.positions.update(widget.portfolio.id,
+                            widget.transaction.tokenDebit, newPositionDebit);
+                      } catch (e) {
+                        // if not, we should get an error then insert the new position
+                        await api.positions.insert(
+                            widget.portfolio.id,
+                            Position(
+                                widget.transaction.tokenDebit,
+                                -widget.transaction.amountDebit.toDouble(),
+                                widget.transaction.time));
+                      }
                     }
 
                     // finally insert the transaction linked to the portfolio
@@ -362,7 +370,8 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                             widget.transaction.amountDebit.toDouble(),
                             widget.transaction.amountFee.toDouble(),
                             widget.transaction.price.toDouble(),
-                            widget.transaction.time));
+                            widget.transaction.time,
+                            widget.transaction.withImpactOnSecondPosition));
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(

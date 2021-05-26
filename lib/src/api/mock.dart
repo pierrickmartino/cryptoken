@@ -50,8 +50,8 @@ class MockDashboardApi implements DashboardApi {
 
     await positions.insert(portfolio0.id,
         Position(tokenCreditBTC, valueCreditBTC.toDouble(), dateBTC));
-    await positions.insert(portfolio0.id,
-        Position(tokenDebitBTC, valueDebitBTC.toDouble(), dateBTC));
+    // await positions.insert(portfolio0.id,
+    //     Position(tokenDebitBTC, valueDebitBTC.toDouble(), dateBTC));
     await transactions.insert(
         portfolio0.id,
         Transaction(
@@ -63,7 +63,8 @@ class MockDashboardApi implements DashboardApi {
             valueDebitBTC.toDouble(),
             valueFeeBTC.toDouble(),
             valueDebitBTC.toDouble() / valueCreditBTC.toDouble(),
-            dateBTC));
+            dateBTC,
+            false));
 
     // POSITION ETH
     final dateETH = DateTime.utc(2021, 4);
@@ -75,8 +76,8 @@ class MockDashboardApi implements DashboardApi {
 
     await positions.insert(portfolio0.id,
         Position(tokenCreditETH, valueCreditETH.toDouble(), dateETH));
-    await positions.insert(portfolio0.id,
-        Position(tokenDebitETH, valueDebitETH.toDouble(), dateETH));
+    // await positions.insert(portfolio0.id,
+    //     Position(tokenDebitETH, valueDebitETH.toDouble(), dateETH));
     await transactions.insert(
         portfolio0.id,
         Transaction(
@@ -88,7 +89,8 @@ class MockDashboardApi implements DashboardApi {
             valueDebitETH.toDouble(),
             valueFeeETH.toDouble(),
             valueDebitETH.toDouble() / valueCreditETH.toDouble(),
-            dateETH));
+            dateETH,
+            false));
 
     // Other examples
     final portfolio1 =
@@ -152,7 +154,8 @@ class MockDashboardApi implements DashboardApi {
                 valueDebit.toDouble(),
                 valueFee.toDouble(),
                 valueDebit.toDouble() / valueCredit.toDouble(),
-                date));
+                date,
+                true));
       }
     }
   }
@@ -293,7 +296,8 @@ class MockTransactionApi implements TransactionApi {
         transaction.amountDebit,
         transaction.amountFee,
         transaction.price,
-        transaction.time)
+        transaction.time,
+        transaction.withImpactOnSecondPosition)
       ..id = id;
 
     _storage['$positionId-$id'] = newTransaction;

@@ -22,8 +22,8 @@ class NewTransactionForm extends StatefulWidget {
 
 class _NewTransactionFormState extends State<NewTransactionForm> {
   Portfolio? _selected = Portfolio('');
-  final Transaction _transaction =
-      Transaction('BTC', 'USDT', 'USDT', 'USDT', 0, 0, 0, 0, DateTime.now());
+  final Transaction _transaction = Transaction(
+      'BTC', 'USDT', 'USDT', 'USDT', 0, 0, 0, 0, DateTime.now(), true);
 
   @override
   void initState() {
@@ -55,6 +55,7 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
           portfolio: _selected!,
           onDone: (shouldInsert) async {
             if (shouldInsert) {
+              print('Inside shouldInsert');
               // first regarding the Credit part of the transaction
               try {
                 // try to find if the position already exists
@@ -64,11 +65,14 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                     oldPositionCredit.token,
                     oldPositionCredit.amount + _transaction.amountCredit,
                     oldPositionCredit.time);
-
+                print('Before update');
                 // if we find the position, we need to update it
                 await api.positions.update(
                     _selected!.id, _transaction.tokenCredit, newPositionCredit);
+
+                print('After update');
               } catch (e) {
+                print('Inside catch');
                 // if not, we should get an error then insert the new position
                 await api.positions.insert(
                     _selected!.id,
@@ -78,29 +82,34 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                         _transaction.time));
               }
 
+              if (_transaction.withImpactOnSecondPosition)
               // then regarding the Debit part of the transaction
-              try {
-                // try to find if the position already exists
-                final oldPositionDebit = await api.positions
-                    .get(_selected!.id, _transaction.tokenDebit);
-                final newPositionDebit = Position(
-                    oldPositionDebit.token,
-                    oldPositionDebit.amount - _transaction.amountDebit,
-                    oldPositionDebit.time);
+              {
+                print('Inside _transaction.withImpactOnSecondPosition');
 
-                // if we find the position, we need to update it
-                await api.positions.update(
-                    _selected!.id, _transaction.tokenDebit, newPositionDebit);
-              } catch (e) {
-                // if not, we should get an error then insert the new position
-                await api.positions.insert(
-                    _selected!.id,
-                    Position(
-                        _transaction.tokenDebit,
-                        -_transaction.amountDebit.toDouble(),
-                        _transaction.time));
+                try {
+                  // try to find if the position already exists
+                  final oldPositionDebit = await api.positions
+                      .get(_selected!.id, _transaction.tokenDebit);
+                  final newPositionDebit = Position(
+                      oldPositionDebit.token,
+                      oldPositionDebit.amount - _transaction.amountDebit,
+                      oldPositionDebit.time);
+
+                  // if we find the position, we need to update it
+                  await api.positions.update(
+                      _selected!.id, _transaction.tokenDebit, newPositionDebit);
+                } catch (e) {
+                  // if not, we should get an error then insert the new position
+                  await api.positions.insert(
+                      _selected!.id,
+                      Position(
+                          _transaction.tokenDebit,
+                          -_transaction.amountDebit.toDouble(),
+                          _transaction.time));
+                }
               }
-
+              print('Before insert');
               // finally insert the transaction linked to the portfolio
               await api.transactions.insert(
                   _selected!.id,
@@ -113,7 +122,8 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                       _transaction.amountDebit.toDouble(),
                       _transaction.amountFee.toDouble(),
                       _transaction.price.toDouble(),
-                      _transaction.time));
+                      _transaction.time,
+                      _transaction.withImpactOnSecondPosition));
 
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -155,17 +165,6 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
 
   @override
   Widget build(BuildContext context) {
-    //final Transaction _transaction = widget.transaction;
-    // double _amountCredit = _transaction.amountCredit,
-    //     _amountDebit = _transaction.amountDebit,
-    //     _amountFee = _transaction.amountFee,
-    //     _price = _transaction.price;
-    // String _tokenCredit = _transaction.tokenCredit,
-    //     _tokenDebit = _transaction.tokenDebit,
-    //     _tokenFee = _transaction.tokenFee,
-    //     _tokenPrice = _transaction.tokenPrice;
-    // DateTime _time = _transaction.time;
-
     return Form(
       key: _formKey,
       child: Column(
@@ -504,38 +503,81 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 6),
+            leading: const SizedBox(
+              width: 100,
+              child: Icon(Icons.info),
+            ),
+            title: Row(
               children: [
-                Text(
-                  intl.DateFormat('dd/MM/yyyy HH:mm')
-                      .format(widget.transaction.time),
+                const Expanded(
+                  child: Text('with impact on the Total token',
+                      style: TextStyle(fontSize: 14), textAlign: TextAlign.end),
                 ),
-                OutlinedButton(
-                  onPressed: () async {
-                    final result = await DatePicker.showDateTimePicker(context,
-                        //showTitleActions: true,
-                        onChanged: (date) {}, onConfirm: (date) {
-                      widget.transaction.time = date;
+                const SizedBox(
+                  width: 10,
+                ),
+                SizedBox(
+                  width: 60,
+                  child: Checkbox(
+                    value: widget.transaction.withImpactOnSecondPosition,
+                    onChanged: (newValue) {
+                      setState(() {
+                        widget.transaction.withImpactOnSecondPosition =
+                            newValue!;
+                      });
                     },
-                        currentTime: widget.transaction.time,
-                        locale: LocaleType.fr);
-                    if (result == null) {
-                      return;
-                    }
-                    setState(() {
-                      widget.transaction.time = result;
-                    });
-                  },
-                  child: const Text(
-                    'Edit',
-                    style: TextStyle(color: Colors.blue),
                   ),
                 ),
               ],
             ),
+          ),
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 6),
+            leading: const SizedBox(
+              width: 100,
+              child: Icon(Icons.calendar_today),
+            ),
+            title: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                      intl.DateFormat('dd/MM/yyyy HH:mm')
+                          .format(widget.transaction.time),
+                      style: const TextStyle(fontSize: 14),
+                      textAlign: TextAlign.end),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                SizedBox(
+                  width: 60,
+                  child: IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () async {
+                      final result =
+                          await DatePicker.showDateTimePicker(context,
+                              //showTitleActions: true,
+                              onChanged: (date) {}, onConfirm: (date) {
+                        widget.transaction.time = date;
+                      },
+                              currentTime: widget.transaction.time,
+                              locale: LocaleType.fr);
+                      if (result == null) {
+                        return;
+                      }
+                      setState(() {
+                        widget.transaction.time = result;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            height: 10,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -555,6 +597,8 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       try {
+                        print('Inside _formKey.currentState!.validate()');
+
                         // 1. Find the positions (credit and debit) in relation with the transaction
                         final oldPositionCredit =
                             await Provider.of<AppState>(context, listen: false)
@@ -569,21 +613,15 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                                 widget.transaction.amountCredit,
                             oldPositionCredit.time);
 
-                        final oldPositionDebit =
-                            await Provider.of<AppState>(context, listen: false)
-                                .api
-                                .positions
-                                .get(widget.portfolio.id,
-                                    widget.transaction.tokenDebit);
+                        print(
+                            'update old Position ${oldPositionCredit.token} - ${oldPositionCredit.amount}');
+                        print(
+                            'with new Position ${newPositionCredit.token} - ${newPositionCredit.amount}');
+                        print(
+                            'update position ${widget.transaction.tokenCredit}');
 
-                        final newPositionDebit = Position(
-                            oldPositionDebit.token,
-                            oldPositionDebit.amount +
-                                widget.transaction.amountDebit,
-                            oldPositionDebit.time);
-
-                        // 2. Update the positions
-                        await Provider.of<AppState>(context, listen: false)
+                        // 2. Update the position
+                        await Provider.of<AppState>(context, listen: true)
                             .api
                             .positions
                             .update(
@@ -591,31 +629,41 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                                 widget.transaction.tokenCredit,
                                 newPositionCredit);
 
-                        await Provider.of<AppState>(context, listen: false)
-                            .api
-                            .positions
-                            .update(
-                                widget.portfolio.id,
-                                widget.transaction.tokenDebit,
-                                newPositionDebit);
+                        if (widget.transaction.withImpactOnSecondPosition) {
+                          print(
+                              'Inside widget.transaction.withImpactOnSecondPosition');
+
+                          final oldPositionDebit = await Provider.of<AppState>(
+                                  context,
+                                  listen: false)
+                              .api
+                              .positions
+                              .get(widget.portfolio.id,
+                                  widget.transaction.tokenDebit);
+
+                          final newPositionDebit = Position(
+                              oldPositionDebit.token,
+                              oldPositionDebit.amount +
+                                  widget.transaction.amountDebit,
+                              oldPositionDebit.time);
+
+                          await Provider.of<AppState>(context, listen: false)
+                              .api
+                              .positions
+                              .update(
+                                  widget.portfolio.id,
+                                  widget.transaction.tokenDebit,
+                                  newPositionDebit);
+                        }
 
                         // 3. Delete the transaction
                         await Provider.of<AppState>(context, listen: false)
                             .api
                             .transactions
                             .delete(widget.portfolio.id, widget.transaction.id);
-                      } catch (_) {}
-                      // new transaction
-                      //widget.transaction.amountCredit = _amountCredit;
-                      // widget.transaction.tokenCredit = _tokenCredit;
-                      // widget.transaction.amountDebit = _amountDebit;
-                      // widget.transaction.tokenDebit = _tokenDebit;
-                      // widget.transaction.amountFee = _amountFee;
-                      // widget.transaction.tokenFee = _tokenFee;
-                      // widget.transaction.price = _price;
-                      // widget.transaction.tokenPrice = _tokenPrice;
-                      // widget.transaction.time = _time;
-                      //widget.transaction.id = widget.transaction.id;
+                      } catch (e) {
+                        print(e);
+                      }
 
                       widget.onDone(true);
                     }

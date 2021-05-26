@@ -27,7 +27,8 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) {
     (json['amountFee'] as num).toDouble(),
     (json['price'] as num).toDouble(),
     Transaction._timestampToDateTime(json['time'] as Timestamp),
-  )..id = json['id'] as String;
+    json['withImpactOnSecondPosition'] as bool,
+  );
 }
 
 Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
@@ -40,8 +41,8 @@ Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
       'amountDebit': instance.amountDebit,
       'amountFee': instance.amountFee,
       'price': instance.price,
+      'withImpactOnSecondPosition': instance.withImpactOnSecondPosition,
       'time': Transaction._dateTimeToTimestamp(instance.time),
-      'id': instance.id,
     };
 
 Position _$PositionFromJson(Map<String, dynamic> json) {
@@ -49,12 +50,11 @@ Position _$PositionFromJson(Map<String, dynamic> json) {
     json['token'] as String,
     (json['amount'] as num).toDouble(),
     Position._timestampToDateTime(json['time'] as Timestamp),
-  )..id = json['id'] as String;
+  );
 }
 
 Map<String, dynamic> _$PositionToJson(Position instance) => <String, dynamic>{
       'token': instance.token,
       'amount': instance.amount,
       'time': Position._dateTimeToTimestamp(instance.time),
-      'id': instance.id,
     };
