@@ -7,13 +7,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 import 'package:http/http.dart' as http;
 
 import '../api/api.dart';
-import '../app.dart';
-import '../pages/transactions.dart';
 import 'dialogs.dart';
 import 'position_widget.dart';
 

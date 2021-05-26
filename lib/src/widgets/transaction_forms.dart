@@ -55,7 +55,6 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
           portfolio: _selected!,
           onDone: (shouldInsert) async {
             if (shouldInsert) {
-              print('Inside shouldInsert');
               // first regarding the Credit part of the transaction
               try {
                 // try to find if the position already exists
@@ -65,14 +64,11 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                     oldPositionCredit.token,
                     oldPositionCredit.amount + _transaction.amountCredit,
                     oldPositionCredit.time);
-                print('Before update');
+
                 // if we find the position, we need to update it
                 await api.positions.update(
                     _selected!.id, _transaction.tokenCredit, newPositionCredit);
-
-                print('After update');
               } catch (e) {
-                print('Inside catch');
                 // if not, we should get an error then insert the new position
                 await api.positions.insert(
                     _selected!.id,
@@ -85,8 +81,6 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
               if (_transaction.withImpactOnSecondPosition)
               // then regarding the Debit part of the transaction
               {
-                print('Inside _transaction.withImpactOnSecondPosition');
-
                 try {
                   // try to find if the position already exists
                   final oldPositionDebit = await api.positions
@@ -109,7 +103,6 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                           _transaction.time));
                 }
               }
-              print('Before insert');
               // finally insert the transaction linked to the portfolio
               await api.transactions.insert(
                   _selected!.id,
@@ -597,8 +590,6 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       try {
-                        print('Inside _formKey.currentState!.validate()');
-
                         // 1. Find the positions (credit and debit) in relation with the transaction
                         final oldPositionCredit =
                             await Provider.of<AppState>(context, listen: false)
@@ -613,13 +604,6 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                                 widget.transaction.amountCredit,
                             oldPositionCredit.time);
 
-                        print(
-                            'update old Position ${oldPositionCredit.token} - ${oldPositionCredit.amount}');
-                        print(
-                            'with new Position ${newPositionCredit.token} - ${newPositionCredit.amount}');
-                        print(
-                            'update position ${widget.transaction.tokenCredit}');
-
                         // 2. Update the position
                         await Provider.of<AppState>(context, listen: true)
                             .api
@@ -630,9 +614,6 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                                 newPositionCredit);
 
                         if (widget.transaction.withImpactOnSecondPosition) {
-                          print(
-                              'Inside widget.transaction.withImpactOnSecondPosition');
-
                           final oldPositionDebit = await Provider.of<AppState>(
                                   context,
                                   listen: false)

@@ -11,6 +11,9 @@ import '../app.dart';
 import '../widgets/dialogs.dart';
 import '../widgets/portfolios_dropdown.dart';
 
+final _priceFormat =
+    intl.NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 6);
+
 class TransactionsPage extends StatefulWidget {
   const TransactionsPage({Key? key}) : super(key: key);
   @override
@@ -104,7 +107,7 @@ class TransactionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(
-          '${transaction.amountCredit} ${transaction.tokenCredit} at ${transaction.price.toStringAsFixed(4)} ${transaction.tokenPrice}'),
+          '${transaction.amountCredit} ${transaction.tokenCredit} at ${_priceFormat.format(transaction.price)} ${transaction.tokenPrice}'),
       subtitle:
           Text(intl.DateFormat('dd/MM/yy HH:mm').format(transaction.time)),
       trailing: Row(
