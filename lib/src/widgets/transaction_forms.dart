@@ -155,16 +155,16 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
 
   @override
   Widget build(BuildContext context) {
-    final Transaction _transaction = widget.transaction;
-    double _amountCredit = _transaction.amountCredit,
-        _amountDebit = _transaction.amountDebit,
-        _amountFee = _transaction.amountFee,
-        _price = _transaction.price;
-    String _tokenCredit = _transaction.tokenCredit,
-        _tokenDebit = _transaction.tokenDebit,
-        _tokenFee = _transaction.tokenFee,
-        _tokenPrice = _transaction.tokenPrice;
-    DateTime _time = _transaction.time;
+    //final Transaction _transaction = widget.transaction;
+    // double _amountCredit = _transaction.amountCredit,
+    //     _amountDebit = _transaction.amountDebit,
+    //     _amountFee = _transaction.amountFee,
+    //     _price = _transaction.price;
+    // String _tokenCredit = _transaction.tokenCredit,
+    //     _tokenDebit = _transaction.tokenDebit,
+    //     _tokenFee = _transaction.tokenFee,
+    //     _tokenPrice = _transaction.tokenPrice;
+    // DateTime _time = _transaction.time;
 
     return Form(
       key: _formKey,
@@ -233,9 +233,10 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     },
                     onChanged: (newValue) {
                       try {
-                        _amountCredit = double.parse(newValue.toCurrencyString(
-                            mantissaLength: 6,
-                            thousandSeparator: ThousandSeparator.None));
+                        widget.transaction.amountCredit = double.parse(
+                            newValue.toCurrencyString(
+                                mantissaLength: 6,
+                                thousandSeparator: ThousandSeparator.None));
                       } on FormatException {
                         // ignore: avoid_print
                         print(
@@ -258,7 +259,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     ),
                     keyboardType: TextInputType.text,
                     onChanged: (newValue) {
-                      _tokenCredit = newValue;
+                      widget.transaction.tokenCredit = newValue;
                     },
                   ),
                 ),
@@ -309,9 +310,10 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                       },
                       onChanged: (newValue) {
                         try {
-                          _price = double.parse(newValue.toCurrencyString(
-                              mantissaLength: 6,
-                              thousandSeparator: ThousandSeparator.None));
+                          widget.transaction.price = double.parse(
+                              newValue.toCurrencyString(
+                                  mantissaLength: 6,
+                                  thousandSeparator: ThousandSeparator.None));
                         } on FormatException {
                           // ignore: avoid_print
                           print(
@@ -334,7 +336,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                         hintText: 'Token',
                       ),
                       onChanged: (newValue) {
-                        _tokenPrice = newValue;
+                        widget.transaction.tokenPrice = newValue;
                       },
                     ),
                   ),
@@ -385,14 +387,16 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     },
                     onChanged: (newValue) {
                       try {
-                        _price = double.parse(newValue.toCurrencyString(
+                        widget.transaction
+                            .price = double.parse(newValue.toCurrencyString(
                                 mantissaLength: 6,
                                 thousandSeparator: ThousandSeparator.None)) /
-                            _amountCredit;
+                            widget.transaction.amountCredit;
 
-                        _amountDebit = double.parse(newValue.toCurrencyString(
-                            mantissaLength: 6,
-                            thousandSeparator: ThousandSeparator.None));
+                        widget.transaction.amountDebit = double.parse(
+                            newValue.toCurrencyString(
+                                mantissaLength: 6,
+                                thousandSeparator: ThousandSeparator.None));
                       } on FormatException {
                         // ignore: avoid_print
                         print(
@@ -415,7 +419,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     ),
                     keyboardType: TextInputType.text,
                     onChanged: (newValue) {
-                      _tokenDebit = newValue;
+                      widget.transaction.tokenDebit = newValue;
                     },
                   ),
                 ),
@@ -467,9 +471,10 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     },
                     onChanged: (newValue) {
                       try {
-                        _amountFee = double.parse(newValue.toCurrencyString(
-                            mantissaLength: 6,
-                            thousandSeparator: ThousandSeparator.None));
+                        widget.transaction.amountFee = double.parse(
+                            newValue.toCurrencyString(
+                                mantissaLength: 6,
+                                thousandSeparator: ThousandSeparator.None));
                       } on FormatException {
                         // ignore: avoid_print
                         print(
@@ -492,7 +497,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     ),
                     keyboardType: TextInputType.text,
                     onChanged: (newValue) {
-                      _tokenFee = newValue;
+                      widget.transaction.tokenFee = newValue;
                     },
                   ),
                 ),
@@ -512,9 +517,10 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   onPressed: () async {
                     final result = await DatePicker.showDateTimePicker(context,
                         //showTitleActions: true,
-                        onChanged: (date) {},
-                        onConfirm: (date) {},
-                        currentTime: _time,
+                        onChanged: (date) {}, onConfirm: (date) {
+                      widget.transaction.time = date;
+                    },
+                        currentTime: widget.transaction.time,
                         locale: LocaleType.fr);
                     if (result == null) {
                       return;
@@ -600,15 +606,15 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                             .delete(widget.portfolio.id, widget.transaction.id);
                       } catch (_) {}
                       // new transaction
-                      widget.transaction.amountCredit = _amountCredit;
-                      widget.transaction.tokenCredit = _tokenCredit;
-                      widget.transaction.amountDebit = _amountDebit;
-                      widget.transaction.tokenDebit = _tokenDebit;
-                      widget.transaction.amountFee = _amountFee;
-                      widget.transaction.tokenFee = _tokenFee;
-                      widget.transaction.price = _price;
-                      widget.transaction.tokenPrice = _tokenPrice;
-                      //widget.transaction.time = _time;
+                      //widget.transaction.amountCredit = _amountCredit;
+                      // widget.transaction.tokenCredit = _tokenCredit;
+                      // widget.transaction.amountDebit = _amountDebit;
+                      // widget.transaction.tokenDebit = _tokenDebit;
+                      // widget.transaction.amountFee = _amountFee;
+                      // widget.transaction.tokenFee = _tokenFee;
+                      // widget.transaction.price = _price;
+                      // widget.transaction.tokenPrice = _tokenPrice;
+                      // widget.transaction.time = _time;
                       //widget.transaction.id = widget.transaction.id;
 
                       widget.onDone(true);
