@@ -202,7 +202,7 @@ class _ListPositionsState extends State<_ListPositions> {
           maxCrossAxisExtent: 500,
           childAspectRatio: 2,
           // crossAxisSpacing: 20,
-          mainAxisExtent: 250,
+          mainAxisExtent: 270,
           // mainAxisSpacing: 5
         ),
         scrollDirection: Axis.horizontal,

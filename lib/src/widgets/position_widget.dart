@@ -307,6 +307,30 @@ class _PositionsState extends State<PositionWidget> {
                     future: futurePrice,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
+                        return Text(_numberFormat.format(
+                            snapshot.data!.price * widget.position.amount));
+                      } else if (snapshot.hasError) {
+                        print('${snapshot.error}');
+                        return Text('${snapshot.error}');
+                      }
+
+                      // By default, show a loading spinner.
+                      return const Text('-');
+                    },
+                  ),
+                  const Spacer(),
+                  const Text('Valuation'),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+              child: Row(
+                children: [
+                  FutureBuilder<Price>(
+                    future: futurePrice,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
                         return Text(_numberFormat.format(snapshot.data!.price));
                       } else if (snapshot.hasError) {
                         print('${snapshot.error}');
