@@ -92,6 +92,45 @@ class PortfolioWidget extends StatelessWidget {
             ],
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+          child: Row(
+            children: [
+              Text(
+                _numberFormat.format(0),
+              ),
+              const Spacer(),
+              const Text('24h Var.'),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+          child: Row(
+            children: [
+              Text(
+                _numberFormat.format(0),
+              ),
+              const Spacer(),
+              const Text('RealizedGain'),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+          child: Row(
+            children: [
+              Text(
+                _numberFormat.format(0),
+              ),
+              const Spacer(),
+              const Text('UnrealizedGain'),
+            ],
+          ),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
         Expanded(
           // Load the initial snapshot using a FutureBuilder, and subscribe to
           // additional updates with a StreamBuilder.
@@ -157,7 +196,7 @@ class _ListPositionsState extends State<_ListPositions> {
           maxCrossAxisExtent: 500,
           childAspectRatio: 2,
           // crossAxisSpacing: 20,
-          mainAxisExtent: 300,
+          mainAxisExtent: 250,
           // mainAxisSpacing: 5
         ),
         scrollDirection: Axis.horizontal,

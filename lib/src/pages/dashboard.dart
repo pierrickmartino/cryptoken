@@ -54,7 +54,8 @@ class Dashboard extends StatelessWidget {
       child: GridView(
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           childAspectRatio: 2,
-          maxCrossAxisExtent: 500,
+          maxCrossAxisExtent: 800,
+          mainAxisExtent: 350,
         ),
         children: [
           ...portfolios!.map(
