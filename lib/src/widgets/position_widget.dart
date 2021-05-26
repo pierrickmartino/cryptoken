@@ -42,6 +42,71 @@ Future<Price> fetchPrice(String symbol) async {
   }
 }
 
+Future<Variation24> fetchVariation24(String symbol) async {
+  if (symbol == 'INIT') {
+    return Variation24(
+      priceChange: 0,
+      symbol: '',
+      askPrice: 0,
+      bidPrice: 0,
+      count: 0,
+      firstId: 0,
+      highPrice: 0,
+      lastId: 0,
+      lastQty: 0,
+      lowPrice: 0,
+      lastPrice: 0,
+      openPrice: 0,
+      prevClosePrice: 0,
+      priceChangePercent: 0,
+      quoteVolume: 0,
+      volume: 0,
+      weightedAvgPrice: 0,
+      closeTime: 0,
+      openTime: 0,
+    );
+  }
+  if (symbol == 'USDT') {
+    return Variation24(
+      priceChange: 0,
+      symbol: 'USDT',
+      askPrice: 0,
+      bidPrice: 0,
+      count: 0,
+      firstId: 0,
+      highPrice: 0,
+      lastId: 0,
+      lastQty: 0,
+      lowPrice: 0,
+      lastPrice: 0,
+      openPrice: 0,
+      prevClosePrice: 0,
+      priceChangePercent: 0,
+      quoteVolume: 0,
+      volume: 0,
+      weightedAvgPrice: 0,
+      closeTime: 0,
+      openTime: 0,
+    );
+  }
+
+  symbol = '${symbol}USDT';
+
+  final response = await http.get(
+      Uri.parse('https://api3.binance.com/api/v3/ticker/24hr?symbol=$symbol'));
+
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+
+    return Variation24.fromJson(jsonDecode(response.body));
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load price');
+  }
+}
+
 class Price {
   Price({
     required this.symbol,
@@ -57,6 +122,74 @@ class Price {
 
   final String symbol;
   final double price;
+}
+
+class Variation24 {
+  Variation24({
+    required this.symbol,
+    required this.priceChange,
+    required this.priceChangePercent,
+    required this.weightedAvgPrice,
+    required this.prevClosePrice,
+    required this.lastPrice,
+    required this.lastQty,
+    required this.bidPrice,
+    required this.askPrice,
+    required this.openPrice,
+    required this.highPrice,
+    required this.lowPrice,
+    required this.volume,
+    required this.quoteVolume,
+    required this.openTime,
+    required this.closeTime,
+    required this.firstId,
+    required this.lastId,
+    required this.count,
+  });
+
+  factory Variation24.fromJson(Map<String, dynamic> json) {
+    return Variation24(
+      symbol: json['symbol'],
+      priceChange: double.parse(json['priceChange']),
+      priceChangePercent: double.parse(json['priceChangePercent']),
+      weightedAvgPrice: double.parse(json['weightedAvgPrice']),
+      prevClosePrice: double.parse(json['prevClosePrice']),
+      lastPrice: double.parse(json['lastPrice']),
+      lastQty: double.parse(json['lastQty']),
+      bidPrice: double.parse(json['bidPrice']),
+      askPrice: double.parse(json['askPrice']),
+      openPrice: double.parse(json['openPrice']),
+      highPrice: double.parse(json['highPrice']),
+      lowPrice: double.parse(json['lowPrice']),
+      volume: double.parse(json['volume']),
+      quoteVolume: double.parse(json['quoteVolume']),
+      openTime: json['openTime'], // already an int
+      closeTime: json['closeTime'], // already an int
+      firstId: json['firstId'], // already an int
+      lastId: json['lastId'], // already an int
+      count: json['count'], // already an int
+    );
+  }
+
+  final String symbol;
+  final double priceChange;
+  final double priceChangePercent;
+  final double weightedAvgPrice;
+  final double prevClosePrice;
+  final double lastPrice;
+  final double lastQty;
+  final double bidPrice;
+  final double askPrice;
+  final double openPrice;
+  final double highPrice;
+  final double lowPrice;
+  final double volume;
+  final double quoteVolume;
+  final int openTime; // TODO : Transform in DateTime
+  final int closeTime; // TODO : Transform in DateTime
+  final int firstId;
+  final int lastId;
+  final int count;
 }
 
 class PositionWidget extends StatefulWidget {
@@ -75,11 +208,13 @@ class PositionWidget extends StatefulWidget {
 
 class _PositionsState extends State<PositionWidget> {
   late Future<Price> futurePrice;
+  late Future<Variation24> futureVariation24;
 
   @override
   void initState() {
     super.initState();
     futurePrice = fetchPrice('INIT');
+    futureVariation24 = fetchVariation24('INIT');
   }
 
   @override
@@ -105,6 +240,8 @@ class _PositionsState extends State<PositionWidget> {
                     onPressed: () {
                       setState(() {
                         futurePrice = fetchPrice(widget.position.token);
+                        futureVariation24 =
+                            fetchVariation24(widget.position.token);
                       });
                     },
                   ),
@@ -182,6 +319,66 @@ class _PositionsState extends State<PositionWidget> {
                   ),
                   const Spacer(),
                   const Text('MarketPrice'),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+              child: Row(
+                children: [
+                  FutureBuilder<Variation24>(
+                    future: futureVariation24,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Text(_numberFormat
+                            .format(snapshot.data!.priceChangePercent));
+                      } else if (snapshot.hasError) {
+                        print('${snapshot.error}');
+                        return Text('${snapshot.error}');
+                      }
+
+                      // By default, show a loading spinner.
+                      return const Text('-');
+                    },
+                  ),
+                  const Spacer(),
+                  const Text('24h Var.'),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+              child: Row(
+                children: [
+                  Text(
+                    _numberFormat.format(0),
+                  ),
+                  const Spacer(),
+                  const Text('AvgPurchPrice'),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+              child: Row(
+                children: [
+                  Text(
+                    _numberFormat.format(0),
+                  ),
+                  const Spacer(),
+                  const Text('RealizedGain'),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+              child: Row(
+                children: [
+                  Text(
+                    _numberFormat.format(0),
+                  ),
+                  const Spacer(),
+                  const Text('UnrealizedGain'),
                 ],
               ),
             ),
