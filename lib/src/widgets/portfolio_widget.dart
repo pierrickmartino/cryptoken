@@ -76,6 +76,15 @@ class PortfolioWidget extends StatelessWidget {
               Text(portfolio.name),
               const Spacer(),
               IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () {
+                  showDialog<NewTransactionDialog>(
+                    context: context,
+                    builder: (context) => const NewTransactionDialog(),
+                  );
+                },
+              ),
+              IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: () {
                   showDialog<EditPortfolioDialog>(

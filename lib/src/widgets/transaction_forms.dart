@@ -642,9 +642,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                             .api
                             .transactions
                             .delete(widget.portfolio.id, widget.transaction.id);
-                      } catch (e) {
-                        print(e);
-                      }
+                      } catch (_) {}
 
                       widget.onDone(true);
                     }
