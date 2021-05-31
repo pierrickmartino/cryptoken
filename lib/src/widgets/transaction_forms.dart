@@ -1,7 +1,3 @@
-// Copyright 2020, the Flutter project authors. Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
@@ -592,7 +588,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                       try {
                         // 1. Find the positions (credit and debit) in relation with the transaction
                         final oldPositionCredit =
-                            await Provider.of<AppState>(context, listen: false)
+                            await Provider.of<AppState>(context)
                                 .api
                                 .positions
                                 .get(widget.portfolio.id,
@@ -605,7 +601,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                             oldPositionCredit.time);
 
                         // 2. Update the position
-                        await Provider.of<AppState>(context, listen: true)
+                        await Provider.of<AppState>(context)
                             .api
                             .positions
                             .update(
@@ -614,13 +610,12 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                                 newPositionCredit);
 
                         if (widget.transaction.withImpactOnSecondPosition) {
-                          final oldPositionDebit = await Provider.of<AppState>(
-                                  context,
-                                  listen: false)
-                              .api
-                              .positions
-                              .get(widget.portfolio.id,
-                                  widget.transaction.tokenDebit);
+                          final oldPositionDebit =
+                              await Provider.of<AppState>(context)
+                                  .api
+                                  .positions
+                                  .get(widget.portfolio.id,
+                                      widget.transaction.tokenDebit);
 
                           final newPositionDebit = Position(
                               oldPositionDebit.token,
@@ -628,7 +623,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                                   widget.transaction.amountDebit,
                               oldPositionDebit.time);
 
-                          await Provider.of<AppState>(context, listen: false)
+                          await Provider.of<AppState>(context)
                               .api
                               .positions
                               .update(
@@ -638,7 +633,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                         }
 
                         // 3. Delete the transaction
-                        await Provider.of<AppState>(context, listen: false)
+                        await Provider.of<AppState>(context)
                             .api
                             .transactions
                             .delete(widget.portfolio.id, widget.transaction.id);

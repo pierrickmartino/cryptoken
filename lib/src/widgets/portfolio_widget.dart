@@ -1,14 +1,5 @@
-// Copyright 2020, the Flutter project authors. Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import 'package:http/http.dart' as http;
 
 import '../api/api.dart';
 import 'dialogs.dart';
@@ -16,44 +7,6 @@ import 'position_widget.dart';
 
 final _numberFormat =
     NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 2);
-
-Future<Price> fetchPrice(String symbol) async {
-  if (symbol == 'INIT') {
-    symbol = 'BTCUSDT';
-  } else {
-    symbol = '${symbol}USDT';
-  }
-
-  final response = await http.get(
-      Uri.parse('https://api3.binance.com/api/v3/ticker/price?symbol=$symbol'));
-
-  if (response.statusCode == 200) {
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
-    return Price.fromJson(jsonDecode(response.body));
-  } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
-    throw Exception('Failed to load price');
-  }
-}
-
-class Price {
-  Price({
-    required this.symbol,
-    required this.price,
-  });
-
-  factory Price.fromJson(Map<String, dynamic> json) {
-    return Price(
-      symbol: json['symbol'],
-      price: double.parse(json['price']),
-    );
-  }
-
-  final String symbol;
-  final double price;
-}
 
 class PortfolioWidget extends StatelessWidget {
   const PortfolioWidget({
@@ -73,10 +26,14 @@ class PortfolioWidget extends StatelessWidget {
           padding: const EdgeInsets.only(left: 8, right: 8),
           child: Row(
             children: [
-              Text(portfolio.name),
+              Text(
+                portfolio.name,
+                style: const TextStyle(color: Color(0xff3A6EA5)),
+              ),
               const Spacer(),
               IconButton(
                 icon: const Icon(Icons.add),
+                color: const Color(0xff3A6EA5),
                 onPressed: () {
                   showDialog<NewTransactionDialog>(
                     context: context,
@@ -86,6 +43,7 @@ class PortfolioWidget extends StatelessWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.settings),
+                color: const Color(0xff3A6EA5),
                 onPressed: () {
                   showDialog<EditPortfolioDialog>(
                     context: context,
@@ -95,6 +53,18 @@ class PortfolioWidget extends StatelessWidget {
                   );
                 },
               ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+          child: Row(
+            children: [
+              Text(
+                _numberFormat.format(0),
+              ),
+              const Spacer(),
+              const Text('Valuation'),
             ],
           ),
         ),
@@ -187,23 +157,20 @@ class _ListPositions extends StatefulWidget {
 }
 
 class _ListPositionsState extends State<_ListPositions> {
-  late Future<Price> futurePrice;
-
   @override
   void initState() {
     super.initState();
-    futurePrice = fetchPrice('INIT');
   }
 
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 500,
-          childAspectRatio: 2,
+          maxCrossAxisExtent: 900,
+          childAspectRatio: 1,
           // crossAxisSpacing: 20,
           mainAxisExtent: 270,
-          // mainAxisSpacing: 5
+          mainAxisSpacing: 5,
         ),
         scrollDirection: Axis.horizontal,
         itemCount: widget.positions!.length,

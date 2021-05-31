@@ -220,191 +220,272 @@ class _PositionsState extends State<PositionWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 20,
+      height: 200,
       child: Card(
-        color: Colors.cyan,
-        elevation: 2,
+        clipBehavior: Clip.antiAlias,
+        //color: Colors.white,
+        //elevation: 1,
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 10, right: 4),
-              child: Row(
-                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    widget.position.token,
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    icon: const Icon(Icons.refresh),
-                    onPressed: () {
-                      setState(() {
-                        futurePrice = fetchPrice(widget.position.token);
-                        futureVariation24 =
-                            fetchVariation24(widget.position.token);
-                      });
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.list),
-                    onPressed: () {
-                      final appState =
-                          Provider.of<AppState>(context, listen: false);
+            ListTile(
+              leading: const Icon(Icons.all_inclusive),
+              title: Text(widget.position.token),
+              trailing: FutureBuilder<Price>(
+                future: futurePrice,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Text(
+                      _numberFormat.format(
+                          snapshot.data!.price * widget.position.amount),
+                      style: TextStyle(
+                        color: Colors.black.withOpacity(0.6),
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    print('${snapshot.error}');
+                    return Text('${snapshot.error}');
+                  }
 
-                      showModalBottomSheet<void>(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Container(
-                            height: MediaQuery.of(context).size.height,
-                            child: Column(
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Row(
-                                    children: [
-                                      const Text('Transactions'),
-                                      const Spacer(),
-                                      OutlinedButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: const Text('Close'),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: TransactionsList(
-                                    portfolio: widget.portfolio!,
-                                    api: appState.api.transactions,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ],
+                  // By default, show a loading spinner.
+                  return Text('-',
+                      style: TextStyle(
+                        color: Colors.black.withOpacity(0.6),
+                      ));
+                },
               ),
             ),
+            // const Divider(
+            //   indent: 16,
+            //   endIndent: 16,
+            // ),
             Padding(
-              padding: const EdgeInsets.only(left: 8, right: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   Text(
                     _numberFormat.format(widget.position.amount),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.black.withOpacity(0.6),
+                    ),
                   ),
                   const Spacer(),
-                  const Text('Amount'),
+                  Text(
+                    'Amount',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.black.withOpacity(0.6),
+                    ),
+                  ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   FutureBuilder<Price>(
                     future: futurePrice,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        return Text(_numberFormat.format(
-                            snapshot.data!.price * widget.position.amount));
+                        return Text(_numberFormat.format(snapshot.data!.price),
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.black.withOpacity(0.6),
+                            ));
                       } else if (snapshot.hasError) {
                         print('${snapshot.error}');
                         return Text('${snapshot.error}');
                       }
 
                       // By default, show a loading spinner.
-                      return const Text('-');
+                      return Text('-',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.black.withOpacity(0.6),
+                          ));
                     },
                   ),
                   const Spacer(),
-                  const Text('Valuation'),
+                  Text(
+                    'MarketPrice',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.black.withOpacity(0.6),
+                    ),
+                  ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
-              child: Row(
-                children: [
-                  FutureBuilder<Price>(
-                    future: futurePrice,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Text(_numberFormat.format(snapshot.data!.price));
-                      } else if (snapshot.hasError) {
-                        print('${snapshot.error}');
-                        return Text('${snapshot.error}');
-                      }
-
-                      // By default, show a loading spinner.
-                      return const Text('-');
-                    },
-                  ),
-                  const Spacer(),
-                  const Text('MarketPrice'),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   FutureBuilder<Variation24>(
                     future: futureVariation24,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        return Text(_numberFormat
-                            .format(snapshot.data!.priceChangePercent));
+                        return Text(
+                            _numberFormat
+                                .format(snapshot.data!.priceChangePercent),
+                            style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.black.withOpacity(0.6)));
                       } else if (snapshot.hasError) {
                         print('${snapshot.error}');
                         return Text('${snapshot.error}');
                       }
 
                       // By default, show a loading spinner.
-                      return const Text('-');
+                      return Text('-',
+                          style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.black.withOpacity(0.6)));
                     },
                   ),
                   const Spacer(),
-                  const Text('24h Var.'),
+                  Text(
+                    '24hr Var.',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.black.withOpacity(0.6),
+                    ),
+                  ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   Text(
                     _numberFormat.format(0),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.black.withOpacity(0.6),
+                    ),
                   ),
                   const Spacer(),
-                  const Text('AvgPurchPrice'),
+                  Text(
+                    'AvgPurchPrice',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.black.withOpacity(0.6),
+                    ),
+                  ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   Text(
                     _numberFormat.format(0),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.black.withOpacity(0.6),
+                    ),
                   ),
                   const Spacer(),
-                  const Text('RealizedGain'),
+                  Text(
+                    'RealizedGain',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.black.withOpacity(0.6),
+                    ),
+                  ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   Text(
                     _numberFormat.format(0),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.black.withOpacity(0.6),
+                    ),
                   ),
                   const Spacer(),
-                  const Text('UnrealizedGain'),
+                  Text(
+                    'UnrealizedGain',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.black.withOpacity(0.6),
+                    ),
+                  ),
                 ],
               ),
+            ),
+            const Divider(
+                //height: 14,
+                ),
+            const Spacer(),
+            ButtonBar(
+              buttonHeight: 10,
+              buttonMinWidth: 10,
+              buttonPadding: const EdgeInsets.all(0),
+              alignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  iconSize: 20,
+                  padding: const EdgeInsets.all(6),
+                  icon: const Icon(Icons.refresh),
+                  color: Colors.black.withOpacity(0.6),
+                  onPressed: () {
+                    setState(() {
+                      futurePrice = fetchPrice(widget.position.token);
+                      futureVariation24 =
+                          fetchVariation24(widget.position.token);
+                    });
+                  },
+                ),
+                IconButton(
+                  iconSize: 20,
+                  padding: const EdgeInsets.all(6),
+                  icon: const Icon(Icons.list),
+                  color: Colors.black.withOpacity(0.6),
+                  onPressed: () {
+                    final appState =
+                        Provider.of<AppState>(context, listen: false);
+
+                    showModalBottomSheet<void>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Container(
+                          height: MediaQuery.of(context).size.height,
+                          child: Column(
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Row(
+                                  children: [
+                                    const Text('Transactions'),
+                                    const Spacer(),
+                                    OutlinedButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('Close'),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: TransactionsList(
+                                  portfolio: widget.portfolio!,
+                                  api: appState.api.transactions,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),
