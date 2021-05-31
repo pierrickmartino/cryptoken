@@ -51,21 +51,30 @@ class Dashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     final api = Provider.of<AppState>(context).api;
     return Scrollbar(
-      child: GridView(
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          childAspectRatio: 2,
-          maxCrossAxisExtent: 500,
+      child: Container(
+        color: const Color(0xff3A6EA5),
+        child: Padding(
+          padding: const EdgeInsets.all(5),
+          child: GridView(
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                childAspectRatio: 1,
+                maxCrossAxisExtent: 1200,
+                mainAxisExtent: 390,
+                mainAxisSpacing: 5,
+                crossAxisSpacing: 5),
+            children: [
+              ...portfolios!.map(
+                (portfolio) => Card(
+                  color: const Color(0xffEBEBEB),
+                  child: PortfolioWidget(
+                    api: api,
+                    portfolio: portfolio,
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
-        children: [
-          ...portfolios!.map(
-            (portfolio) => Card(
-              child: PortfolioWidget(
-                api: api,
-                portfolio: portfolio,
-              ),
-            ),
-          )
-        ],
       ),
     );
   }

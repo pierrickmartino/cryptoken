@@ -17,6 +17,7 @@ dependencies:
   flutter_datetime_picker: ^1.5.1 #https://pub.dev/packages/flutter_datetime_picker
   flutter_multi_formatter: ^2.1.0 #https://pub.dev/packages/flutter_multi_formatter
   google_sign_in: ^5.0 3
+  http: ^0.13.3 #https://pub.dev/packages/http
   json_annotation: ^4.0.0
   json_serializable: ^4.0.0
   provider: ^5.0.0
@@ -31,7 +32,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   
-  grinder: ^0.9.0
+  #grinder: ^0.9.0
   #test: ^1.17.4
   
 flutter:

@@ -36,6 +36,63 @@ class MockDashboardApi implements DashboardApi {
   /// Creates a [MockDashboardApi] filled with mock data for the last 30 days.
   Future<void> fillWithMockData() async {
     await Future<void>.delayed(const Duration(seconds: 1));
+
+    // PORTFOLIO BENCHMARK
+    final portfolio0 = await portfolios.insert(Portfolio('Benchmark'));
+
+    // POSITION BTC
+    final dateBTC = DateTime.utc(2021, 4);
+    const valueMainBTC = 1;
+    const valueReferenceBTC = 58740;
+    const valueFeeBTC = 0;
+    const tokenMainBTC = 'BTC';
+    const tokenReferenceBTC = 'USDT';
+
+    await positions.insert(portfolio0.id,
+        Position(tokenMainBTC, valueMainBTC.toDouble(), dateBTC));
+    // await positions.insert(portfolio0.id,
+    //     Position(tokenReferenceBTC, valueReferenceBTC.toDouble(), dateBTC));
+    await transactions.insert(
+        portfolio0.id,
+        Transaction(
+            tokenMainBTC,
+            tokenReferenceBTC,
+            tokenReferenceBTC,
+            tokenReferenceBTC,
+            valueMainBTC.toDouble(),
+            valueReferenceBTC.toDouble(),
+            valueFeeBTC.toDouble(),
+            valueReferenceBTC.toDouble() / valueMainBTC.toDouble(),
+            dateBTC,
+            false));
+
+    // POSITION ETH
+    final dateETH = DateTime.utc(2021, 4);
+    const valueMainETH = 1;
+    const valueReferenceETH = 1968;
+    const valueFeeETH = 0;
+    const tokenMainETH = 'ETH';
+    const tokenReferenceETH = 'USDT';
+
+    await positions.insert(portfolio0.id,
+        Position(tokenMainETH, valueMainETH.toDouble(), dateETH));
+    // await positions.insert(portfolio0.id,
+    //     Position(tokenReferenceETH, valueReferenceETH.toDouble(), dateETH));
+    await transactions.insert(
+        portfolio0.id,
+        Transaction(
+            tokenMainETH,
+            tokenReferenceETH,
+            tokenReferenceETH,
+            tokenReferenceETH,
+            valueMainETH.toDouble(),
+            valueReferenceETH.toDouble(),
+            valueFeeETH.toDouble(),
+            valueReferenceETH.toDouble() / valueMainETH.toDouble(),
+            dateETH,
+            false));
+
+    // Other examples
     final portfolio1 =
         await portfolios.insert(Portfolio('PTF ${randomString(7)}'));
     final portfolio2 =
@@ -47,57 +104,60 @@ class MockDashboardApi implements DashboardApi {
     for (final portfolio in [portfolio1, portfolio2, portfolio3]) {
       for (var i = 0; i < 3; i++) {
         final date = monthAgo.add(const Duration(days: 1));
-        final valueCredit = Random().nextInt(100);
-        final valueDebit = Random().nextInt(100);
+        final valueMain = Random().nextInt(100);
+        final valueReference = Random().nextInt(100);
         final valueFee = Random().nextInt(9);
-        final tokenCredit = randomString(3);
-        final tokenDebit = randomString(4);
+        final tokenMain = randomString(3);
+        final tokenReference = randomString(4);
 
-        // first regarding the Credit part of the transaction
+        // first regarding the Main part of the transaction
         try {
           // try to find if the position already exists
-          final oldPositionCredit =
-              await positions.get(portfolio.id, tokenCredit);
-          final newPositionCredit = Position(oldPositionCredit.token,
-              oldPositionCredit.amount + valueCredit, oldPositionCredit.time);
+          final oldPositionMain = await positions.get(portfolio.id, tokenMain);
+          final newPositionMain = Position(oldPositionMain.token,
+              oldPositionMain.amount + valueMain, oldPositionMain.time);
 
           // if we find the position, we need to update it
-          await positions.update(portfolio.id, tokenCredit, newPositionCredit);
-        } catch (e) {
-          // if not, we should get an error then insert the new position
-          await positions.insert(portfolio.id,
-              Position(tokenCredit, valueCredit.toDouble(), date));
-        }
-
-        // then regarding the Debit part of the transaction
-        try {
-          // try to find if the position already exists
-          final oldPositionDebit =
-              await positions.get(portfolio.id, tokenDebit);
-          final newPositionDebit = Position(oldPositionDebit.token,
-              oldPositionDebit.amount - valueDebit, oldPositionDebit.time);
-
-          // if we find the position, we need to update it
-          await positions.update(portfolio.id, tokenDebit, newPositionDebit);
+          await positions.update(portfolio.id, tokenMain, newPositionMain);
         } catch (e) {
           // if not, we should get an error then insert the new position
           await positions.insert(
-              portfolio.id, Position(tokenDebit, valueDebit.toDouble(), date));
+              portfolio.id, Position(tokenMain, valueMain.toDouble(), date));
+        }
+
+        // then regarding the Reference part of the transaction
+        try {
+          // try to find if the position already exists
+          final oldPositionReference =
+              await positions.get(portfolio.id, tokenReference);
+          final newPositionReference = Position(
+              oldPositionReference.token,
+              oldPositionReference.amount - valueReference,
+              oldPositionReference.time);
+
+          // if we find the position, we need to update it
+          await positions.update(
+              portfolio.id, tokenReference, newPositionReference);
+        } catch (e) {
+          // if not, we should get an error then insert the new position
+          await positions.insert(portfolio.id,
+              Position(tokenReference, valueReference.toDouble(), date));
         }
 
         // finally insert the transaction linked to the portfolio
         await transactions.insert(
             portfolio.id,
             Transaction(
-                tokenCredit,
-                tokenDebit,
-                tokenDebit,
-                tokenDebit,
-                valueCredit.toDouble(),
-                valueDebit.toDouble(),
+                tokenMain,
+                tokenReference,
+                tokenReference,
+                tokenReference,
+                valueMain.toDouble(),
+                valueReference.toDouble(),
                 valueFee.toDouble(),
-                valueDebit.toDouble() / valueCredit.toDouble(),
-                date));
+                valueReference.toDouble() / valueMain.toDouble(),
+                date,
+                true));
       }
     }
   }
@@ -230,15 +290,16 @@ class MockTransactionApi implements TransactionApi {
   Future<Transaction> insert(String positionId, Transaction transaction) async {
     final id = const uuid.Uuid().v4();
     final newTransaction = Transaction(
-        transaction.tokenCredit,
-        transaction.tokenDebit,
+        transaction.tokenMain,
+        transaction.tokenReference,
         transaction.tokenFee,
         transaction.tokenPrice,
-        transaction.amountCredit,
-        transaction.amountDebit,
+        transaction.amountMain,
+        transaction.amountReference,
         transaction.amountFee,
         transaction.price,
-        transaction.time)
+        transaction.time,
+        transaction.withImpactOnSecondPosition)
       ..id = id;
 
     _storage['$positionId-$id'] = newTransaction;

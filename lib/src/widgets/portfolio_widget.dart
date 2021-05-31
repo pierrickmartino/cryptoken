@@ -1,15 +1,9 @@
-// Copyright 2020, the Flutter project authors. Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 import '../api/api.dart';
-import '../app.dart';
-import '../pages/transactions.dart';
 import 'dialogs.dart';
+import 'position_widget.dart';
 
 final _numberFormat =
     NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 2);
@@ -32,14 +26,24 @@ class PortfolioWidget extends StatelessWidget {
           padding: const EdgeInsets.only(left: 8, right: 8),
           child: Row(
             children: [
-              Text(portfolio.name),
+              Text(
+                portfolio.name,
+                style: const TextStyle(color: Color(0xff3A6EA5)),
+              ),
               const Spacer(),
-              const IconButton(
-                icon: Icon(Icons.refresh),
-                onPressed: null,
+              IconButton(
+                icon: const Icon(Icons.add),
+                color: const Color(0xff3A6EA5),
+                onPressed: () {
+                  showDialog<NewTransactionDialog>(
+                    context: context,
+                    builder: (context) => const NewTransactionDialog(),
+                  );
+                },
               ),
               IconButton(
                 icon: const Icon(Icons.settings),
+                color: const Color(0xff3A6EA5),
                 onPressed: () {
                   showDialog<EditPortfolioDialog>(
                     context: context,
@@ -51,6 +55,57 @@ class PortfolioWidget extends StatelessWidget {
               ),
             ],
           ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+          child: Row(
+            children: [
+              Text(
+                _numberFormat.format(0),
+              ),
+              const Spacer(),
+              const Text('Valuation'),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+          child: Row(
+            children: [
+              Text(
+                _numberFormat.format(0),
+              ),
+              const Spacer(),
+              const Text('24h Var.'),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+          child: Row(
+            children: [
+              Text(
+                _numberFormat.format(0),
+              ),
+              const Spacer(),
+              const Text('RealizedGain'),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 4, left: 10, right: 10),
+          child: Row(
+            children: [
+              Text(
+                _numberFormat.format(0),
+              ),
+              const Spacer(),
+              const Text('UnrealizedGain'),
+            ],
+          ),
+        ),
+        const SizedBox(
+          height: 10,
         ),
         Expanded(
           // Load the initial snapshot using a FutureBuilder, and subscribe to
@@ -90,7 +145,7 @@ class PortfolioWidget extends StatelessWidget {
   }
 }
 
-class _ListPositions extends StatelessWidget {
+class _ListPositions extends StatefulWidget {
   const _ListPositions({Key? key, this.positions, this.portfolio})
       : super(key: key);
 
@@ -98,89 +153,31 @@ class _ListPositions extends StatelessWidget {
   final Portfolio? portfolio;
 
   @override
+  _ListPositionsState createState() => _ListPositionsState();
+}
+
+class _ListPositionsState extends State<_ListPositions> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GridView.builder(
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 500,
-          childAspectRatio: 2,
+          maxCrossAxisExtent: 900,
+          childAspectRatio: 1,
           // crossAxisSpacing: 20,
-          mainAxisExtent: 300,
-          // mainAxisSpacing: 5
+          mainAxisExtent: 270,
+          mainAxisSpacing: 5,
         ),
         scrollDirection: Axis.horizontal,
-        itemCount: positions!.length,
+        itemCount: widget.positions!.length,
         itemBuilder: (BuildContext context, int index) {
-          return Container(
-            height: 20,
-            child: Card(
-              color: Colors.cyan,
-              elevation: 2,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10, right: 4),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          positions![index]!.token,
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.list),
-                          onPressed: () {
-                            final appState =
-                                Provider.of<AppState>(context, listen: false);
-
-                            showModalBottomSheet<void>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Container(
-                                  height: MediaQuery.of(context).size.height,
-                                  child: Column(
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.all(8),
-                                        child: Row(
-                                          children: [
-                                            const Text('Transactions'),
-                                            const Spacer(),
-                                            OutlinedButton(
-                                              onPressed: () =>
-                                                  Navigator.pop(context),
-                                              child: const Text('Close'),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: TransactionsList(
-                                          portfolio: portfolio!,
-                                          api: appState.api.transactions,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8, right: 4),
-                    child: Row(
-                      children: [
-                        Text(
-                          _numberFormat.format(positions![index]!.amount),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          return PositionWidget(
+            position: widget.positions![index]!,
+            portfolio: widget.portfolio,
           );
         });
   }

@@ -10,11 +10,32 @@ import 'package:web_dashboard/src/widgets/portfolio_forms.dart';
 
 import '../app.dart';
 
+bool _isLargeScreen(BuildContext context) {
+  return MediaQuery.of(context).size.width > 960.0;
+}
+
 class NewPortfolioDialog extends StatelessWidget {
   const NewPortfolioDialog({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    if (_isLargeScreen(context)) {
+      return SimpleDialog(
+        title: const Text('New Portfolio'),
+        contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+        children: [
+          Container(
+            width: 600,
+            child: Column(
+              children: const [
+                NewPortfolioForm(),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
     return SimpleDialog(
       title: const Text('New Portfolio'),
       contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
@@ -43,6 +64,35 @@ class EditPortfolioDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final api = Provider.of<AppState>(context).api;
+
+    if (_isLargeScreen(context)) {
+      return SimpleDialog(
+        title: const Text('Edit Portfolio'),
+        contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+        children: [
+          Container(
+            width: 600,
+            child: Column(children: [
+              EditPortfolioForm(
+                portfolio: portfolio,
+                onDone: (shouldUpdate) {
+                  if (shouldUpdate) {
+                    api.portfolios.update(portfolio, portfolio.id);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Portfolio updated'),
+                      ),
+                    );
+                  }
+                  Navigator.of(context).pop();
+                },
+              ),
+            ]),
+          ),
+        ],
+      );
+    }
 
     return SimpleDialog(
       title: const Text('Edit Portfolio'),
@@ -88,6 +138,23 @@ class _NewTransactionDialogState extends State<NewTransactionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLargeScreen(context)) {
+      return SimpleDialog(
+        title: const Text('New Transaction'),
+        contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+        children: [
+          Container(
+            width: 600,
+            child: Column(
+              children: const [
+                NewTransactionForm(),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
     return SimpleDialog(
       title: const Text('New Transaction'),
       contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
@@ -129,6 +196,106 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
   Widget build(BuildContext context) {
     final api = Provider.of<AppState>(context).api;
 
+    if (_isLargeScreen(context)) {
+      return SimpleDialog(
+        title: const Text('Edit Transaction'),
+        contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+        children: [
+          Container(
+            width: 600,
+            child: Column(
+              children: [
+                EditTransactionForm(
+                  transaction: widget.transaction,
+                  portfolio: widget.portfolio,
+                  onDone: (shouldUpdate) async {
+                    if (shouldUpdate) {
+                      // first regarding the Main part of the transaction
+                      try {
+                        // try to find if the position already exists
+                        final oldPositionMain = await api.positions.get(
+                            widget.portfolio.id, widget.transaction.tokenMain);
+                        final newPositionMain = Position(
+                            oldPositionMain.token,
+                            oldPositionMain.amount +
+                                widget.transaction.amountMain,
+                            oldPositionMain.time);
+
+                        // if we find the position, we need to update it
+                        await api.positions.update(widget.portfolio.id,
+                            widget.transaction.tokenMain, newPositionMain);
+                      } catch (e) {
+                        // if not, we should get an error then insert the new position
+                        await api.positions.insert(
+                            widget.portfolio.id,
+                            Position(
+                                widget.transaction.tokenMain,
+                                widget.transaction.amountMain.toDouble(),
+                                widget.transaction.time));
+                      }
+
+                      if (widget.transaction.withImpactOnSecondPosition)
+                      // then regarding the Reference part of the transaction
+                      {
+                        try {
+                          // try to find if the position already exists
+                          final oldPositionReference = await api.positions.get(
+                              widget.portfolio.id,
+                              widget.transaction.tokenReference);
+                          final newPositionReference = Position(
+                              oldPositionReference.token,
+                              oldPositionReference.amount -
+                                  widget.transaction.amountReference,
+                              oldPositionReference.time);
+
+                          // if we find the position, we need to update it
+                          await api.positions.update(
+                              widget.portfolio.id,
+                              widget.transaction.tokenReference,
+                              newPositionReference);
+                        } catch (e) {
+                          // if not, we should get an error then insert the new position
+                          await api.positions.insert(
+                              widget.portfolio.id,
+                              Position(
+                                  widget.transaction.tokenReference,
+                                  -widget.transaction.amountReference
+                                      .toDouble(),
+                                  widget.transaction.time));
+                        }
+                      }
+
+                      // finally insert the transaction linked to the portfolio
+                      await api.transactions.insert(
+                          widget.portfolio.id,
+                          Transaction(
+                              widget.transaction.tokenMain,
+                              widget.transaction.tokenReference,
+                              widget.transaction.tokenFee,
+                              widget.transaction.tokenPrice,
+                              widget.transaction.amountMain.toDouble(),
+                              widget.transaction.amountReference.toDouble(),
+                              widget.transaction.amountFee.toDouble(),
+                              widget.transaction.price.toDouble(),
+                              widget.transaction.time,
+                              widget.transaction.withImpactOnSecondPosition));
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Transaction updated'),
+                        ),
+                      );
+                    }
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
     return SimpleDialog(
       title: const Text('Edit Transaction'),
       contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
@@ -142,67 +309,74 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                 portfolio: widget.portfolio,
                 onDone: (shouldUpdate) async {
                   if (shouldUpdate) {
-                    // first regarding the Credit part of the transaction
+                    // first regarding the Main part of the transaction
                     try {
                       // try to find if the position already exists
-                      final oldPositionCredit = await api.positions.get(
-                          widget.portfolio.id, widget.transaction.tokenCredit);
-                      final newPositionCredit = Position(
-                          oldPositionCredit.token,
-                          oldPositionCredit.amount +
-                              widget.transaction.amountCredit,
-                          oldPositionCredit.time);
+                      final oldPositionMain = await api.positions.get(
+                          widget.portfolio.id, widget.transaction.tokenMain);
+                      final newPositionMain = Position(
+                          oldPositionMain.token,
+                          oldPositionMain.amount +
+                              widget.transaction.amountMain,
+                          oldPositionMain.time);
 
                       // if we find the position, we need to update it
                       await api.positions.update(widget.portfolio.id,
-                          widget.transaction.tokenCredit, newPositionCredit);
+                          widget.transaction.tokenMain, newPositionMain);
                     } catch (e) {
                       // if not, we should get an error then insert the new position
                       await api.positions.insert(
                           widget.portfolio.id,
                           Position(
-                              widget.transaction.tokenCredit,
-                              widget.transaction.amountCredit.toDouble(),
+                              widget.transaction.tokenMain,
+                              widget.transaction.amountMain.toDouble(),
                               widget.transaction.time));
                     }
 
-                    // then regarding the Debit part of the transaction
-                    try {
-                      // try to find if the position already exists
-                      final oldPositionDebit = await api.positions.get(
-                          widget.portfolio.id, widget.transaction.tokenDebit);
-                      final newPositionDebit = Position(
-                          oldPositionDebit.token,
-                          oldPositionDebit.amount -
-                              widget.transaction.amountDebit,
-                          oldPositionDebit.time);
+                    if (widget.transaction.withImpactOnSecondPosition)
+                    // then regarding the Reference part of the transaction
+                    {
+                      try {
+                        // try to find if the position already exists
+                        final oldPositionReference = await api.positions.get(
+                            widget.portfolio.id,
+                            widget.transaction.tokenReference);
+                        final newPositionReference = Position(
+                            oldPositionReference.token,
+                            oldPositionReference.amount -
+                                widget.transaction.amountReference,
+                            oldPositionReference.time);
 
-                      // if we find the position, we need to update it
-                      await api.positions.update(widget.portfolio.id,
-                          widget.transaction.tokenDebit, newPositionDebit);
-                    } catch (e) {
-                      // if not, we should get an error then insert the new position
-                      await api.positions.insert(
-                          widget.portfolio.id,
-                          Position(
-                              widget.transaction.tokenDebit,
-                              -widget.transaction.amountDebit.toDouble(),
-                              widget.transaction.time));
+                        // if we find the position, we need to update it
+                        await api.positions.update(
+                            widget.portfolio.id,
+                            widget.transaction.tokenReference,
+                            newPositionReference);
+                      } catch (e) {
+                        // if not, we should get an error then insert the new position
+                        await api.positions.insert(
+                            widget.portfolio.id,
+                            Position(
+                                widget.transaction.tokenReference,
+                                -widget.transaction.amountReference.toDouble(),
+                                widget.transaction.time));
+                      }
                     }
 
                     // finally insert the transaction linked to the portfolio
                     await api.transactions.insert(
                         widget.portfolio.id,
                         Transaction(
-                            widget.transaction.tokenCredit,
-                            widget.transaction.tokenDebit,
+                            widget.transaction.tokenMain,
+                            widget.transaction.tokenReference,
                             widget.transaction.tokenFee,
                             widget.transaction.tokenPrice,
-                            widget.transaction.amountCredit.toDouble(),
-                            widget.transaction.amountDebit.toDouble(),
+                            widget.transaction.amountMain.toDouble(),
+                            widget.transaction.amountReference.toDouble(),
                             widget.transaction.amountFee.toDouble(),
                             widget.transaction.price.toDouble(),
-                            widget.transaction.time));
+                            widget.transaction.time,
+                            widget.transaction.withImpactOnSecondPosition));
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(

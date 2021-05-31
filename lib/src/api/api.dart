@@ -89,26 +89,29 @@ class Portfolio {
 @JsonSerializable()
 class Transaction {
   Transaction(
-      this.tokenCredit,
-      this.tokenDebit,
-      this.tokenFee,
-      this.tokenPrice,
-      this.amountCredit,
-      this.amountDebit,
-      this.amountFee,
-      this.price,
-      this.time);
+    this.tokenMain,
+    this.tokenReference,
+    this.tokenFee,
+    this.tokenPrice,
+    this.amountMain,
+    this.amountReference,
+    this.amountFee,
+    this.price,
+    this.time,
+    this.withImpactOnSecondPosition,
+  );
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>
       _$TransactionFromJson(json);
 
-  String tokenCredit, tokenDebit, tokenFee, tokenPrice;
-  double amountCredit, amountDebit, amountFee, price;
+  String tokenMain, tokenReference, tokenFee, tokenPrice;
+  double amountMain, amountReference, amountFee, price;
+  bool withImpactOnSecondPosition;
 
   @JsonKey(fromJson: _timestampToDateTime, toJson: _dateTimeToTimestamp)
   DateTime time;
 
-  //@JsonKey(ignore: true)
+  @JsonKey(ignore: true)
   late String id;
 
   Map<String, dynamic> toJson() => _$TransactionToJson(this);
@@ -148,7 +151,7 @@ class Position {
   @JsonKey(fromJson: _timestampToDateTime, toJson: _dateTimeToTimestamp)
   DateTime time;
 
-  //@JsonKey(ignore: true)
+  @JsonKey(ignore: true)
   late String id;
 
   Map<String, dynamic> toJson() => _$PositionToJson(this);

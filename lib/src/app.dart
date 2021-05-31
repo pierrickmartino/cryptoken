@@ -66,6 +66,13 @@ class _DashboardAppState extends State<DashboardApp> {
     return Provider.value(
       value: _appState,
       child: MaterialApp(
+        theme: ThemeData(
+          primaryColor: const Color(0xff004e98),
+          accentColor: const Color(0xffff6700),
+          dividerColor: const Color(0xffc0c0c0),
+          canvasColor: const Color(0xffEBEBEB),
+        ),
+        debugShowCheckedModeBanner: false,
         home: SignInSwitcher(
           appState: _appState,
           apiBuilder: widget.apiBuilder,
