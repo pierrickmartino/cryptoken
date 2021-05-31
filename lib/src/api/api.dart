@@ -89,12 +89,12 @@ class Portfolio {
 @JsonSerializable()
 class Transaction {
   Transaction(
-    this.tokenCredit,
-    this.tokenDebit,
+    this.tokenMain,
+    this.tokenReference,
     this.tokenFee,
     this.tokenPrice,
-    this.amountCredit,
-    this.amountDebit,
+    this.amountMain,
+    this.amountReference,
     this.amountFee,
     this.price,
     this.time,
@@ -104,8 +104,8 @@ class Transaction {
   factory Transaction.fromJson(Map<String, dynamic> json) =>
       _$TransactionFromJson(json);
 
-  String tokenCredit, tokenDebit, tokenFee, tokenPrice;
-  double amountCredit, amountDebit, amountFee, price;
+  String tokenMain, tokenReference, tokenFee, tokenPrice;
+  double amountMain, amountReference, amountFee, price;
   bool withImpactOnSecondPosition;
 
   @JsonKey(fromJson: _timestampToDateTime, toJson: _dateTimeToTimestamp)

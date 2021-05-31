@@ -18,12 +18,12 @@ Map<String, dynamic> _$PortfolioToJson(Portfolio instance) => <String, dynamic>{
 
 Transaction _$TransactionFromJson(Map<String, dynamic> json) {
   return Transaction(
-    json['tokenCredit'] as String,
-    json['tokenDebit'] as String,
+    json['tokenMain'] as String,
+    json['tokenReference'] as String,
     json['tokenFee'] as String,
     json['tokenPrice'] as String,
-    (json['amountCredit'] as num).toDouble(),
-    (json['amountDebit'] as num).toDouble(),
+    (json['amountMain'] as num).toDouble(),
+    (json['amountReference'] as num).toDouble(),
     (json['amountFee'] as num).toDouble(),
     (json['price'] as num).toDouble(),
     Transaction._timestampToDateTime(json['time'] as Timestamp),
@@ -33,12 +33,12 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
     <String, dynamic>{
-      'tokenCredit': instance.tokenCredit,
-      'tokenDebit': instance.tokenDebit,
+      'tokenMain': instance.tokenMain,
+      'tokenReference': instance.tokenReference,
       'tokenFee': instance.tokenFee,
       'tokenPrice': instance.tokenPrice,
-      'amountCredit': instance.amountCredit,
-      'amountDebit': instance.amountDebit,
+      'amountMain': instance.amountMain,
+      'amountReference': instance.amountReference,
       'amountFee': instance.amountFee,
       'price': instance.price,
       'withImpactOnSecondPosition': instance.withImpactOnSecondPosition,

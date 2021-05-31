@@ -31,7 +31,7 @@
 //     final entryTotal = EntryTotal(start.add(Duration(days: i)), 0);
 
 //     for (final entry in list) {
-//       entryTotal.value += entry.amountCredit.round();
+//       entryTotal.value += entry.amountMain.round();
 //     }
 
 //     yield entryTotal;

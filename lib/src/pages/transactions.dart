@@ -107,7 +107,7 @@ class TransactionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(
-          '${transaction.amountCredit} ${transaction.tokenCredit} at ${_priceFormat.format(transaction.price)} ${transaction.tokenPrice}'),
+          '${transaction.amountMain} ${transaction.tokenMain} at ${_priceFormat.format(transaction.price)} ${transaction.tokenPrice}'),
       subtitle:
           Text(intl.DateFormat('dd/MM/yy HH:mm').format(transaction.time)),
       trailing: Row(
@@ -148,41 +148,41 @@ class TransactionTile extends StatelessWidget {
               if (shouldDelete!) {
                 // To delete an existing transaction we also need to adjust the positions
 
-                // 1. Find the positions (credit and debit) in relation with the transaction
-                final oldPositionCredit =
+                // 1. Find the positions (Main and Reference) in relation with the transaction
+                final oldPositionMain =
                     await Provider.of<AppState>(context, listen: false)
                         .api
                         .positions
-                        .get(portfolio.id, transaction.tokenCredit);
+                        .get(portfolio.id, transaction.tokenMain);
 
-                final newPositionCredit = Position(
-                    oldPositionCredit.token,
-                    oldPositionCredit.amount - transaction.amountCredit,
-                    oldPositionCredit.time);
+                final newPositionMain = Position(
+                    oldPositionMain.token,
+                    oldPositionMain.amount - transaction.amountMain,
+                    oldPositionMain.time);
 
-                final oldPositionDebit =
+                final oldPositionReference =
                     await Provider.of<AppState>(context, listen: false)
                         .api
                         .positions
-                        .get(portfolio.id, transaction.tokenDebit);
+                        .get(portfolio.id, transaction.tokenReference);
 
-                final newPositionDebit = Position(
-                    oldPositionDebit.token,
-                    oldPositionDebit.amount + transaction.amountDebit,
-                    oldPositionDebit.time);
+                final newPositionReference = Position(
+                    oldPositionReference.token,
+                    oldPositionReference.amount + transaction.amountReference,
+                    oldPositionReference.time);
 
                 // 2. Update the positions
                 await Provider.of<AppState>(context, listen: false)
                     .api
                     .positions
-                    .update(portfolio.id, transaction.tokenCredit,
-                        newPositionCredit);
+                    .update(
+                        portfolio.id, transaction.tokenMain, newPositionMain);
 
                 await Provider.of<AppState>(context, listen: false)
                     .api
                     .positions
-                    .update(
-                        portfolio.id, transaction.tokenDebit, newPositionDebit);
+                    .update(portfolio.id, transaction.tokenReference,
+                        newPositionReference);
 
                 // 3. Delete the transaction
                 await Provider.of<AppState>(context, listen: false)

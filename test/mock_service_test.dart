@@ -65,7 +65,7 @@
 //         final transaction = await api.transactions
 //             .insert(portfolio.id, Transaction('BTC', 'USD', 1, 2, dateTime));
 
-//         expect(transaction.amountCredit, 1);
+//         expect(transaction.amountMain, 1);
 //         expect(transaction.time, dateTime);
 //       });
 
@@ -86,7 +86,7 @@
 //             .insert(portfolio.id, Transaction('BTC', 'USD', 1, 2, dateTime));
 //         final updated = await api.transactions.update(portfolio.id,
 //             transaction.id, Transaction('BTC', 'USD', 1, 2, dateTime));
-//         expect(updated.amountDebit, 2);
+//         expect(updated.amountReference, 2);
 //       });
 
 //       test('subscribe', () async {
@@ -94,7 +94,7 @@
 
 //         stream.listen(expectAsync1((x) {
 //           expect(x, hasLength(1));
-//           expect(x.first.amountCredit, equals(1));
+//           expect(x.first.amountMain, equals(1));
 //         }, count: 1));
 
 //         await api.transactions

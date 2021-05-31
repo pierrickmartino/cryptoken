@@ -51,51 +51,50 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
           portfolio: _selected!,
           onDone: (shouldInsert) async {
             if (shouldInsert) {
-              // first regarding the Credit part of the transaction
+              // first regarding the Main part of the transaction
               try {
                 // try to find if the position already exists
-                final oldPositionCredit = await api.positions
-                    .get(_selected!.id, _transaction.tokenCredit);
-                final newPositionCredit = Position(
-                    oldPositionCredit.token,
-                    oldPositionCredit.amount + _transaction.amountCredit,
-                    oldPositionCredit.time);
+                final oldPositionMain = await api.positions
+                    .get(_selected!.id, _transaction.tokenMain);
+                final newPositionMain = Position(
+                    oldPositionMain.token,
+                    oldPositionMain.amount + _transaction.amountMain,
+                    oldPositionMain.time);
 
                 // if we find the position, we need to update it
                 await api.positions.update(
-                    _selected!.id, _transaction.tokenCredit, newPositionCredit);
+                    _selected!.id, _transaction.tokenMain, newPositionMain);
               } catch (e) {
                 // if not, we should get an error then insert the new position
                 await api.positions.insert(
                     _selected!.id,
-                    Position(
-                        _transaction.tokenCredit,
-                        _transaction.amountCredit.toDouble(),
-                        _transaction.time));
+                    Position(_transaction.tokenMain,
+                        _transaction.amountMain.toDouble(), _transaction.time));
               }
 
               if (_transaction.withImpactOnSecondPosition)
-              // then regarding the Debit part of the transaction
+              // then regarding the Reference part of the transaction
               {
                 try {
                   // try to find if the position already exists
-                  final oldPositionDebit = await api.positions
-                      .get(_selected!.id, _transaction.tokenDebit);
-                  final newPositionDebit = Position(
-                      oldPositionDebit.token,
-                      oldPositionDebit.amount - _transaction.amountDebit,
-                      oldPositionDebit.time);
+                  final oldPositionReference = await api.positions
+                      .get(_selected!.id, _transaction.tokenReference);
+                  final newPositionReference = Position(
+                      oldPositionReference.token,
+                      oldPositionReference.amount -
+                          _transaction.amountReference,
+                      oldPositionReference.time);
 
                   // if we find the position, we need to update it
-                  await api.positions.update(
-                      _selected!.id, _transaction.tokenDebit, newPositionDebit);
+                  await api.positions.update(_selected!.id,
+                      _transaction.tokenReference, newPositionReference);
                 } catch (e) {
                   // if not, we should get an error then insert the new position
                   await api.positions.insert(
                       _selected!.id,
                       Position(
-                          _transaction.tokenDebit,
-                          -_transaction.amountDebit.toDouble(),
+                          _transaction.tokenReference,
+                          -_transaction.amountReference.toDouble(),
                           _transaction.time));
                 }
               }
@@ -103,12 +102,12 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
               await api.transactions.insert(
                   _selected!.id,
                   Transaction(
-                      _transaction.tokenCredit,
-                      _transaction.tokenDebit,
+                      _transaction.tokenMain,
+                      _transaction.tokenReference,
                       _transaction.tokenFee,
                       _transaction.tokenPrice,
-                      _transaction.amountCredit.toDouble(),
-                      _transaction.amountDebit.toDouble(),
+                      _transaction.amountMain.toDouble(),
+                      _transaction.amountReference.toDouble(),
                       _transaction.amountFee.toDouble(),
                       _transaction.price.toDouble(),
                       _transaction.time,
@@ -150,6 +149,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
   @override
   void initState() {
     super.initState();
+    final api = Provider.of<AppState>(context).api;
   }
 
   @override
@@ -192,7 +192,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     style: const TextStyle(fontSize: 14),
                     textAlign: TextAlign.end,
                     initialValue:
-                        widget.transaction.amountCredit.toCurrencyString(
+                        widget.transaction.amountMain.toCurrencyString(
                       mantissaLength: 6,
                       thousandSeparator:
                           ThousandSeparator.SpaceAndPeriodMantissa,
@@ -221,7 +221,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     },
                     onChanged: (newValue) {
                       try {
-                        widget.transaction.amountCredit = double.parse(
+                        widget.transaction.amountMain = double.parse(
                             newValue.toCurrencyString(
                                 mantissaLength: 6,
                                 thousandSeparator: ThousandSeparator.None));
@@ -240,14 +240,14 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   width: 60,
                   child: TextFormField(
                     style: const TextStyle(fontSize: 14),
-                    initialValue: widget.transaction.tokenCredit,
+                    initialValue: widget.transaction.tokenMain,
                     decoration: const InputDecoration(
                       isDense: true,
                       hintText: 'Token',
                     ),
                     keyboardType: TextInputType.text,
                     onChanged: (newValue) {
-                      widget.transaction.tokenCredit = newValue;
+                      widget.transaction.tokenMain = newValue;
                     },
                   ),
                 ),
@@ -346,7 +346,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     style: const TextStyle(fontSize: 14),
                     textAlign: TextAlign.end,
                     initialValue:
-                        widget.transaction.amountDebit.toCurrencyString(
+                        widget.transaction.amountReference.toCurrencyString(
                       mantissaLength: 6,
                       thousandSeparator:
                           ThousandSeparator.SpaceAndPeriodMantissa,
@@ -379,9 +379,9 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                             .price = double.parse(newValue.toCurrencyString(
                                 mantissaLength: 6,
                                 thousandSeparator: ThousandSeparator.None)) /
-                            widget.transaction.amountCredit;
+                            widget.transaction.amountMain;
 
-                        widget.transaction.amountDebit = double.parse(
+                        widget.transaction.amountReference = double.parse(
                             newValue.toCurrencyString(
                                 mantissaLength: 6,
                                 thousandSeparator: ThousandSeparator.None));
@@ -400,14 +400,14 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   width: 60,
                   child: TextFormField(
                     style: const TextStyle(fontSize: 14),
-                    initialValue: widget.transaction.tokenDebit,
+                    initialValue: widget.transaction.tokenReference,
                     decoration: const InputDecoration(
                       isDense: true,
                       hintText: 'Token',
                     ),
                     keyboardType: TextInputType.text,
                     onChanged: (newValue) {
-                      widget.transaction.tokenDebit = newValue;
+                      widget.transaction.tokenReference = newValue;
                     },
                   ),
                 ),
@@ -586,50 +586,48 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       try {
-                        // 1. Find the positions (credit and debit) in relation with the transaction
-                        final oldPositionCredit =
+                        // 1. Find the positions (Main and Reference) in relation with the transaction
+                        final oldPositionMain =
                             await Provider.of<AppState>(context)
                                 .api
                                 .positions
                                 .get(widget.portfolio.id,
-                                    widget.transaction.tokenCredit);
+                                    widget.transaction.tokenMain);
 
-                        final newPositionCredit = Position(
-                            oldPositionCredit.token,
-                            oldPositionCredit.amount -
-                                widget.transaction.amountCredit,
-                            oldPositionCredit.time);
+                        final newPositionMain = Position(
+                            oldPositionMain.token,
+                            oldPositionMain.amount -
+                                widget.transaction.amountMain,
+                            oldPositionMain.time);
 
                         // 2. Update the position
                         await Provider.of<AppState>(context)
                             .api
                             .positions
-                            .update(
-                                widget.portfolio.id,
-                                widget.transaction.tokenCredit,
-                                newPositionCredit);
+                            .update(widget.portfolio.id,
+                                widget.transaction.tokenMain, newPositionMain);
 
                         if (widget.transaction.withImpactOnSecondPosition) {
-                          final oldPositionDebit =
+                          final oldPositionReference =
                               await Provider.of<AppState>(context)
                                   .api
                                   .positions
                                   .get(widget.portfolio.id,
-                                      widget.transaction.tokenDebit);
+                                      widget.transaction.tokenReference);
 
-                          final newPositionDebit = Position(
-                              oldPositionDebit.token,
-                              oldPositionDebit.amount +
-                                  widget.transaction.amountDebit,
-                              oldPositionDebit.time);
+                          final newPositionReference = Position(
+                              oldPositionReference.token,
+                              oldPositionReference.amount +
+                                  widget.transaction.amountReference,
+                              oldPositionReference.time);
 
                           await Provider.of<AppState>(context)
                               .api
                               .positions
                               .update(
                                   widget.portfolio.id,
-                                  widget.transaction.tokenDebit,
-                                  newPositionDebit);
+                                  widget.transaction.tokenReference,
+                                  newPositionReference);
                         }
 
                         // 3. Delete the transaction
