@@ -20,6 +20,8 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
   Portfolio? _selected = Portfolio('');
   final Transaction _transaction = Transaction(
       'BTC', 'USDT', 'USDT', 'USDT', 0, 0, 0, 0, DateTime.now(), true);
+  final Position _positionMain = Position('BTC', 0, DateTime.now());
+  final Position _positionReference = Position('USDT', 0, DateTime.now());
 
   @override
   void initState() {
@@ -49,22 +51,29 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
         EditTransactionForm(
           transaction: _transaction,
           portfolio: _selected!,
+          positionMain: _positionMain,
+          positionReference: _positionReference,
           onDone: (shouldInsert) async {
             if (shouldInsert) {
+              //print('Insert Mode');
+
               // first regarding the Main part of the transaction
               try {
-                // try to find if the position already exists
-                final oldPositionMain = await api.positions
-                    .get(_selected!.id, _transaction.tokenMain);
+                // print(
+                //     '_positionMain : ${_positionMain.token} : ${_positionMain.amount}');
+
+                //final oldPositionMain = _positionMain;
                 final newPositionMain = Position(
-                    oldPositionMain.token,
-                    oldPositionMain.amount + _transaction.amountMain,
-                    oldPositionMain.time);
+                    _positionMain.token,
+                    _positionMain.amount + _transaction.amountMain,
+                    _positionMain.time);
 
                 // if we find the position, we need to update it
                 await api.positions.update(
                     _selected!.id, _transaction.tokenMain, newPositionMain);
               } catch (e) {
+                // print(
+                //     '_positionMain : ${_positionMain.token} : ${_positionMain.amount}');
                 // if not, we should get an error then insert the new position
                 await api.positions.insert(
                     _selected!.id,
@@ -76,19 +85,21 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
               // then regarding the Reference part of the transaction
               {
                 try {
-                  // try to find if the position already exists
-                  final oldPositionReference = await api.positions
-                      .get(_selected!.id, _transaction.tokenReference);
+                  // print(
+                  //     '_positionReference : ${_positionReference.token} : ${_positionReference.amount}');
+
                   final newPositionReference = Position(
-                      oldPositionReference.token,
-                      oldPositionReference.amount -
-                          _transaction.amountReference,
-                      oldPositionReference.time);
+                      _positionReference.token,
+                      _positionReference.amount - _transaction.amountReference,
+                      _positionReference.time);
 
                   // if we find the position, we need to update it
                   await api.positions.update(_selected!.id,
                       _transaction.tokenReference, newPositionReference);
                 } catch (e) {
+                  // print(e);
+                  // print(
+                  //     '_positionReference : ${_positionReference.token} : ${_positionReference.amount}');
                   // if not, we should get an error then insert the new position
                   await api.positions.insert(
                       _selected!.id,
@@ -132,11 +143,14 @@ class EditTransactionForm extends StatefulWidget {
     Key? key,
     required this.transaction,
     required this.portfolio,
+    required this.positionMain,
+    required this.positionReference,
     required this.onDone,
   }) : super(key: key);
 
   final Transaction transaction;
   final Portfolio portfolio;
+  final Position positionMain, positionReference;
   final ValueChanged<bool> onDone;
 
   @override
@@ -149,7 +163,6 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
   @override
   void initState() {
     super.initState();
-    final api = Provider.of<AppState>(context).api;
   }
 
   @override
@@ -246,8 +259,9 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                       hintText: 'Token',
                     ),
                     keyboardType: TextInputType.text,
-                    onChanged: (newValue) {
+                    onChanged: (newValue) async {
                       widget.transaction.tokenMain = newValue;
+                      widget.positionMain.token = newValue;
                     },
                   ),
                 ),
@@ -408,6 +422,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     keyboardType: TextInputType.text,
                     onChanged: (newValue) {
                       widget.transaction.tokenReference = newValue;
+                      widget.positionReference.token = newValue;
                     },
                   ),
                 ),
@@ -585,57 +600,103 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                 child: ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
+                      // Once the user click on validate, we are able to check the positions existence
+
                       try {
-                        // 1. Find the positions (Main and Reference) in relation with the transaction
+                        // try to find if the position already exists
+                        await Provider.of<AppState>(context, listen: false)
+                            .api
+                            .positions
+                            .get(widget.portfolio.id,
+                                widget.transaction.tokenMain);
+                      } catch (e) {
+                        // if not, we should get an error then insert the new position
+                        await Provider.of<AppState>(context, listen: false)
+                            .api
+                            .positions
+                            .insert(
+                                widget.portfolio.id,
+                                Position(widget.transaction.tokenMain, 0,
+                                    DateTime.now()));
+                      } finally {
                         final oldPositionMain =
-                            await Provider.of<AppState>(context)
+                            await Provider.of<AppState>(context, listen: false)
                                 .api
                                 .positions
                                 .get(widget.portfolio.id,
                                     widget.transaction.tokenMain);
+                        widget.positionMain.amount = oldPositionMain.amount;
+                      }
 
-                        final newPositionMain = Position(
-                            oldPositionMain.token,
-                            oldPositionMain.amount -
-                                widget.transaction.amountMain,
-                            oldPositionMain.time);
-
-                        // 2. Update the position
-                        await Provider.of<AppState>(context)
+                      try {
+                        // try to find if the position already exists
+                        await Provider.of<AppState>(context, listen: false)
                             .api
                             .positions
-                            .update(widget.portfolio.id,
-                                widget.transaction.tokenMain, newPositionMain);
-
-                        if (widget.transaction.withImpactOnSecondPosition) {
-                          final oldPositionReference =
-                              await Provider.of<AppState>(context)
-                                  .api
-                                  .positions
-                                  .get(widget.portfolio.id,
-                                      widget.transaction.tokenReference);
-
-                          final newPositionReference = Position(
-                              oldPositionReference.token,
-                              oldPositionReference.amount +
-                                  widget.transaction.amountReference,
-                              oldPositionReference.time);
-
-                          await Provider.of<AppState>(context)
-                              .api
-                              .positions
-                              .update(
-                                  widget.portfolio.id,
-                                  widget.transaction.tokenReference,
-                                  newPositionReference);
-                        }
-
-                        // 3. Delete the transaction
-                        await Provider.of<AppState>(context)
+                            .get(widget.portfolio.id,
+                                widget.transaction.tokenReference);
+                      } catch (e) {
+                        // if not, we should get an error then insert the new position
+                        await Provider.of<AppState>(context, listen: false)
                             .api
-                            .transactions
-                            .delete(widget.portfolio.id, widget.transaction.id);
-                      } catch (_) {}
+                            .positions
+                            .insert(
+                                widget.portfolio.id,
+                                Position(widget.transaction.tokenReference, 0,
+                                    DateTime.now()));
+                      }
+
+                      // try {
+                      //   // 1. Find the positions (Main and Reference) in relation with the transaction
+                      //   final oldPositionMain =
+                      //       await Provider.of<AppState>(context)
+                      //           .api
+                      //           .positions
+                      //           .get(widget.portfolio.id,
+                      //               widget.transaction.tokenMain);
+
+                      //   final newPositionMain = Position(
+                      //       oldPositionMain.token,
+                      //       oldPositionMain.amount -
+                      //           widget.transaction.amountMain,
+                      //       oldPositionMain.time);
+
+                      //   // 2. Update the position
+                      //   await Provider.of<AppState>(context)
+                      //       .api
+                      //       .positions
+                      //       .update(widget.portfolio.id,
+                      //           widget.transaction.tokenMain, newPositionMain);
+
+                      //   if (widget.transaction.withImpactOnSecondPosition) {
+                      //     final oldPositionReference =
+                      //         await Provider.of<AppState>(context)
+                      //             .api
+                      //             .positions
+                      //             .get(widget.portfolio.id,
+                      //                 widget.transaction.tokenReference);
+
+                      //     final newPositionReference = Position(
+                      //         oldPositionReference.token,
+                      //         oldPositionReference.amount +
+                      //             widget.transaction.amountReference,
+                      //         oldPositionReference.time);
+
+                      //     await Provider.of<AppState>(context)
+                      //         .api
+                      //         .positions
+                      //         .update(
+                      //             widget.portfolio.id,
+                      //             widget.transaction.tokenReference,
+                      //             newPositionReference);
+                      //   }
+
+                      //   // 3. Delete the transaction
+                      //   await Provider.of<AppState>(context)
+                      //       .api
+                      //       .transactions
+                      //       .delete(widget.portfolio.id, widget.transaction.id);
+                      // } catch (_) {}
 
                       widget.onDone(true);
                     }

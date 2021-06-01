@@ -127,7 +127,7 @@ class PortfolioWidget extends StatelessWidget {
                     }
                     return _ListPositions(
                       portfolio:
-                          portfolio, // TODO : Temporary as we need to find transactions based on positions
+                          portfolio, //TODO : Temporary as we need to find transactions based on positions
                       positions: snapshot.data,
                     );
                   },
@@ -167,7 +167,7 @@ class _ListPositionsState extends State<_ListPositions> {
     return GridView.builder(
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 900,
-          childAspectRatio: 1,
+          //childAspectRatio: 1,
           // crossAxisSpacing: 20,
           mainAxisExtent: 270,
           mainAxisSpacing: 5,

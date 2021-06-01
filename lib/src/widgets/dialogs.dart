@@ -175,12 +175,16 @@ class _NewTransactionDialogState extends State<NewTransactionDialog> {
 class EditTransactionDialog extends StatefulWidget {
   const EditTransactionDialog({
     Key? key,
-    required this.portfolio,
     required this.transaction,
+    required this.transactionCache,
+    required this.portfolio,
+    required this.positionMain,
+    required this.positionReference,
   }) : super(key: key);
 
+  final Transaction transaction, transactionCache;
   final Portfolio portfolio;
-  final Transaction transaction;
+  final Position positionMain, positionReference;
 
   @override
   _EditTransactionDialogState createState() => _EditTransactionDialogState();
@@ -208,23 +212,35 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                 EditTransactionForm(
                   transaction: widget.transaction,
                   portfolio: widget.portfolio,
+                  positionMain: widget.positionMain,
+                  positionReference: widget.positionReference,
                   onDone: (shouldUpdate) async {
                     if (shouldUpdate) {
+                      // print('Update Mode');
+
+                      // print(
+                      //     'transactionCache Main : ${widget.transactionCache.tokenMain} : ${widget.transactionCache.amountMain.toString()}');
+
                       // first regarding the Main part of the transaction
                       try {
-                        // try to find if the position already exists
-                        final oldPositionMain = await api.positions.get(
-                            widget.portfolio.id, widget.transaction.tokenMain);
+                        // print(
+                        //     'widget.positionMain : ${widget.positionMain.token} : ${widget.positionMain.amount}');
+                        // print(
+                        //     'newPositionMain calculation : ${widget.positionMain.amount} - ${widget.transactionCache.amountMain} + ${widget.transaction.amountMain}');
+
                         final newPositionMain = Position(
-                            oldPositionMain.token,
-                            oldPositionMain.amount +
+                            widget.positionMain.token,
+                            widget.positionMain.amount -
+                                widget.transactionCache.amountMain +
                                 widget.transaction.amountMain,
-                            oldPositionMain.time);
+                            widget.positionMain.time);
 
                         // if we find the position, we need to update it
                         await api.positions.update(widget.portfolio.id,
                             widget.transaction.tokenMain, newPositionMain);
                       } catch (e) {
+                        // print(
+                        //     'widget.positionMain : ${widget.positionMain.token} : ${widget.positionMain.amount}');
                         // if not, we should get an error then insert the new position
                         await api.positions.insert(
                             widget.portfolio.id,
@@ -238,15 +254,15 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                       // then regarding the Reference part of the transaction
                       {
                         try {
-                          // try to find if the position already exists
-                          final oldPositionReference = await api.positions.get(
-                              widget.portfolio.id,
-                              widget.transaction.tokenReference);
+                          // print(
+                          //     'widget.positionReference : ${widget.positionReference.token} : ${widget.positionReference.amount}');
+
                           final newPositionReference = Position(
-                              oldPositionReference.token,
-                              oldPositionReference.amount -
+                              widget.positionReference.token,
+                              widget.positionReference.amount +
+                                  widget.transactionCache.amountReference -
                                   widget.transaction.amountReference,
-                              oldPositionReference.time);
+                              widget.positionReference.time);
 
                           // if we find the position, we need to update it
                           await api.positions.update(
@@ -254,6 +270,8 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                               widget.transaction.tokenReference,
                               newPositionReference);
                         } catch (e) {
+                          // print(
+                          //     'widget.positionReference : ${widget.positionReference.token} : ${widget.positionReference.amount}');
                           // if not, we should get an error then insert the new position
                           await api.positions.insert(
                               widget.portfolio.id,
@@ -264,6 +282,10 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                                   widget.transaction.time));
                         }
                       }
+
+                      // delete the transaction
+                      await api.transactions
+                          .delete(widget.portfolio.id, widget.transaction.id);
 
                       // finally insert the transaction linked to the portfolio
                       await api.transactions.insert(
@@ -307,23 +329,35 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
               EditTransactionForm(
                 transaction: widget.transaction,
                 portfolio: widget.portfolio,
+                positionMain: widget.positionMain,
+                positionReference: widget.positionReference,
                 onDone: (shouldUpdate) async {
                   if (shouldUpdate) {
+                    // print('Update Mode');
+
+                    // print(
+                    //     'transactionCache Main : ${widget.transactionCache.tokenMain} : ${widget.transactionCache.amountMain.toString()}');
+
                     // first regarding the Main part of the transaction
                     try {
-                      // try to find if the position already exists
-                      final oldPositionMain = await api.positions.get(
-                          widget.portfolio.id, widget.transaction.tokenMain);
+                      // print(
+                      //     'widget.positionMain : ${widget.positionMain.token} : ${widget.positionMain.amount}');
+                      // print(
+                      //     'newPositionMain calculation : ${widget.positionMain.amount} - ${widget.transactionCache.amountMain} + ${widget.transaction.amountMain}');
+
                       final newPositionMain = Position(
-                          oldPositionMain.token,
-                          oldPositionMain.amount +
+                          widget.positionMain.token,
+                          widget.positionMain.amount -
+                              widget.transactionCache.amountMain +
                               widget.transaction.amountMain,
-                          oldPositionMain.time);
+                          widget.positionMain.time);
 
                       // if we find the position, we need to update it
                       await api.positions.update(widget.portfolio.id,
                           widget.transaction.tokenMain, newPositionMain);
                     } catch (e) {
+                      // print(
+                      //     'widget.positionMain : ${widget.positionMain.token} : ${widget.positionMain.amount}');
                       // if not, we should get an error then insert the new position
                       await api.positions.insert(
                           widget.portfolio.id,
@@ -337,15 +371,15 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                     // then regarding the Reference part of the transaction
                     {
                       try {
-                        // try to find if the position already exists
-                        final oldPositionReference = await api.positions.get(
-                            widget.portfolio.id,
-                            widget.transaction.tokenReference);
+                        // print(
+                        //     'widget.positionReference : ${widget.positionReference.token} : ${widget.positionReference.amount}');
+
                         final newPositionReference = Position(
-                            oldPositionReference.token,
-                            oldPositionReference.amount -
+                            widget.positionReference.token,
+                            widget.positionReference.amount +
+                                widget.transactionCache.amountReference -
                                 widget.transaction.amountReference,
-                            oldPositionReference.time);
+                            widget.positionReference.time);
 
                         // if we find the position, we need to update it
                         await api.positions.update(
@@ -353,6 +387,8 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                             widget.transaction.tokenReference,
                             newPositionReference);
                       } catch (e) {
+                        // print(
+                        //     'widget.positionReference : ${widget.positionReference.token} : ${widget.positionReference.amount}');
                         // if not, we should get an error then insert the new position
                         await api.positions.insert(
                             widget.portfolio.id,
@@ -362,6 +398,10 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                                 widget.transaction.time));
                       }
                     }
+
+                    // delete the transaction
+                    await api.transactions
+                        .delete(widget.portfolio.id, widget.transaction.id);
 
                     // finally insert the transaction linked to the portfolio
                     await api.transactions.insert(
