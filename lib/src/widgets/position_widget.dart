@@ -242,7 +242,7 @@ class _PositionsState extends State<PositionWidget> {
                       ),
                     );
                   } else if (snapshot.hasError) {
-                    print('${snapshot.error}');
+                    //print('${snapshot.error}');
                     return Text('${snapshot.error}');
                   }
 
@@ -254,10 +254,6 @@ class _PositionsState extends State<PositionWidget> {
                 },
               ),
             ),
-            // const Divider(
-            //   indent: 16,
-            //   endIndent: 16,
-            // ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -294,7 +290,7 @@ class _PositionsState extends State<PositionWidget> {
                               color: Colors.black.withOpacity(0.6),
                             ));
                       } else if (snapshot.hasError) {
-                        print('${snapshot.error}');
+                        //print('${snapshot.error}');
                         return Text('${snapshot.error}');
                       }
 
@@ -332,7 +328,7 @@ class _PositionsState extends State<PositionWidget> {
                                 fontSize: 13,
                                 color: Colors.black.withOpacity(0.6)));
                       } else if (snapshot.hasError) {
-                        print('${snapshot.error}');
+                        //print('${snapshot.error}');
                         return Text('${snapshot.error}');
                       }
 

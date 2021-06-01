@@ -94,7 +94,7 @@ class _TransactionsListState extends State<TransactionsList> {
 }
 
 class TransactionTile extends StatelessWidget {
-  const TransactionTile({
+  TransactionTile({
     Key? key,
     required this.portfolio,
     required this.transaction,
@@ -103,8 +103,13 @@ class TransactionTile extends StatelessWidget {
   final Portfolio portfolio;
   final Transaction transaction;
 
+  Position? positionMain, positionReference;
+  Transaction? transactionCache;
+
   @override
   Widget build(BuildContext context) {
+    final api = Provider.of<AppState>(context).api;
+
     return ListTile(
       title: Text(
           '${transaction.amountMain} ${transaction.tokenMain} at ${_priceFormat.format(transaction.price)} ${transaction.tokenPrice}'),
@@ -114,16 +119,42 @@ class TransactionTile extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextButton(
-            onPressed: () {
-              showDialog<void>(
+            onPressed: () async {
+              positionMain =
+                  await api.positions.get(portfolio.id, transaction.tokenMain);
+              positionReference = await api.positions
+                  .get(portfolio.id, transaction.tokenReference);
+              transactionCache = await api.transactions.insert(
+                  portfolio.id,
+                  Transaction(
+                      transaction.tokenMain,
+                      transaction.tokenReference,
+                      transaction.tokenFee,
+                      transaction.tokenPrice,
+                      transaction.amountMain.toDouble(),
+                      transaction.amountReference.toDouble(),
+                      transaction.amountFee.toDouble(),
+                      transaction.price.toDouble(),
+                      transaction.time,
+                      transaction.withImpactOnSecondPosition));
+
+              // print(
+              //     'transactionCache Main : ${transactionCache!.tokenMain} : ${transactionCache!.amountMain.toString()}');
+
+              await showDialog<void>(
                 context: context,
                 builder: (context) {
                   return EditTransactionDialog(
                     portfolio: portfolio,
                     transaction: transaction,
+                    transactionCache: transactionCache!,
+                    positionMain: positionMain!,
+                    positionReference: positionReference!,
                   );
                 },
               );
+
+              await api.transactions.delete(portfolio.id, transactionCache!.id);
             },
             child: const Text('Edit'),
           ),
