@@ -1,0 +1,42 @@
+[
+    {
+        "id": 8104,
+        "name": "1inch",
+        "symbol": "1INCH",
+        "category": "token",
+        "slug": "1inch",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/8104.png"
+    },
+    {
+        "id": 7278,
+        "name": "Aave",
+        "symbol": "AAVE",
+        "category": "token",
+        "slug": "aave",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/7278.png"
+    },
+    {
+        "id": 3437,
+        "name": "ABBC Coin",
+        "symbol": "ABBC",
+        "category": "coin",
+        "slug": "abbc-coin",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/3437.png"
+    },
+    {
+        "id": 2010,
+        "name": "Cardano",
+        "symbol": "ADA",
+        "category": "coin",
+        "slug": "cardano",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/2010.png"
+    },
+    {
+        "id": 4030,
+        "name": "Algorand",
+        "symbol": "ALGO",
+        "category": "coin",
+        "slug": "algorand",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/4030.png"
+    }
+]

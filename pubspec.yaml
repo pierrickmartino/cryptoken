@@ -7,6 +7,7 @@ dependencies:
   charts_flutter: ^0.10.0
   cloud_firestore: ^2.1.0
   cupertino_icons: ^1.0.3
+  dropdown_search: ^0.6.1 #https://pub.dev/packages/dropdown_search
   
   firebase_auth: ^1.1.4
   firebase_core: ^1.1.1
@@ -37,3 +38,7 @@ dev_dependencies:
   
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/data/info200.json
+    - assets/data/crypto.json

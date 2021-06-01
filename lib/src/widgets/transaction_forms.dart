@@ -1,10 +1,18 @@
+import 'dart:async' show Future;
+import 'dart:convert';
+
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
+import 'package:intl/intl.dart' as intl;
 import 'package:provider/provider.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:web_dashboard/src/api/api.dart';
-import 'package:intl/intl.dart' as intl;
+import 'package:web_dashboard/src/class/crypto.dart';
+import 'package:web_dashboard/src/class/cryptosList.dart';
 
 import '../app.dart';
 import 'portfolios_dropdown.dart';
@@ -159,14 +167,24 @@ class EditTransactionForm extends StatefulWidget {
 
 class _EditTransactionFormState extends State<EditTransactionForm> {
   final _formKey = GlobalKey<FormState>();
+  //final List<Crypto> crypto;
+
+  // Future<String> localJsonData() async {
+  //   final jsonText = await rootBundle.loadString('assets/data/info200.json');
+  //   setState(() => data = json.decode(jsonText));
+  //   return 'success';
+  // }
 
   @override
   void initState() {
     super.initState();
+    //localJsonData();
   }
 
   @override
   Widget build(BuildContext context) {
+    loadCrypto();
+
     return Form(
       key: _formKey,
       child: Column(
@@ -250,20 +268,47 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   width: 10,
                 ),
                 SizedBox(
-                  width: 60,
-                  child: TextFormField(
-                    style: const TextStyle(fontSize: 14),
-                    initialValue: widget.transaction.tokenMain,
-                    decoration: const InputDecoration(
+                  width: 70,
+                  child: DropdownSearch<Crypto>(
+                    mode: Mode.BOTTOM_SHEET,
+                    //showSelectedItem: true,
+                    showSearchBox: true,
+                    dropdownSearchDecoration: const InputDecoration(
                       isDense: true,
-                      hintText: 'Token',
+                      hintText: '-',
                     ),
-                    keyboardType: TextInputType.text,
+                    onFind: (String filter) => loadCrypto(),
+                    // items: [
+                    //   Crypto(
+                    //       symbol: 'BTC',
+                    //       category: '',
+                    //       id: '',
+                    //       logo: '',
+                    //       name: '',
+                    //       slug: '')
+                    // ],
+                    //label: "Menu mode",
+                    hint: '-',
                     onChanged: (newValue) async {
-                      widget.transaction.tokenMain = newValue;
-                      widget.positionMain.token = newValue;
+                      widget.transaction.tokenMain = newValue!.symbol;
+                      widget.positionMain.token = newValue.symbol;
                     },
+                    //selectedItem: 'BTC',
                   ),
+
+                  // TextFormField(
+                  //   style: const TextStyle(fontSize: 14),
+                  //   initialValue: widget.transaction.tokenMain,
+                  //   decoration: const InputDecoration(
+                  //     isDense: true,
+                  //     hintText: 'Token',
+                  //   ),
+                  //   keyboardType: TextInputType.text,
+                  //   onChanged: (newValue) async {
+                  //     widget.transaction.tokenMain = newValue;
+                  //     widget.positionMain.token = newValue;
+                  //   },
+                  // ),
                 ),
               ],
             ),
@@ -710,4 +755,27 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
       ),
     );
   }
+
+  Future<String> _loadCryptoAsset() async {
+    return rootBundle.loadString('data/crypto.json');
+  }
+
+  Future<List<Crypto>> loadCrypto() async {
+    final String jsonString = await _loadCryptoAsset();
+    final jsonResponse = json.decode(jsonString);
+    final CryptosList cryptosList = CryptosList.fromJson(jsonResponse);
+    //print(crypto.symbol);
+    return cryptosList.cryptos;
+  }
+
+  // Future<List<Crypto>> getCryptoData() async {
+  //   final jsonText = await rootBundle.loadString('data/info200.json');
+  //   final symbolList = json.decode(jsonText);
+
+  //   if (symbolList != null) {
+  //     return Crypto.fromJsonList(symbolList);
+  //   }
+
+  //   return [];
+  // }
 }
