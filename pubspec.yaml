@@ -40,5 +40,5 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/data/info200.json
-    - assets/data/crypto.json
+    - data/info200.json
+    - data/crypto.json

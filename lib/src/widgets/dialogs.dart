@@ -19,29 +19,15 @@ class NewPortfolioDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLargeScreen(context)) {
-      return SimpleDialog(
-        title: const Text('New Portfolio'),
-        contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-        children: [
-          Container(
-            width: 600,
-            child: Column(
-              children: const [
-                NewPortfolioForm(),
-              ],
-            ),
-          ),
-        ],
-      );
-    }
-
     return SimpleDialog(
       title: const Text('New Portfolio'),
+      titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
       children: [
         Container(
-          width: MediaQuery.of(context).size.width - 50,
+          width: _isLargeScreen(context)
+              ? 600
+              : MediaQuery.of(context).size.width - 10,
           child: Column(
             children: const [
               NewPortfolioForm(),
@@ -65,41 +51,15 @@ class EditPortfolioDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final api = Provider.of<AppState>(context).api;
 
-    if (_isLargeScreen(context)) {
-      return SimpleDialog(
-        title: const Text('Edit Portfolio'),
-        contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-        children: [
-          Container(
-            width: 600,
-            child: Column(children: [
-              EditPortfolioForm(
-                portfolio: portfolio,
-                onDone: (shouldUpdate) {
-                  if (shouldUpdate) {
-                    api.portfolios.update(portfolio, portfolio.id);
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Portfolio updated'),
-                      ),
-                    );
-                  }
-                  Navigator.of(context).pop();
-                },
-              ),
-            ]),
-          ),
-        ],
-      );
-    }
-
     return SimpleDialog(
       title: const Text('Edit Portfolio'),
+      titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
       children: [
         Container(
-          width: MediaQuery.of(context).size.width - 50,
+          width: _isLargeScreen(context)
+              ? 600
+              : MediaQuery.of(context).size.width - 10,
           child: Column(children: [
             EditPortfolioForm(
               portfolio: portfolio,
@@ -138,29 +98,15 @@ class _NewTransactionDialogState extends State<NewTransactionDialog> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLargeScreen(context)) {
-      return SimpleDialog(
-        title: const Text('New Transaction'),
-        contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-        children: [
-          Container(
-            width: 600,
-            child: Column(
-              children: const [
-                NewTransactionForm(),
-              ],
-            ),
-          ),
-        ],
-      );
-    }
-
     return SimpleDialog(
       title: const Text('New Transaction'),
+      titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
       children: [
         Container(
-          width: MediaQuery.of(context).size.width - 50,
+          width: _isLargeScreen(context)
+              ? 600
+              : MediaQuery.of(context).size.width - 10,
           child: Column(
             children: const [
               NewTransactionForm(),
@@ -202,6 +148,7 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
 
     return SimpleDialog(
       title: const Text('Edit Transaction'),
+      titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
       children: [
         Container(
