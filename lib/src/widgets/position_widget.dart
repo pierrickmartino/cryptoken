@@ -6,20 +6,25 @@ import 'dart:async' show Future;
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/services.dart' show rootBundle;
+// import 'package:flutter/services.dart';
+// import 'package:flutter/services.dart' show rootBundle;
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:web_dashboard/src/class/crypto.dart';
-import 'package:web_dashboard/src/class/cryptosList.dart';
+// import 'package:web_dashboard/src/class/crypto.dart';
+// import 'package:web_dashboard/src/class/cryptos_list.dart';
 import 'package:web_dashboard/src/class/price.dart';
 import 'package:web_dashboard/src/class/variation24.dart';
+import 'package:web_dashboard/src/hive/crypto_hive.dart';
 
 import '../api/api.dart';
 import '../app.dart';
 import '../pages/transactions.dart';
+
+const cryptoListBox = 'cryptoList';
 
 final _numberFormat =
     NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 2);
@@ -150,7 +155,7 @@ class _PositionsState extends State<PositionWidget> {
           children: [
             ListTile(
               leading: FutureBuilder(
-                future: _getIconFromCryptoList(widget.position.token),
+                future: _getIconFromCryptoHive(widget.position.token),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return Image.network(
@@ -422,23 +427,30 @@ class _PositionsState extends State<PositionWidget> {
     );
   }
 
-  Future<String> _getIconFromCryptoList(String symbol) async {
-    final List<Crypto> cryptos = await loadCrypto();
-    final Crypto crypto =
-        cryptos[cryptos.indexWhere((item) => item.symbol == symbol)];
+  Future<String> _getIconFromCryptoHive(String symbol) async {
+    final boxCrypto = await Hive.openBox<CryptoHive>(cryptoListBox);
+    final CryptoHive cryptos = boxCrypto.get(symbol)!;
 
-    return crypto.logo;
+    return cryptos.logo;
   }
 
-  Future<String> _loadCryptoAsset() async {
-    return rootBundle.loadString('data/crypto.json');
-  }
+//   Future<String> _getIconFromCryptoList(String symbol) async {
+//     final List<Crypto> cryptos = await loadCrypto();
+//     final Crypto crypto =
+//         cryptos[cryptos.indexWhere((item) => item.symbol == symbol)];
 
-  Future<List<Crypto>> loadCrypto() async {
-    final String jsonString = await _loadCryptoAsset();
-    final jsonResponse = json.decode(jsonString);
-    final CryptosList cryptosList = CryptosList.fromJson(jsonResponse);
-    //print(crypto.symbol);
-    return cryptosList.cryptos;
-  }
+//     return crypto.logo;
+//   }
+
+//   Future<String> _loadCryptoAsset() async {
+//     return rootBundle.loadString('data/crypto.json');
+//   }
+
+//   Future<List<Crypto>> loadCrypto() async {
+//     final String jsonString = await _loadCryptoAsset();
+//     final jsonResponse = json.decode(jsonString);
+//     final CryptosList cryptosList = CryptosList.fromJson(jsonResponse);
+//     //print(crypto.symbol);
+//     return cryptosList.cryptos;
+//   }
 }

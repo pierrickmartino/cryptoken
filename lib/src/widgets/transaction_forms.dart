@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:web_dashboard/src/api/api.dart';
 import 'package:web_dashboard/src/class/crypto.dart';
-import 'package:web_dashboard/src/class/cryptosList.dart';
+import 'package:web_dashboard/src/class/cryptos_list.dart';
 
 import '../app.dart';
 import 'portfolios_dropdown.dart';
