@@ -54,5 +54,117 @@
         "category": "coin",
         "slug": "ethereum",
         "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png"
+    },
+    {
+        "id": 5268,
+        "name": "Energy Web Token",
+        "symbol": "EWT",
+        "category": "coin",
+        "slug": "energy-web-token",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/5268.png"
+    },
+    {
+        "id": 825,
+        "name": "Tether",
+        "symbol": "USDT",
+        "category": "token",
+        "slug": "tether",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png"
+    },
+    {
+        "id": 7129,
+        "name": "TerraUSD",
+        "symbol": "UST",
+        "category": "coin",
+        "slug": "terrausd",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/7129.png"
+    },
+    {
+        "id": 2320,
+        "name": "Utrust",
+        "symbol": "UTK",
+        "category": "token",
+        "slug": "utrust",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/2320.png"
+    },
+    {
+        "id": 3077,
+        "name": "VeChain",
+        "symbol": "VET",
+        "category": "coin",
+        "slug": "vechain",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/3077.png"
+    },
+    {
+        "id": 1817,
+        "name": "Voyager Token",
+        "symbol": "VGX",
+        "category": "token",
+        "slug": "voyager-token",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/1817.png"
+    },
+    {
+        "id": 7232,
+        "name": "Alpha Finance Lab",
+        "symbol": "ALPHA",
+        "category": "token",
+        "slug": "alpha-finance-lab",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/7232.png"
+    },
+    {
+        "id": 4056,
+        "name": "Ampleforth",
+        "symbol": "AMPL",
+        "category": "token",
+        "slug": "ampleforth",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/4056.png"
+    },
+    {
+        "id": 3783,
+        "name": "Ankr",
+        "symbol": "ANKR",
+        "category": "token",
+        "slug": "ankr",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/3783.png"
+    },
+    {
+        "id": 1680,
+        "name": "Aragon",
+        "symbol": "ANT",
+        "category": "token",
+        "slug": "aragon",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/1680.png"
+    },
+    {
+        "id": 5632,
+        "name": "Arweave",
+        "symbol": "AR",
+        "category": "coin",
+        "slug": "arweave",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/5632.png"
+    },
+    {
+        "id": 1320,
+        "name": "Ardor",
+        "symbol": "ARDR",
+        "category": "coin",
+        "slug": "ardor",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/1320.png"
+    },
+    {
+        "id": 1586,
+        "name": "Ark",
+        "symbol": "ARK",
+        "category": "coin",
+        "slug": "ark",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/1586.png"
+    },
+    {
+        "id": 3794,
+        "name": "Cosmos",
+        "symbol": "ATOM",
+        "category": "coin",
+        "slug": "cosmos",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/3794.png"
     }
 ]

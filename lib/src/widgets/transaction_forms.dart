@@ -262,23 +262,12 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   width: 85,
                   child: DropdownSearch<Crypto>(
                     mode: Mode.BOTTOM_SHEET,
-                    //showSelectedItem: true,
                     showSearchBox: true,
                     dropdownSearchDecoration: const InputDecoration(
                       isDense: true,
                       hintText: '-',
                     ),
                     onFind: (String filter) => loadCrypto(),
-                    // items: [
-                    //   Crypto(
-                    //       symbol: 'BTC',
-                    //       category: '',
-                    //       id: '',
-                    //       logo: '',
-                    //       name: '',
-                    //       slug: '')
-                    // ],
-                    //label: "Menu mode",
                     hint: '-',
                     dropdownButtonBuilder: (_) => const Padding(
                       padding: EdgeInsets.all(6),
@@ -292,22 +281,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                       widget.transaction.tokenMain = newValue!.symbol;
                       widget.positionMain.token = newValue.symbol;
                     },
-                    //selectedItem: 'BTC',
                   ),
-
-                  // TextFormField(
-                  //   style: const TextStyle(fontSize: 14),
-                  //   initialValue: widget.transaction.tokenMain,
-                  //   decoration: const InputDecoration(
-                  //     isDense: true,
-                  //     hintText: 'Token',
-                  //   ),
-                  //   keyboardType: TextInputType.text,
-                  //   onChanged: (newValue) async {
-                  //     widget.transaction.tokenMain = newValue;
-                  //     widget.positionMain.token = newValue;
-                  //   },
-                  // ),
                 ),
               ],
             ),
@@ -372,17 +346,26 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     width: 10,
                   ),
                   SizedBox(
-                    width: 60,
-                    child: TextFormField(
-                      style: const TextStyle(fontSize: 14),
-                      initialValue: widget.transaction.tokenPrice,
-                      keyboardType: TextInputType.text,
-                      decoration: const InputDecoration(
+                    width: 85,
+                    child: DropdownSearch<Crypto>(
+                      mode: Mode.BOTTOM_SHEET,
+                      showSearchBox: true,
+                      dropdownSearchDecoration: const InputDecoration(
                         isDense: true,
-                        hintText: 'Token',
+                        hintText: '-',
                       ),
-                      onChanged: (newValue) {
-                        widget.transaction.tokenPrice = newValue;
+                      onFind: (String filter) => loadCrypto(),
+                      hint: '-',
+                      dropdownButtonBuilder: (_) => const Padding(
+                        padding: EdgeInsets.all(6),
+                        child: Icon(
+                          Icons.arrow_drop_down,
+                          size: 18,
+                          color: Colors.black,
+                        ),
+                      ),
+                      onChanged: (newValue) async {
+                        widget.transaction.tokenPrice = newValue!.symbol;
                       },
                     ),
                   ),
@@ -455,18 +438,27 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   width: 10,
                 ),
                 SizedBox(
-                  width: 60,
-                  child: TextFormField(
-                    style: const TextStyle(fontSize: 14),
-                    initialValue: widget.transaction.tokenReference,
-                    decoration: const InputDecoration(
+                  width: 85,
+                  child: DropdownSearch<Crypto>(
+                    mode: Mode.BOTTOM_SHEET,
+                    showSearchBox: true,
+                    dropdownSearchDecoration: const InputDecoration(
                       isDense: true,
-                      hintText: 'Token',
+                      hintText: '-',
                     ),
-                    keyboardType: TextInputType.text,
-                    onChanged: (newValue) {
-                      widget.transaction.tokenReference = newValue;
-                      widget.positionReference.token = newValue;
+                    onFind: (String filter) => loadCrypto(),
+                    hint: '-',
+                    dropdownButtonBuilder: (_) => const Padding(
+                      padding: EdgeInsets.all(6),
+                      child: Icon(
+                        Icons.arrow_drop_down,
+                        size: 18,
+                        color: Colors.black,
+                      ),
+                    ),
+                    onChanged: (newValue) async {
+                      widget.transaction.tokenReference = newValue!.symbol;
+                      widget.positionReference.token = newValue.symbol;
                     },
                   ),
                 ),
@@ -534,17 +526,26 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   width: 10,
                 ),
                 SizedBox(
-                  width: 60,
-                  child: TextFormField(
-                    style: const TextStyle(fontSize: 14),
-                    initialValue: widget.transaction.tokenFee,
-                    decoration: const InputDecoration(
+                  width: 85,
+                  child: DropdownSearch<Crypto>(
+                    mode: Mode.BOTTOM_SHEET,
+                    showSearchBox: true,
+                    dropdownSearchDecoration: const InputDecoration(
                       isDense: true,
-                      hintText: 'Token',
+                      hintText: '-',
                     ),
-                    keyboardType: TextInputType.text,
-                    onChanged: (newValue) {
-                      widget.transaction.tokenFee = newValue;
+                    onFind: (String filter) => loadCrypto(),
+                    hint: '-',
+                    dropdownButtonBuilder: (_) => const Padding(
+                      padding: EdgeInsets.all(6),
+                      child: Icon(
+                        Icons.arrow_drop_down,
+                        size: 18,
+                        color: Colors.black,
+                      ),
+                    ),
+                    onChanged: (newValue) async {
+                      widget.transaction.tokenFee = newValue!.symbol;
                     },
                   ),
                 ),
