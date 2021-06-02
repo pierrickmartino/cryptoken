@@ -1,7 +1,3 @@
-// Copyright 2020, the Flutter project authors. Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
 import 'package:flutter/material.dart';
 import 'package:web_dashboard/src/auth/auth.dart';
 
@@ -10,6 +6,7 @@ import '../widgets/dialogs.dart';
 import '../widgets/third_party/adaptive_scaffold.dart';
 
 import 'dashboard.dart';
+import 'settings.dart';
 import 'transactions.dart';
 
 class HomePage extends StatefulWidget {
@@ -134,6 +131,6 @@ class _HomePageState extends State<HomePage> {
       return const TransactionsPage();
     }
 
-    return const Center(child: Text('Settings page'));
+    return const SettingsPage();
   }
 }

@@ -1,12 +1,15 @@
-// Copyright 2020, the Flutter project authors. Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
 import 'package:flutter/material.dart';
+
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'src/app.dart';
 
-void main() {
+const darkModeBox = 'darkMode';
+
+void main() async {
+  await Hive.initFlutter();
+  await Hive.openBox(darkModeBox);
   runApp(DashboardApp.mock());
   //runApp(DashboardApp.firebase());
 }
