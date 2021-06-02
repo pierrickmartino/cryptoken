@@ -2,14 +2,18 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:async';
+import 'dart:async' show Future;
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:web_dashboard/src/class/crypto.dart';
+import 'package:web_dashboard/src/class/cryptosList.dart';
 import 'package:web_dashboard/src/class/price.dart';
 import 'package:web_dashboard/src/class/variation24.dart';
 
@@ -145,7 +149,19 @@ class _PositionsState extends State<PositionWidget> {
         child: Column(
           children: [
             ListTile(
-              leading: const Icon(Icons.all_inclusive),
+              leading: FutureBuilder(
+                future: _getIconFromCryptoList(widget.position.token),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Image.network(
+                      snapshot.data.toString(),
+                      height: 28,
+                    );
+                  } else {
+                    return const Icon(Icons.all_inclusive);
+                  }
+                },
+              ),
               title: Text(widget.position.token),
               trailing: FutureBuilder<Price>(
                 future: futurePrice,
@@ -404,5 +420,25 @@ class _PositionsState extends State<PositionWidget> {
         ),
       ),
     );
+  }
+
+  Future<String> _getIconFromCryptoList(String symbol) async {
+    final List<Crypto> cryptos = await loadCrypto();
+    final Crypto crypto =
+        cryptos[cryptos.indexWhere((item) => item.symbol == symbol)];
+
+    return crypto.logo;
+  }
+
+  Future<String> _loadCryptoAsset() async {
+    return rootBundle.loadString('data/crypto.json');
+  }
+
+  Future<List<Crypto>> loadCrypto() async {
+    final String jsonString = await _loadCryptoAsset();
+    final jsonResponse = json.decode(jsonString);
+    final CryptosList cryptosList = CryptosList.fromJson(jsonResponse);
+    //print(crypto.symbol);
+    return cryptosList.cryptos;
   }
 }

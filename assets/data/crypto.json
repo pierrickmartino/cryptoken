@@ -38,5 +38,21 @@
         "category": "coin",
         "slug": "algorand",
         "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/4030.png"
+    },
+    {
+        "id": 1,
+        "name": "Bitcoin",
+        "symbol": "BTC",
+        "category": "coin",
+        "slug": "bitcoin",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/1.png"
+    },
+    {
+        "id": 1027,
+        "name": "Ethereum",
+        "symbol": "ETH",
+        "category": "coin",
+        "slug": "ethereum",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png"
     }
 ]

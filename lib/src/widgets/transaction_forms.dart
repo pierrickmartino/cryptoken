@@ -167,18 +167,10 @@ class EditTransactionForm extends StatefulWidget {
 
 class _EditTransactionFormState extends State<EditTransactionForm> {
   final _formKey = GlobalKey<FormState>();
-  //final List<Crypto> crypto;
-
-  // Future<String> localJsonData() async {
-  //   final jsonText = await rootBundle.loadString('assets/data/info200.json');
-  //   setState(() => data = json.decode(jsonText));
-  //   return 'success';
-  // }
 
   @override
   void initState() {
     super.initState();
-    //localJsonData();
   }
 
   @override
@@ -194,7 +186,6 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
             padding: const EdgeInsets.all(0),
             child: Center(
               child: ToggleSwitch(
-                //fontSize: 14,
                 labels: const ['Buy', 'Sell', 'Deposit', 'Withdrawal'],
                 minHeight: 30,
                 //minWidth: MediaQuery.of(context).size.width,
@@ -268,7 +259,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   width: 10,
                 ),
                 SizedBox(
-                  width: 70,
+                  width: 85,
                   child: DropdownSearch<Crypto>(
                     mode: Mode.BOTTOM_SHEET,
                     //showSelectedItem: true,
@@ -289,6 +280,14 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     // ],
                     //label: "Menu mode",
                     hint: '-',
+                    dropdownButtonBuilder: (_) => const Padding(
+                      padding: EdgeInsets.all(6),
+                      child: Icon(
+                        Icons.arrow_drop_down,
+                        size: 18,
+                        color: Colors.black,
+                      ),
+                    ),
                     onChanged: (newValue) async {
                       widget.transaction.tokenMain = newValue!.symbol;
                       widget.positionMain.token = newValue.symbol;
@@ -767,15 +766,4 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
     //print(crypto.symbol);
     return cryptosList.cryptos;
   }
-
-  // Future<List<Crypto>> getCryptoData() async {
-  //   final jsonText = await rootBundle.loadString('data/info200.json');
-  //   final symbolList = json.decode(jsonText);
-
-  //   if (symbolList != null) {
-  //     return Crypto.fromJsonList(symbolList);
-  //   }
-
-  //   return [];
-  // }
 }

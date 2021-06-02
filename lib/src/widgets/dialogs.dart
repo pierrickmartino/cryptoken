@@ -200,130 +200,14 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
   Widget build(BuildContext context) {
     final api = Provider.of<AppState>(context).api;
 
-    if (_isLargeScreen(context)) {
-      return SimpleDialog(
-        title: const Text('Edit Transaction'),
-        contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-        children: [
-          Container(
-            width: 600,
-            child: Column(
-              children: [
-                EditTransactionForm(
-                  transaction: widget.transaction,
-                  portfolio: widget.portfolio,
-                  positionMain: widget.positionMain,
-                  positionReference: widget.positionReference,
-                  onDone: (shouldUpdate) async {
-                    if (shouldUpdate) {
-                      // print('Update Mode');
-
-                      // print(
-                      //     'transactionCache Main : ${widget.transactionCache.tokenMain} : ${widget.transactionCache.amountMain.toString()}');
-
-                      // first regarding the Main part of the transaction
-                      try {
-                        // print(
-                        //     'widget.positionMain : ${widget.positionMain.token} : ${widget.positionMain.amount}');
-                        // print(
-                        //     'newPositionMain calculation : ${widget.positionMain.amount} - ${widget.transactionCache.amountMain} + ${widget.transaction.amountMain}');
-
-                        final newPositionMain = Position(
-                            widget.positionMain.token,
-                            widget.positionMain.amount -
-                                widget.transactionCache.amountMain +
-                                widget.transaction.amountMain,
-                            widget.positionMain.time);
-
-                        // if we find the position, we need to update it
-                        await api.positions.update(widget.portfolio.id,
-                            widget.transaction.tokenMain, newPositionMain);
-                      } catch (e) {
-                        // print(
-                        //     'widget.positionMain : ${widget.positionMain.token} : ${widget.positionMain.amount}');
-                        // if not, we should get an error then insert the new position
-                        await api.positions.insert(
-                            widget.portfolio.id,
-                            Position(
-                                widget.transaction.tokenMain,
-                                widget.transaction.amountMain.toDouble(),
-                                widget.transaction.time));
-                      }
-
-                      if (widget.transaction.withImpactOnSecondPosition)
-                      // then regarding the Reference part of the transaction
-                      {
-                        try {
-                          // print(
-                          //     'widget.positionReference : ${widget.positionReference.token} : ${widget.positionReference.amount}');
-
-                          final newPositionReference = Position(
-                              widget.positionReference.token,
-                              widget.positionReference.amount +
-                                  widget.transactionCache.amountReference -
-                                  widget.transaction.amountReference,
-                              widget.positionReference.time);
-
-                          // if we find the position, we need to update it
-                          await api.positions.update(
-                              widget.portfolio.id,
-                              widget.transaction.tokenReference,
-                              newPositionReference);
-                        } catch (e) {
-                          // print(
-                          //     'widget.positionReference : ${widget.positionReference.token} : ${widget.positionReference.amount}');
-                          // if not, we should get an error then insert the new position
-                          await api.positions.insert(
-                              widget.portfolio.id,
-                              Position(
-                                  widget.transaction.tokenReference,
-                                  -widget.transaction.amountReference
-                                      .toDouble(),
-                                  widget.transaction.time));
-                        }
-                      }
-
-                      // delete the transaction
-                      await api.transactions
-                          .delete(widget.portfolio.id, widget.transaction.id);
-
-                      // finally insert the transaction linked to the portfolio
-                      await api.transactions.insert(
-                          widget.portfolio.id,
-                          Transaction(
-                              widget.transaction.tokenMain,
-                              widget.transaction.tokenReference,
-                              widget.transaction.tokenFee,
-                              widget.transaction.tokenPrice,
-                              widget.transaction.amountMain.toDouble(),
-                              widget.transaction.amountReference.toDouble(),
-                              widget.transaction.amountFee.toDouble(),
-                              widget.transaction.price.toDouble(),
-                              widget.transaction.time,
-                              widget.transaction.withImpactOnSecondPosition));
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Transaction updated'),
-                        ),
-                      );
-                    }
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
-      );
-    }
-
     return SimpleDialog(
       title: const Text('Edit Transaction'),
       contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
       children: [
         Container(
-          width: MediaQuery.of(context).size.width - 50,
+          width: _isLargeScreen(context)
+              ? 600
+              : MediaQuery.of(context).size.width - 10,
           child: Column(
             children: [
               EditTransactionForm(

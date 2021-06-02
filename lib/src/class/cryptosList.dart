@@ -15,4 +15,8 @@ class CryptosList {
   }
 
   final List<Crypto> cryptos;
+
+  static List<String> fromJsonSymbolList(List<dynamic> parsedJson) {
+    return parsedJson.map((i) => Crypto.fromJson(i).symbol).toList();
+  }
 }
