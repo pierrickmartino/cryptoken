@@ -1,4 +1,3 @@
-import 'dart:async' show Future;
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -15,7 +14,7 @@ import 'src/class/cryptos_list.dart';
 const darkModeBox = 'darkMode';
 const cryptoListBox = 'cryptoList';
 
-void main() async {
+Future<void> main() async {
   await Hive.initFlutter();
 
   await Hive.openBox(darkModeBox);
@@ -27,7 +26,7 @@ void main() async {
   final cryptoJsonResponse = json.decode(cryptoJsonString);
   final CryptosList cryptosList = CryptosList.fromJson(cryptoJsonResponse);
 
-  for (var element in cryptosList.cryptos) {
+  for (final element in cryptosList.cryptos) {
     final crypto = CryptoHive()
       ..symbol = element.symbol
       ..id = element.id
@@ -37,8 +36,6 @@ void main() async {
       ..slug = element.slug;
 
     await boxCrypto.put(crypto.symbol, crypto);
-    //await boxCrypto.add();
-    //print(crypto.symbol);
   }
 
   runApp(DashboardApp.mock());

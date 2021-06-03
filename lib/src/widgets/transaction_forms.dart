@@ -1,21 +1,22 @@
 import 'dart:async' show Future;
-import 'dart:convert';
 
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:provider/provider.dart';
 import 'package:toggle_switch/toggle_switch.dart';
-import 'package:web_dashboard/src/api/api.dart';
-import 'package:web_dashboard/src/class/crypto.dart';
-import 'package:web_dashboard/src/class/cryptos_list.dart';
 
+import '../../src/api/api.dart';
+import '../../src/class/crypto.dart';
+import '../../src/hive/crypto_hive.dart';
 import '../app.dart';
 import 'portfolios_dropdown.dart';
+
+const cryptoListBox = 'cryptoList';
 
 class NewTransactionForm extends StatefulWidget {
   const NewTransactionForm({Key? key}) : super(key: key);
@@ -175,8 +176,6 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
 
   @override
   Widget build(BuildContext context) {
-    loadCrypto();
-
     return Form(
       key: _formKey,
       child: Column(
@@ -267,7 +266,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                       isDense: true,
                       hintText: '-',
                     ),
-                    onFind: (String filter) => loadCrypto(),
+                    onFind: (String filter) => _getCryptoFromCryptoHive(),
                     hint: '-',
                     dropdownButtonBuilder: (_) => const Padding(
                       padding: EdgeInsets.all(6),
@@ -354,7 +353,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                         isDense: true,
                         hintText: '-',
                       ),
-                      onFind: (String filter) => loadCrypto(),
+                      onFind: (String filter) => _getCryptoFromCryptoHive(),
                       hint: '-',
                       dropdownButtonBuilder: (_) => const Padding(
                         padding: EdgeInsets.all(6),
@@ -446,7 +445,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                       isDense: true,
                       hintText: '-',
                     ),
-                    onFind: (String filter) => loadCrypto(),
+                    onFind: (String filter) => _getCryptoFromCryptoHive(),
                     hint: '-',
                     dropdownButtonBuilder: (_) => const Padding(
                       padding: EdgeInsets.all(6),
@@ -534,7 +533,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                       isDense: true,
                       hintText: '-',
                     ),
-                    onFind: (String filter) => loadCrypto(),
+                    onFind: (String filter) => _getCryptoFromCryptoHive(),
                     hint: '-',
                     dropdownButtonBuilder: (_) => const Padding(
                       padding: EdgeInsets.all(6),
@@ -691,58 +690,6 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                                     DateTime.now()));
                       }
 
-                      // try {
-                      //   // 1. Find the positions (Main and Reference) in relation with the transaction
-                      //   final oldPositionMain =
-                      //       await Provider.of<AppState>(context)
-                      //           .api
-                      //           .positions
-                      //           .get(widget.portfolio.id,
-                      //               widget.transaction.tokenMain);
-
-                      //   final newPositionMain = Position(
-                      //       oldPositionMain.token,
-                      //       oldPositionMain.amount -
-                      //           widget.transaction.amountMain,
-                      //       oldPositionMain.time);
-
-                      //   // 2. Update the position
-                      //   await Provider.of<AppState>(context)
-                      //       .api
-                      //       .positions
-                      //       .update(widget.portfolio.id,
-                      //           widget.transaction.tokenMain, newPositionMain);
-
-                      //   if (widget.transaction.withImpactOnSecondPosition) {
-                      //     final oldPositionReference =
-                      //         await Provider.of<AppState>(context)
-                      //             .api
-                      //             .positions
-                      //             .get(widget.portfolio.id,
-                      //                 widget.transaction.tokenReference);
-
-                      //     final newPositionReference = Position(
-                      //         oldPositionReference.token,
-                      //         oldPositionReference.amount +
-                      //             widget.transaction.amountReference,
-                      //         oldPositionReference.time);
-
-                      //     await Provider.of<AppState>(context)
-                      //         .api
-                      //         .positions
-                      //         .update(
-                      //             widget.portfolio.id,
-                      //             widget.transaction.tokenReference,
-                      //             newPositionReference);
-                      //   }
-
-                      //   // 3. Delete the transaction
-                      //   await Provider.of<AppState>(context)
-                      //       .api
-                      //       .transactions
-                      //       .delete(widget.portfolio.id, widget.transaction.id);
-                      // } catch (_) {}
-
                       widget.onDone(true);
                     }
                   },
@@ -756,15 +703,18 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
     );
   }
 
-  Future<String> _loadCryptoAsset() async {
-    return rootBundle.loadString('data/crypto.json');
-  }
+  Future<List<Crypto>> _getCryptoFromCryptoHive() async {
+    final boxCrypto = await Hive.openBox<CryptoHive>(cryptoListBox);
 
-  Future<List<Crypto>> loadCrypto() async {
-    final String jsonString = await _loadCryptoAsset();
-    final jsonResponse = json.decode(jsonString);
-    final CryptosList cryptosList = CryptosList.fromJson(jsonResponse);
-    //print(crypto.symbol);
-    return cryptosList.cryptos;
+    final cryptos = <Crypto>[];
+    boxCrypto.toMap().entries.forEach((e) => cryptos.add(Crypto(
+        category: e.value.category,
+        id: e.value.id,
+        logo: e.value.logo,
+        name: e.value.name,
+        slug: e.value.slug,
+        symbol: e.value.symbol)));
+
+    return cryptos;
   }
 }

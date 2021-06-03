@@ -67,7 +67,7 @@ class _DashboardAppState extends State<DashboardApp> {
     return ValueListenableBuilder(
         valueListenable: Hive.box(darkModeBox).listenable(),
         builder: (listenerContext, Box<dynamic> box, listenerWidget) {
-          var darkMode = box.get('darkMode', defaultValue: false);
+          final darkMode = box.get('darkMode', defaultValue: false);
           return Provider.value(
             value: _appState,
             child: MaterialApp(

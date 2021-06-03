@@ -1,21 +1,12 @@
-// Copyright 2020, the Flutter project authors. Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
 import 'dart:async' show Future;
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-// import 'package:flutter/services.dart';
-// import 'package:flutter/services.dart' show rootBundle;
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'package:http/http.dart' as http;
-// import 'package:web_dashboard/src/class/crypto.dart';
-// import 'package:web_dashboard/src/class/cryptos_list.dart';
 import 'package:web_dashboard/src/class/price.dart';
 import 'package:web_dashboard/src/class/variation24.dart';
 import 'package:web_dashboard/src/hive/crypto_hive.dart';
@@ -433,24 +424,4 @@ class _PositionsState extends State<PositionWidget> {
 
     return cryptos.logo;
   }
-
-//   Future<String> _getIconFromCryptoList(String symbol) async {
-//     final List<Crypto> cryptos = await loadCrypto();
-//     final Crypto crypto =
-//         cryptos[cryptos.indexWhere((item) => item.symbol == symbol)];
-
-//     return crypto.logo;
-//   }
-
-//   Future<String> _loadCryptoAsset() async {
-//     return rootBundle.loadString('data/crypto.json');
-//   }
-
-//   Future<List<Crypto>> loadCrypto() async {
-//     final String jsonString = await _loadCryptoAsset();
-//     final jsonResponse = json.decode(jsonString);
-//     final CryptosList cryptosList = CryptosList.fromJson(jsonResponse);
-//     //print(crypto.symbol);
-//     return cryptosList.cryptos;
-//   }
 }

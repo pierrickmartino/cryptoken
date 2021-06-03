@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:flutter/material.dart';
 
@@ -16,7 +15,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    var darkMode = box.get('darkMode', defaultValue: false);
+    final darkMode = box.get('darkMode', defaultValue: false);
 
     return Column(
       children: [
