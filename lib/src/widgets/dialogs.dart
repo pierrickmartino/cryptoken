@@ -80,7 +80,9 @@ class EditPortfolioDialog extends StatelessWidget {
 }
 
 class NewTransactionDialog extends StatefulWidget {
-  const NewTransactionDialog({Key? key}) : super(key: key);
+  NewTransactionDialog({Key? key, this.selectedPortfolio}) : super(key: key);
+
+  Portfolio? selectedPortfolio;
 
   @override
   _NewTransactionDialogState createState() => _NewTransactionDialogState();
@@ -104,8 +106,10 @@ class _NewTransactionDialogState extends State<NewTransactionDialog> {
               ? 600
               : MediaQuery.of(context).size.width - 10,
           child: Column(
-            children: const [
-              NewTransactionForm(),
+            children: [
+              NewTransactionForm(
+                selectedPortfolio: widget.selectedPortfolio,
+              ),
             ],
           ),
         ),

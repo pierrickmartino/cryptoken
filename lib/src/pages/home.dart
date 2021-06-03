@@ -87,7 +87,7 @@ class _HomePageState extends State<HomePage> {
     if (_pageIndex == 1) {
       showDialog<NewTransactionDialog>(
         context: context,
-        builder: (context) => const NewTransactionDialog(),
+        builder: (context) => NewTransactionDialog(),
       );
       return;
     }

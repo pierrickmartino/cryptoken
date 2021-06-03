@@ -19,7 +19,9 @@ import 'portfolios_dropdown.dart';
 const cryptoListBox = 'cryptoList';
 
 class NewTransactionForm extends StatefulWidget {
-  const NewTransactionForm({Key? key}) : super(key: key);
+  NewTransactionForm({Key? key, this.selectedPortfolio}) : super(key: key);
+
+  Portfolio? selectedPortfolio;
 
   @override
   _NewTransactionFormState createState() => _NewTransactionFormState();
@@ -35,6 +37,7 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
   @override
   void initState() {
     super.initState();
+    //_selected = widget.selectedPortfolio;
   }
 
   @override
@@ -48,6 +51,7 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
         Padding(
           padding: const EdgeInsets.all(0),
           child: PortfolioDropdown(
+            initPortfolio: widget.selectedPortfolio,
             api: api.portfolios,
             onSelected: (portfolio) {
               setState(() {

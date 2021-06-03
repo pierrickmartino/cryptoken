@@ -37,7 +37,9 @@ class PortfolioWidget extends StatelessWidget {
                 onPressed: () {
                   showDialog<NewTransactionDialog>(
                     context: context,
-                    builder: (context) => const NewTransactionDialog(),
+                    builder: (context) => NewTransactionDialog(
+                      selectedPortfolio: portfolio,
+                    ),
                   );
                 },
               ),
