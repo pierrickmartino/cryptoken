@@ -13,7 +13,7 @@ import 'auth/mock.dart';
 import 'pages/home.dart';
 import 'pages/sign_in.dart';
 
-const darkModeBox = 'darkMode';
+const settingsBox = 'settings';
 
 /// The global state the app.
 class AppState {
@@ -54,7 +54,7 @@ class DashboardApp extends StatefulWidget {
 
 class _DashboardAppState extends State<DashboardApp> {
   late AppState _appState;
-  final box = Hive.box(darkModeBox);
+  final box = Hive.box(settingsBox);
 
   @override
   void initState() {
@@ -65,7 +65,7 @@ class _DashboardAppState extends State<DashboardApp> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-        valueListenable: Hive.box(darkModeBox).listenable(),
+        valueListenable: Hive.box(settingsBox).listenable(),
         builder: (listenerContext, Box<dynamic> box, listenerWidget) {
           final darkMode = box.get('darkMode', defaultValue: false);
           return Provider.value(

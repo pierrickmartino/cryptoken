@@ -11,13 +11,13 @@ import 'package:web_dashboard/src/hive/crypto_hive.dart';
 import 'src/app.dart';
 import 'src/class/cryptos_list.dart';
 
-const darkModeBox = 'darkMode';
+const settingsBox = 'settings';
 const cryptoListBox = 'cryptoList';
 
 Future<void> main() async {
   await Hive.initFlutter();
 
-  await Hive.openBox(darkModeBox);
+  await Hive.openBox(settingsBox);
 
   Hive.registerAdapter(CryptoHiveAdapter());
   final boxCrypto = await Hive.openBox<CryptoHive>(cryptoListBox);
