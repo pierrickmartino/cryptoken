@@ -219,7 +219,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                           ThousandSeparator.SpaceAndPeriodMantissa,
                     ),
                     decoration: const InputDecoration(
-                      isDense: true,
+                      //isDense: true,
                       hintText: 'Amount',
                     ),
                     keyboardType: TextInputType.number,
@@ -263,11 +263,15 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     mode: Mode.BOTTOM_SHEET,
                     showSearchBox: true,
                     dropdownSearchDecoration: const InputDecoration(
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
                       isDense: true,
-                      hintText: '-',
                     ),
-                    onFind: (String filter) => _getCryptoFromCryptoHive(),
-                    hint: '-',
+                    onFind: (String filter) => _getCryptoList(),
+                    compareFn: (i, s) => i.isEqual(s!),
                     dropdownButtonBuilder: (_) => const Padding(
                       padding: EdgeInsets.all(6),
                       child: Icon(
@@ -276,9 +280,13 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                         color: Colors.black,
                       ),
                     ),
+                    popupItemBuilder: _customPopupItemBuilder,
+                    dropdownBuilder: _customDropDown,
                     onChanged: (newValue) async {
+                      //setState(() {
                       widget.transaction.tokenMain = newValue!.symbol;
                       widget.positionMain.token = newValue.symbol;
+                      //});
                     },
                   ),
                 ),
@@ -306,7 +314,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                             ThousandSeparator.SpaceAndPeriodMantissa,
                       ),
                       decoration: const InputDecoration(
-                        isDense: true,
+                        //isDense: true,
                         hintText: 'Price',
                       ),
                       keyboardType: TextInputType.number,
@@ -345,16 +353,20 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     width: 10,
                   ),
                   SizedBox(
-                    width: 85,
+                    width: 80,
                     child: DropdownSearch<Crypto>(
                       mode: Mode.BOTTOM_SHEET,
                       showSearchBox: true,
                       dropdownSearchDecoration: const InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
                         isDense: true,
-                        hintText: '-',
                       ),
-                      onFind: (String filter) => _getCryptoFromCryptoHive(),
-                      hint: '-',
+                      onFind: (String filter) => _getCryptoList(),
+                      compareFn: (i, s) => i.isEqual(s!),
                       dropdownButtonBuilder: (_) => const Padding(
                         padding: EdgeInsets.all(6),
                         child: Icon(
@@ -363,6 +375,8 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                           color: Colors.black,
                         ),
                       ),
+                      popupItemBuilder: _customPopupItemBuilder,
+                      dropdownBuilder: _customDropDown,
                       onChanged: (newValue) async {
                         widget.transaction.tokenPrice = newValue!.symbol;
                       },
@@ -392,7 +406,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                           ThousandSeparator.SpaceAndPeriodMantissa,
                     ),
                     decoration: const InputDecoration(
-                      isDense: true,
+                      //isDense: true,
                       hintText: 'Total Amount',
                     ),
                     keyboardType: TextInputType.number,
@@ -437,16 +451,20 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   width: 10,
                 ),
                 SizedBox(
-                  width: 85,
+                  width: 80,
                   child: DropdownSearch<Crypto>(
                     mode: Mode.BOTTOM_SHEET,
                     showSearchBox: true,
                     dropdownSearchDecoration: const InputDecoration(
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
                       isDense: true,
-                      hintText: '-',
                     ),
-                    onFind: (String filter) => _getCryptoFromCryptoHive(),
-                    hint: '-',
+                    onFind: (String filter) => _getCryptoList(),
+                    compareFn: (i, s) => i.isEqual(s!),
                     dropdownButtonBuilder: (_) => const Padding(
                       padding: EdgeInsets.all(6),
                       child: Icon(
@@ -455,6 +473,8 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                         color: Colors.black,
                       ),
                     ),
+                    popupItemBuilder: _customPopupItemBuilder,
+                    dropdownBuilder: _customDropDown,
                     onChanged: (newValue) async {
                       widget.transaction.tokenReference = newValue!.symbol;
                       widget.positionReference.token = newValue.symbol;
@@ -485,7 +505,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     ),
                     style: const TextStyle(fontSize: 14),
                     decoration: const InputDecoration(
-                      isDense: true,
+                      //isDense: true,
                       hintText: 'Fees amount incl.',
                       hintStyle: TextStyle(fontSize: 14),
                     ),
@@ -525,16 +545,20 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   width: 10,
                 ),
                 SizedBox(
-                  width: 85,
+                  width: 80,
                   child: DropdownSearch<Crypto>(
                     mode: Mode.BOTTOM_SHEET,
                     showSearchBox: true,
                     dropdownSearchDecoration: const InputDecoration(
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
                       isDense: true,
-                      hintText: '-',
                     ),
-                    onFind: (String filter) => _getCryptoFromCryptoHive(),
-                    hint: '-',
+                    onFind: (String filter) => _getCryptoList(),
+                    compareFn: (i, s) => i.isEqual(s!),
                     dropdownButtonBuilder: (_) => const Padding(
                       padding: EdgeInsets.all(6),
                       child: Icon(
@@ -543,6 +567,8 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                         color: Colors.black,
                       ),
                     ),
+                    popupItemBuilder: _customPopupItemBuilder,
+                    dropdownBuilder: _customDropDown,
                     onChanged: (newValue) async {
                       widget.transaction.tokenFee = newValue!.symbol;
                     },
@@ -703,7 +729,42 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
     );
   }
 
-  Future<List<Crypto>> _getCryptoFromCryptoHive() async {
+  Widget _customDropDown(
+      BuildContext context, Crypto? item, String itemDesignation) {
+    if (item == null) {
+      return Container();
+    }
+
+    return ListTile(
+      contentPadding: const EdgeInsets.all(0),
+      dense: true,
+      title: Text(
+        item.symbol,
+        style: const TextStyle(fontSize: 14),
+      ),
+    );
+  }
+
+  Widget _customPopupItemBuilder(
+      BuildContext context, Crypto item, bool isSelected) {
+    return ListTile(
+      selected: isSelected,
+      title: Text(
+        item.symbol,
+        style: const TextStyle(fontSize: 14),
+      ),
+      subtitle: Text(
+        item.name.toString(),
+        style: const TextStyle(fontSize: 13),
+      ),
+      leading: Image.network(
+        item.logo,
+        height: 28,
+      ),
+    );
+  }
+
+  Future<List<Crypto>> _getCryptoList() async {
     final boxCrypto = await Hive.openBox<CryptoHive>(cryptoListBox);
 
     final cryptos = <Crypto>[];
@@ -715,6 +776,21 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
         slug: e.value.slug,
         symbol: e.value.symbol)));
 
+    //cryptos.sort();
+
     return cryptos;
+  }
+
+  Future<Crypto> _getCryptoBySymbol(String symbol) async {
+    final boxCrypto = await Hive.openBox<CryptoHive>(cryptoListBox);
+    final CryptoHive cryptos = boxCrypto.get(symbol)!;
+
+    return Crypto(
+        category: cryptos.category,
+        logo: cryptos.logo,
+        id: cryptos.id,
+        name: cryptos.name,
+        slug: cryptos.slug,
+        symbol: cryptos.symbol);
   }
 }
