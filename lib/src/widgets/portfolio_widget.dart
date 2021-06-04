@@ -8,9 +8,12 @@ import 'dialogs.dart';
 import 'position_widget.dart';
 
 const settingsBox = 'settings';
-
 final _numberFormat =
     NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 2);
+
+bool _isLargeScreen(BuildContext context) {
+  return MediaQuery.of(context).size.width > 960.0;
+}
 
 class PortfolioWidget extends StatelessWidget {
   const PortfolioWidget({
@@ -45,12 +48,23 @@ class PortfolioWidget extends StatelessWidget {
                       icon: const Icon(Icons.add),
                       color: const Color(0xff3A6EA5),
                       onPressed: () {
-                        showDialog<NewTransactionDialog>(
-                          context: context,
-                          builder: (context) => NewTransactionDialog(
-                            selectedPortfolio: portfolio,
-                          ),
-                        );
+                        if (_isLargeScreen(context)) {
+                          showDialog<NewTransactionDialog>(
+                            context: context,
+                            builder: (context) => NewTransactionDialog(
+                              selectedPortfolio: portfolio,
+                            ),
+                          );
+                        } else {
+                          showGeneralDialog<NewTransactionDialog>(
+                            context: context,
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    NewTransactionDialog(
+                              selectedPortfolio: portfolio,
+                            ),
+                          );
+                        }
                       },
                     ),
                     IconButton(

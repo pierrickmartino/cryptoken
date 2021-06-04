@@ -9,6 +9,10 @@ import 'dashboard.dart';
 import 'settings.dart';
 import 'transactions.dart';
 
+bool _isLargeScreen(BuildContext context) {
+  return MediaQuery.of(context).size.width > 960.0;
+}
+
 class HomePage extends StatefulWidget {
   const HomePage({
     Key? key,
@@ -85,10 +89,19 @@ class _HomePageState extends State<HomePage> {
     }
 
     if (_pageIndex == 1) {
-      showDialog<NewTransactionDialog>(
-        context: context,
-        builder: (context) => NewTransactionDialog(),
-      );
+      if (_isLargeScreen(context)) {
+        showDialog<NewTransactionDialog>(
+          context: context,
+          builder: (context) => NewTransactionDialog(),
+        );
+      } else {
+        showGeneralDialog<NewTransactionDialog>(
+          context: context,
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              NewTransactionDialog(),
+        );
+      }
+
       return;
     }
   }

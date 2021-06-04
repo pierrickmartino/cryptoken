@@ -10,6 +10,10 @@ import '../widgets/portfolios_dropdown.dart';
 final _priceFormat =
     intl.NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 6);
 
+bool _isLargeScreen(BuildContext context) {
+  return MediaQuery.of(context).size.width > 960.0;
+}
+
 class TransactionsPage extends StatefulWidget {
   const TransactionsPage({Key? key}) : super(key: key);
   @override
@@ -136,19 +140,33 @@ class TransactionTile extends StatelessWidget {
 
               // print(
               //     'transactionCache Main : ${transactionCache!.tokenMain} : ${transactionCache!.amountMain.toString()}');
-
-              await showDialog<void>(
-                context: context,
-                builder: (context) {
-                  return EditTransactionDialog(
-                    portfolio: portfolio,
-                    transaction: transaction,
-                    transactionCache: transactionCache!,
-                    positionMain: positionMain!,
-                    positionReference: positionReference!,
-                  );
-                },
-              );
+              if (_isLargeScreen(context)) {
+                await showDialog<EditTransactionDialog>(
+                  context: context,
+                  builder: (context) {
+                    return EditTransactionDialog(
+                      portfolio: portfolio,
+                      transaction: transaction,
+                      transactionCache: transactionCache!,
+                      positionMain: positionMain!,
+                      positionReference: positionReference!,
+                    );
+                  },
+                );
+              } else {
+                await showGeneralDialog<EditTransactionDialog>(
+                  context: context,
+                  pageBuilder: (context, animation, secondaryAnimation) {
+                    return EditTransactionDialog(
+                      portfolio: portfolio,
+                      transaction: transaction,
+                      transactionCache: transactionCache!,
+                      positionMain: positionMain!,
+                      positionReference: positionReference!,
+                    );
+                  },
+                );
+              }
 
               await api.transactions.delete(portfolio.id, transactionCache!.id);
             },

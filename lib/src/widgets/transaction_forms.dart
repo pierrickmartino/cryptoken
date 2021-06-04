@@ -18,6 +18,10 @@ import 'portfolios_dropdown.dart';
 
 const cryptoListBox = 'cryptoList';
 
+bool _isLargeScreen(BuildContext context) {
+  return MediaQuery.of(context).size.width > 960.0;
+}
+
 class NewTransactionForm extends StatefulWidget {
   NewTransactionForm({Key? key, this.selectedPortfolio}) : super(key: key);
 
@@ -202,12 +206,19 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
           const SizedBox(height: 14),
           ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 6),
-            //dense: true,
-            leading: const SizedBox(
+            leading: SizedBox(
               width: 100,
-              child: Text(
-                'Amount',
-                style: TextStyle(fontSize: 14),
+              child: TextFormField(
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                  isDense: true,
+                ),
+                initialValue: 'Amount',
+                style: const TextStyle(fontSize: 14),
               ),
             ),
             title: Row(
@@ -216,15 +227,14 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                   child: TextFormField(
                     style: const TextStyle(fontSize: 14),
                     textAlign: TextAlign.end,
+                    decoration: InputDecoration(
+                      isDense: !_isLargeScreen(context),
+                    ),
                     initialValue:
                         widget.transaction.amountMain.toCurrencyString(
                       mantissaLength: 6,
                       thousandSeparator:
                           ThousandSeparator.SpaceAndPeriodMantissa,
-                    ),
-                    decoration: const InputDecoration(
-                      //isDense: true,
-                      hintText: 'Amount',
                     ),
                     keyboardType: TextInputType.number,
                     inputFormatters: [
@@ -314,11 +324,19 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
           ),
           ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 6),
-              leading: const SizedBox(
+              leading: SizedBox(
                 width: 100,
-                child: Text(
-                  'Price',
-                  style: TextStyle(fontSize: 14),
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                    isDense: true,
+                  ),
+                  initialValue: 'Price',
+                  style: const TextStyle(fontSize: 14),
                 ),
               ),
               title: Row(
@@ -327,14 +345,13 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     child: TextFormField(
                       style: const TextStyle(fontSize: 14),
                       textAlign: TextAlign.end,
+                      decoration: InputDecoration(
+                        isDense: !_isLargeScreen(context),
+                      ),
                       initialValue: widget.transaction.price.toCurrencyString(
                         mantissaLength: 6,
                         thousandSeparator:
                             ThousandSeparator.SpaceAndPeriodMantissa,
-                      ),
-                      decoration: const InputDecoration(
-                        //isDense: true,
-                        hintText: 'Price',
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [
@@ -418,11 +435,19 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
               )),
           ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 6),
-            leading: const SizedBox(
+            leading: SizedBox(
               width: 100,
-              child: Text(
-                'Total',
-                style: TextStyle(fontSize: 14),
+              child: TextFormField(
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                  isDense: true,
+                ),
+                initialValue: 'Total',
+                style: const TextStyle(fontSize: 14),
               ),
             ),
             title: Row(
@@ -437,9 +462,8 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                       thousandSeparator:
                           ThousandSeparator.SpaceAndPeriodMantissa,
                     ),
-                    decoration: const InputDecoration(
-                      //isDense: true,
-                      hintText: 'Total Amount',
+                    decoration: InputDecoration(
+                      isDense: !_isLargeScreen(context),
                     ),
                     keyboardType: TextInputType.number,
                     inputFormatters: [
@@ -533,11 +557,19 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
           ),
           ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 6),
-            leading: const SizedBox(
+            leading: SizedBox(
               width: 100,
-              child: Text(
-                'Fees (incl.)',
-                style: TextStyle(fontSize: 14),
+              child: TextFormField(
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                  isDense: true,
+                ),
+                initialValue: 'Fees (incl.)',
+                style: const TextStyle(fontSize: 14),
               ),
             ),
             title: Row(
@@ -551,10 +583,8 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                           ThousandSeparator.SpaceAndPeriodMantissa,
                     ),
                     style: const TextStyle(fontSize: 14),
-                    decoration: const InputDecoration(
-                      //isDense: true,
-                      hintText: 'Fees amount incl.',
-                      hintStyle: TextStyle(fontSize: 14),
+                    decoration: InputDecoration(
+                      isDense: !_isLargeScreen(context),
                     ),
                     keyboardType: TextInputType.number,
                     inputFormatters: [
@@ -640,14 +670,17 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
           ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 6),
             leading: const SizedBox(
-              width: 100,
+              width: 50,
               child: Icon(Icons.info),
             ),
             title: Row(
               children: [
                 const Expanded(
-                  child: Text('with impact on the Total token',
-                      style: TextStyle(fontSize: 14), textAlign: TextAlign.end),
+                  child: Text(
+                    'with impact on the Total token',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.end,
+                  ),
                 ),
                 const SizedBox(
                   width: 10,
@@ -670,7 +703,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
           ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 6),
             leading: const SizedBox(
-              width: 100,
+              width: 50,
               child: Icon(Icons.calendar_today),
             ),
             title: Row(
