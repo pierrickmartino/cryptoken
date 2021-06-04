@@ -31,12 +31,15 @@ Future<Price> fetchPrice(String symbol) async {
   symbol = '${symbol}USDT';
 
   final response = await http.get(
-      Uri.parse('https://api3.binance.com/api/v3/ticker/price?symbol=$symbol'));
+    Uri.parse('https://api3.binance.com/api/v3/ticker/price?symbol=$symbol'),
+  );
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    return Price.fromJson(jsonDecode(response.body));
+    return Price.fromJson(
+      jsonDecode(response.body),
+    );
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
@@ -95,13 +98,16 @@ Future<Variation24> fetchVariation24(String symbol) async {
   symbol = '${symbol}USDT';
 
   final response = await http.get(
-      Uri.parse('https://api3.binance.com/api/v3/ticker/24hr?symbol=$symbol'));
+    Uri.parse('https://api3.binance.com/api/v3/ticker/24hr?symbol=$symbol'),
+  );
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
 
-    return Variation24.fromJson(jsonDecode(response.body));
+    return Variation24.fromJson(
+      jsonDecode(response.body),
+    );
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
@@ -176,10 +182,12 @@ class _PositionsState extends State<PositionWidget> {
                   }
 
                   // By default, show a loading spinner.
-                  return Text('-',
-                      style: TextStyle(
-                        color: Colors.black.withOpacity(0.6),
-                      ));
+                  return Text(
+                    '-',
+                    style: TextStyle(
+                      color: Colors.black.withOpacity(0.6),
+                    ),
+                  );
                 },
               ),
             ),
@@ -213,22 +221,26 @@ class _PositionsState extends State<PositionWidget> {
                     future: futurePrice,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        return Text(_numberFormat.format(snapshot.data!.price),
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.black.withOpacity(0.6),
-                            ));
+                        return Text(
+                          _numberFormat.format(snapshot.data!.price),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.black.withOpacity(0.6),
+                          ),
+                        );
                       } else if (snapshot.hasError) {
                         //print('${snapshot.error}');
                         return Text('${snapshot.error}');
                       }
 
                       // By default, show a loading spinner.
-                      return Text('-',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.black.withOpacity(0.6),
-                          ));
+                      return Text(
+                        '-',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                      );
                     },
                   ),
                   const Spacer(),
@@ -251,21 +263,26 @@ class _PositionsState extends State<PositionWidget> {
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         return Text(
-                            _numberFormat
-                                .format(snapshot.data!.priceChangePercent),
-                            style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.black.withOpacity(0.6)));
+                          _numberFormat
+                              .format(snapshot.data!.priceChangePercent),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.black.withOpacity(0.6),
+                          ),
+                        );
                       } else if (snapshot.hasError) {
                         //print('${snapshot.error}');
                         return Text('${snapshot.error}');
                       }
 
                       // By default, show a loading spinner.
-                      return Text('-',
-                          style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.black.withOpacity(0.6)));
+                      return Text(
+                        '-',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                      );
                     },
                   ),
                   const Spacer(),
@@ -388,7 +405,11 @@ class _PositionsState extends State<PositionWidget> {
                                 padding: const EdgeInsets.all(8),
                                 child: Row(
                                   children: [
-                                    const Text('Transactions'),
+                                    Text(
+                                      'Transactions',
+                                      style:
+                                          Theme.of(context).textTheme.headline6,
+                                    ),
                                     const Spacer(),
                                     OutlinedButton(
                                       onPressed: () => Navigator.pop(context),

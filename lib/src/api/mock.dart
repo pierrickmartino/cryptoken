@@ -1,7 +1,3 @@
-// Copyright 2020, the Flutter project authors. Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
 import 'dart:async';
 import 'dart:core';
 import 'dart:math';
@@ -35,10 +31,14 @@ class MockDashboardApi implements DashboardApi {
 
   /// Creates a [MockDashboardApi] filled with mock data for the last 30 days.
   Future<void> fillWithMockData() async {
-    await Future<void>.delayed(const Duration(seconds: 1));
+    await Future<void>.delayed(
+      const Duration(seconds: 1),
+    );
 
     // PORTFOLIO BENCHMARK
-    final portfolio0 = await portfolios.insert(Portfolio('Benchmark'));
+    final portfolio0 = await portfolios.insert(
+      Portfolio('Benchmark'),
+    );
 
     // POSITION BTC
     final dateBTC = DateTime.utc(2021, 4);
@@ -48,23 +48,29 @@ class MockDashboardApi implements DashboardApi {
     const tokenMainBTC = 'BTC';
     const tokenReferenceBTC = 'USDT';
 
-    await positions.insert(portfolio0.id,
-        Position(tokenMainBTC, valueMainBTC.toDouble(), dateBTC));
+    await positions.insert(
+      portfolio0.id,
+      Position(tokenMainBTC, valueMainBTC.toDouble(),
+          valueReferenceBTC.toDouble() / valueMainBTC.toDouble(), 0, dateBTC),
+    );
     // await positions.insert(portfolio0.id,
-    //     Position(tokenReferenceBTC, valueReferenceBTC.toDouble(), dateBTC));
+    //     Position(tokenReferenceBTC, valueReferenceBTC.toDouble(), dateBTC),);
     await transactions.insert(
-        portfolio0.id,
-        Transaction(
-            tokenMainBTC,
-            tokenReferenceBTC,
-            tokenReferenceBTC,
-            tokenReferenceBTC,
-            valueMainBTC.toDouble(),
-            valueReferenceBTC.toDouble(),
-            valueFeeBTC.toDouble(),
-            valueReferenceBTC.toDouble() / valueMainBTC.toDouble(),
-            dateBTC,
-            false));
+      portfolio0.id,
+      Transaction(
+        0,
+        tokenMainBTC,
+        tokenReferenceBTC,
+        tokenReferenceBTC,
+        tokenReferenceBTC,
+        valueMainBTC.toDouble(),
+        valueReferenceBTC.toDouble(),
+        valueFeeBTC.toDouble(),
+        valueReferenceBTC.toDouble() / valueMainBTC.toDouble(),
+        dateBTC,
+        false,
+      ),
+    );
 
     // POSITION ETH
     final dateETH = DateTime.utc(2021, 4);
@@ -74,36 +80,53 @@ class MockDashboardApi implements DashboardApi {
     const tokenMainETH = 'ETH';
     const tokenReferenceETH = 'USDT';
 
-    await positions.insert(portfolio0.id,
-        Position(tokenMainETH, valueMainETH.toDouble(), dateETH));
+    await positions.insert(
+      portfolio0.id,
+      Position(
+        tokenMainETH,
+        valueMainETH.toDouble(),
+        valueReferenceETH.toDouble() / valueMainETH.toDouble(),
+        0,
+        dateETH,
+      ),
+    );
     // await positions.insert(portfolio0.id,
-    //     Position(tokenReferenceETH, valueReferenceETH.toDouble(), dateETH));
+    //     Position(tokenReferenceETH, valueReferenceETH.toDouble(), dateETH),);
     await transactions.insert(
-        portfolio0.id,
-        Transaction(
-            tokenMainETH,
-            tokenReferenceETH,
-            tokenReferenceETH,
-            tokenReferenceETH,
-            valueMainETH.toDouble(),
-            valueReferenceETH.toDouble(),
-            valueFeeETH.toDouble(),
-            valueReferenceETH.toDouble() / valueMainETH.toDouble(),
-            dateETH,
-            false));
+      portfolio0.id,
+      Transaction(
+          0,
+          tokenMainETH,
+          tokenReferenceETH,
+          tokenReferenceETH,
+          tokenReferenceETH,
+          valueMainETH.toDouble(),
+          valueReferenceETH.toDouble(),
+          valueFeeETH.toDouble(),
+          valueReferenceETH.toDouble() / valueMainETH.toDouble(),
+          dateETH,
+          false),
+    );
 
     // Other examples
-    final portfolio1 =
-        await portfolios.insert(Portfolio('PTF ${randomString(7)}'));
-    final portfolio2 =
-        await portfolios.insert(Portfolio('PTF ${randomString(9)}'));
-    final portfolio3 =
-        await portfolios.insert(Portfolio('PTF ${randomString(9)}'));
-    final monthAgo = DateTime.now().subtract(const Duration(days: 30));
+    final portfolio1 = await portfolios.insert(
+      Portfolio('PTF ${randomString(7)}'),
+    );
+    final portfolio2 = await portfolios.insert(
+      Portfolio('PTF ${randomString(9)}'),
+    );
+    final portfolio3 = await portfolios.insert(
+      Portfolio('PTF ${randomString(9)}'),
+    );
+    final monthAgo = DateTime.now().subtract(
+      const Duration(days: 30),
+    );
 
     for (final portfolio in [portfolio1, portfolio2, portfolio3]) {
       for (var i = 0; i < 3; i++) {
-        final date = monthAgo.add(const Duration(days: 1));
+        final date = monthAgo.add(
+          const Duration(days: 1),
+        );
         final valueMain = Random().nextInt(100);
         final valueReference = Random().nextInt(100);
         final valueFee = Random().nextInt(9);
@@ -114,15 +137,28 @@ class MockDashboardApi implements DashboardApi {
         try {
           // try to find if the position already exists
           final oldPositionMain = await positions.get(portfolio.id, tokenMain);
-          final newPositionMain = Position(oldPositionMain.token,
-              oldPositionMain.amount + valueMain, oldPositionMain.time);
+          final newPositionMain = Position(
+            oldPositionMain.token,
+            oldPositionMain.amount + valueMain,
+            0,
+            0,
+            oldPositionMain.time,
+          );
 
           // if we find the position, we need to update it
           await positions.update(portfolio.id, tokenMain, newPositionMain);
         } catch (e) {
           // if not, we should get an error then insert the new position
           await positions.insert(
-              portfolio.id, Position(tokenMain, valueMain.toDouble(), date));
+            portfolio.id,
+            Position(
+              tokenMain,
+              valueMain.toDouble(),
+              0,
+              0,
+              date,
+            ),
+          );
         }
 
         // then regarding the Reference part of the transaction
@@ -131,33 +167,47 @@ class MockDashboardApi implements DashboardApi {
           final oldPositionReference =
               await positions.get(portfolio.id, tokenReference);
           final newPositionReference = Position(
-              oldPositionReference.token,
-              oldPositionReference.amount - valueReference,
-              oldPositionReference.time);
+            oldPositionReference.token,
+            oldPositionReference.amount - valueReference,
+            0,
+            0,
+            oldPositionReference.time,
+          );
 
           // if we find the position, we need to update it
           await positions.update(
               portfolio.id, tokenReference, newPositionReference);
         } catch (e) {
           // if not, we should get an error then insert the new position
-          await positions.insert(portfolio.id,
-              Position(tokenReference, valueReference.toDouble(), date));
+          await positions.insert(
+            portfolio.id,
+            Position(
+              tokenReference,
+              valueReference.toDouble(),
+              0,
+              0,
+              date,
+            ),
+          );
         }
 
         // finally insert the transaction linked to the portfolio
         await transactions.insert(
-            portfolio.id,
-            Transaction(
-                tokenMain,
-                tokenReference,
-                tokenReference,
-                tokenReference,
-                valueMain.toDouble(),
-                valueReference.toDouble(),
-                valueFee.toDouble(),
-                valueReference.toDouble() / valueMain.toDouble(),
-                date,
-                true));
+          portfolio.id,
+          Transaction(
+            0,
+            tokenMain,
+            tokenReference,
+            tokenReference,
+            tokenReference,
+            valueMain.toDouble(),
+            valueReference.toDouble(),
+            valueFee.toDouble(),
+            valueReference.toDouble() / valueMain.toDouble(),
+            date,
+            true,
+          ),
+        );
       }
     }
   }
@@ -205,7 +255,9 @@ class MockPortfolioApi implements PortfolioApi {
   Stream<List<Portfolio>> subscribe() => _streamController.stream;
 
   void _emit() {
-    _streamController.add(_storage.values.toList());
+    _streamController.add(
+      _storage.values.toList(),
+    );
   }
 }
 
@@ -223,8 +275,13 @@ class MockPositionApi implements PositionApi {
   @override
   Future<Position> insert(String portfolioId, Position position) async {
     //final id = const uuid.Uuid().v4();
-    final newPosition = Position(position.token, position.amount, position.time)
-      ..id = position.token;
+    final newPosition = Position(
+      position.token,
+      position.amount,
+      0,
+      0,
+      position.time,
+    )..id = position.token;
     //..id = id;
 
     if (_storage['$portfolioId-${position.token}'] != null) {
@@ -240,7 +297,9 @@ class MockPositionApi implements PositionApi {
   @override
   Future<List<Position>> list(String portfolioId) async {
     return _storage.keys
-        .where((k) => k.startsWith(portfolioId))
+        .where(
+          (k) => k.startsWith(portfolioId),
+        )
         .map((k) => _storage[k]!)
         .toList();
   }
@@ -262,11 +321,15 @@ class MockPositionApi implements PositionApi {
 
   void _emit(String portfolioId) {
     final positions = _storage.keys
-        .where((k) => k.startsWith(portfolioId))
+        .where(
+          (k) => k.startsWith(portfolioId),
+        )
         .map((k) => _storage[k]!)
         .toList();
 
-    _streamController.add(_PositionsEvent(portfolioId, positions));
+    _streamController.add(
+      _PositionsEvent(portfolioId, positions),
+    );
   }
 
   @override
@@ -290,6 +353,7 @@ class MockTransactionApi implements TransactionApi {
   Future<Transaction> insert(String positionId, Transaction transaction) async {
     final id = const uuid.Uuid().v4();
     final newTransaction = Transaction(
+        transaction.transactionType,
         transaction.tokenMain,
         transaction.tokenReference,
         transaction.tokenFee,
@@ -310,7 +374,9 @@ class MockTransactionApi implements TransactionApi {
   @override
   Future<List<Transaction>> list(String positionId) async {
     return _storage.keys
-        .where((k) => k.startsWith(positionId))
+        .where(
+          (k) => k.startsWith(positionId),
+        )
         .map((k) => _storage[k]!)
         .toList();
   }
@@ -332,11 +398,15 @@ class MockTransactionApi implements TransactionApi {
 
   void _emit(String positionId) {
     final transactions = _storage.keys
-        .where((k) => k.startsWith(positionId))
+        .where(
+          (k) => k.startsWith(positionId),
+        )
         .map((k) => _storage[k]!)
         .toList();
 
-    _streamController.add(_TransactionsEvent(positionId, transactions));
+    _streamController.add(
+      _TransactionsEvent(positionId, transactions),
+    );
   }
 
   @override

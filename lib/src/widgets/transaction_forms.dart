@@ -33,15 +33,40 @@ class NewTransactionForm extends StatefulWidget {
 
 class _NewTransactionFormState extends State<NewTransactionForm> {
   Portfolio? _selected = Portfolio('');
+
   final Transaction _transaction = Transaction(
-      'BTC', 'USDT', 'USDT', 'USDT', 0, 0, 0, 0, DateTime.now(), true);
-  final Position _positionMain = Position('BTC', 0, DateTime.now());
-  final Position _positionReference = Position('USDT', 0, DateTime.now());
+    0,
+    'BTC',
+    'USDT',
+    'USDT',
+    'USDT',
+    0,
+    0,
+    0,
+    0,
+    DateTime.now(),
+    true,
+  );
+
+  final Position _positionMain = Position(
+    'BTC',
+    0,
+    0,
+    0,
+    DateTime.now(),
+  );
+
+  final Position _positionReference = Position(
+    'USDT',
+    0,
+    0,
+    0,
+    DateTime.now(),
+  );
 
   @override
   void initState() {
     super.initState();
-    //_selected = widget.selectedPortfolio;
   }
 
   @override
@@ -70,76 +95,124 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
           portfolio: _selected!,
           positionMain: _positionMain,
           positionReference: _positionReference,
+          showToogleSwitch: true,
           onDone: (shouldInsert) async {
             if (shouldInsert) {
-              //print('Insert Mode');
-
-              // first regarding the Main part of the transaction
+              // Main axis of the transaction (Buy or Sell Main against Reference)
               try {
-                // print(
-                //     '_positionMain : ${_positionMain.token} : ${_positionMain.amount}');
+                Position newPositionMain;
 
-                //final oldPositionMain = _positionMain;
-                final newPositionMain = Position(
+                // Buy
+                if (_transaction.transactionType == 0) {
+                  newPositionMain = Position(
                     _positionMain.token,
                     _positionMain.amount + _transaction.amountMain,
-                    _positionMain.time);
+                    _positionMain
+                        .averagePurchasePrice, //TODO - averagePurchasePrice
+                    _positionMain.realizedGain,
+                    _positionMain.time,
+                  );
+                }
 
-                // if we find the position, we need to update it
+                // Sell
+                else {
+                  newPositionMain = Position(
+                    _positionMain.token,
+                    _positionMain.amount - _transaction.amountMain,
+                    _positionMain.averagePurchasePrice,
+                    _positionMain.realizedGain, //TODO - realizedGain
+                    _positionMain.time,
+                  );
+                }
+
+                // if we are able to find the position, we need to update it
                 await api.positions.update(
-                    _selected!.id, _transaction.tokenMain, newPositionMain);
+                  _selected!.id,
+                  _transaction.tokenMain,
+                  newPositionMain,
+                );
               } catch (e) {
-                // print(
-                //     '_positionMain : ${_positionMain.token} : ${_positionMain.amount}');
-                // if not, we should get an error then insert the new position
+                // if not, we should catch an error then insert the new position
                 await api.positions.insert(
-                    _selected!.id,
-                    Position(_transaction.tokenMain,
-                        _transaction.amountMain.toDouble(), _transaction.time));
+                  _selected!.id,
+                  Position(
+                    _transaction.tokenMain,
+                    _transaction.amountMain.toDouble(),
+                    0, //TODO - averagePurchasePrice
+                    0, //TODO - realizedGain
+                    _transaction.time,
+                  ),
+                );
               }
 
               if (_transaction.withImpactOnSecondPosition)
-              // then regarding the Reference part of the transaction
+              // Reference axis of the transaction (Buy or Sell Main against Reference)
               {
                 try {
-                  // print(
-                  //     '_positionReference : ${_positionReference.token} : ${_positionReference.amount}');
+                  Position newPositionReference;
 
-                  final newPositionReference = Position(
+                  // Buy
+                  if (_transaction.transactionType == 0) {
+                    newPositionReference = Position(
                       _positionReference.token,
                       _positionReference.amount - _transaction.amountReference,
-                      _positionReference.time);
+                      _positionReference
+                          .averagePurchasePrice, //TODO - averagePurchasePrice
+                      _positionReference.realizedGain, //TODO - realizedGain
+                      _positionReference.time,
+                    );
+                  }
 
-                  // if we find the position, we need to update it
-                  await api.positions.update(_selected!.id,
-                      _transaction.tokenReference, newPositionReference);
+                  // Sell
+                  else {
+                    newPositionReference = Position(
+                      _positionReference.token,
+                      _positionReference.amount + _transaction.amountReference,
+                      _positionReference
+                          .averagePurchasePrice, //TODO - averagePurchasePrice
+                      _positionReference.realizedGain, //TODO - realizedGain
+                      _positionReference.time,
+                    );
+                  }
+
+                  // if we are able to find the position, we need to update it
+                  await api.positions.update(
+                    _selected!.id,
+                    _transaction.tokenReference,
+                    newPositionReference,
+                  );
                 } catch (e) {
-                  // print(e);
-                  // print(
-                  //     '_positionReference : ${_positionReference.token} : ${_positionReference.amount}');
-                  // if not, we should get an error then insert the new position
+                  // if not, we should catch an error then insert the new position
                   await api.positions.insert(
-                      _selected!.id,
-                      Position(
-                          _transaction.tokenReference,
-                          -_transaction.amountReference.toDouble(),
-                          _transaction.time));
+                    _selected!.id,
+                    Position(
+                      _transaction.tokenReference,
+                      -_transaction.amountReference.toDouble(),
+                      0, //TODO - averagePurchasePrice
+                      0, //TODO - realizedGain
+                      _transaction.time,
+                    ),
+                  );
                 }
               }
+
               // finally insert the transaction linked to the portfolio
               await api.transactions.insert(
-                  _selected!.id,
-                  Transaction(
-                      _transaction.tokenMain,
-                      _transaction.tokenReference,
-                      _transaction.tokenFee,
-                      _transaction.tokenPrice,
-                      _transaction.amountMain.toDouble(),
-                      _transaction.amountReference.toDouble(),
-                      _transaction.amountFee.toDouble(),
-                      _transaction.price.toDouble(),
-                      _transaction.time,
-                      _transaction.withImpactOnSecondPosition));
+                _selected!.id,
+                Transaction(
+                  _transaction.transactionType,
+                  _transaction.tokenMain,
+                  _transaction.tokenReference,
+                  _transaction.tokenFee,
+                  _transaction.tokenPrice,
+                  _transaction.amountMain.toDouble(),
+                  _transaction.amountReference.toDouble(),
+                  _transaction.amountFee.toDouble(),
+                  _transaction.price.toDouble(),
+                  _transaction.time,
+                  _transaction.withImpactOnSecondPosition,
+                ),
+              );
 
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -162,12 +235,14 @@ class EditTransactionForm extends StatefulWidget {
     required this.portfolio,
     required this.positionMain,
     required this.positionReference,
+    required this.showToogleSwitch,
     required this.onDone,
   }) : super(key: key);
 
   final Transaction transaction;
   final Portfolio portfolio;
   final Position positionMain, positionReference;
+  final bool showToogleSwitch;
   final ValueChanged<bool> onDone;
 
   @override
@@ -192,15 +267,23 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
           Padding(
             padding: const EdgeInsets.all(0),
             child: Center(
-              child: ToggleSwitch(
-                labels: const ['Buy', 'Sell', 'Deposit', 'Withdrawal'],
-                minHeight: 30,
-                //minWidth: MediaQuery.of(context).size.width,
-                onToggle: (index) {
-                  // ignore: avoid_print
-                  print('switched to: $index');
-                },
-              ),
+              child: widget.showToogleSwitch
+                  ? ToggleSwitch(
+                      // 0 Buy | 1 Sell | 2 Deposit (todo) | 3 Withrawal (todo)
+                      labels: const [
+                        'Buy',
+                        'Sell' /*, 'Deposit', 'Withdrawal'*/
+                      ],
+                      minHeight: 30,
+                      initialLabelIndex: widget.transaction.transactionType,
+                      onToggle: (index) {
+                        setState(() {
+                          widget.transaction.transactionType = index;
+                        });
+                      },
+                    )
+                  : _getTransactionTypeLabel(
+                      widget.transaction.transactionType),
             ),
           ),
           const SizedBox(height: 14),
@@ -246,9 +329,11 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     ],
                     validator: (value) {
                       try {
-                        double.parse(value!.toCurrencyString(
-                            mantissaLength: 6,
-                            thousandSeparator: ThousandSeparator.None));
+                        double.parse(
+                          value!.toCurrencyString(
+                              mantissaLength: 6,
+                              thousandSeparator: ThousandSeparator.None),
+                        );
                       } catch (e) {
                         return 'Please enter a whole number';
                       }
@@ -257,9 +342,10 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     onChanged: (newValue) {
                       try {
                         widget.transaction.amountMain = double.parse(
-                            newValue.toCurrencyString(
-                                mantissaLength: 6,
-                                thousandSeparator: ThousandSeparator.None));
+                          newValue.toCurrencyString(
+                              mantissaLength: 6,
+                              thousandSeparator: ThousandSeparator.None),
+                        );
                       } on FormatException {
                         // ignore: avoid_print
                         print(
@@ -323,116 +409,120 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
             ),
           ),
           ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 6),
-              leading: SizedBox(
-                width: 100,
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    errorBorder: InputBorder.none,
-                    disabledBorder: InputBorder.none,
-                    isDense: true,
-                  ),
-                  initialValue: 'Price',
-                  style: const TextStyle(fontSize: 14),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 6),
+            leading: SizedBox(
+              width: 100,
+              child: TextFormField(
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                  isDense: true,
                 ),
+                initialValue: 'Price',
+                style: const TextStyle(fontSize: 14),
               ),
-              title: Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      style: const TextStyle(fontSize: 14),
-                      textAlign: TextAlign.end,
-                      decoration: InputDecoration(
-                        isDense: !_isLargeScreen(context),
-                      ),
-                      initialValue: widget.transaction.price.toCurrencyString(
+            ),
+            title: Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    style: const TextStyle(fontSize: 14),
+                    textAlign: TextAlign.end,
+                    decoration: InputDecoration(
+                      isDense: !_isLargeScreen(context),
+                    ),
+                    initialValue: widget.transaction.price.toCurrencyString(
+                      mantissaLength: 6,
+                      thousandSeparator:
+                          ThousandSeparator.SpaceAndPeriodMantissa,
+                    ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      MoneyInputFormatter(
                         mantissaLength: 6,
                         thousandSeparator:
                             ThousandSeparator.SpaceAndPeriodMantissa,
-                      ),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        MoneyInputFormatter(
-                          mantissaLength: 6,
-                          thousandSeparator:
-                              ThousandSeparator.SpaceAndPeriodMantissa,
-                        )
-                      ],
-                      validator: (value) {
-                        try {
-                          double.parse(value!.toCurrencyString(
+                      )
+                    ],
+                    validator: (value) {
+                      try {
+                        double.parse(
+                          value!.toCurrencyString(
                               mantissaLength: 6,
-                              thousandSeparator: ThousandSeparator.None));
-                        } catch (e) {
-                          return 'Please enter a whole number';
-                        }
-                        return null;
-                      },
-                      onChanged: (newValue) {
-                        try {
-                          widget.transaction.price = double.parse(
-                              newValue.toCurrencyString(
-                                  mantissaLength: 6,
-                                  thousandSeparator: ThousandSeparator.None));
-                        } on FormatException {
-                          // ignore: avoid_print
-                          print(
-                              'Transaction cannot contain "$newValue". Expected a number');
-                        }
-                      },
-                    ),
+                              thousandSeparator: ThousandSeparator.None),
+                        );
+                      } catch (e) {
+                        return 'Please enter a whole number';
+                      }
+                      return null;
+                    },
+                    onChanged: (newValue) {
+                      try {
+                        widget.transaction.price = double.parse(
+                          newValue.toCurrencyString(
+                              mantissaLength: 6,
+                              thousandSeparator: ThousandSeparator.None),
+                        );
+                      } on FormatException {
+                        // ignore: avoid_print
+                        print(
+                            'Transaction cannot contain "$newValue". Expected a number');
+                      }
+                    },
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  SizedBox(
-                    width: 85,
-                    child: FutureBuilder<Crypto>(
-                      future: _getCryptoBySymbol(widget.transaction.tokenPrice),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return DropdownSearch<Crypto>(
-                            mode: Mode.BOTTOM_SHEET,
-                            showSearchBox: true,
-                            autoFocusSearchBox: true,
-                            dropdownSearchDecoration: const InputDecoration(
-                              border: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              errorBorder: InputBorder.none,
-                              disabledBorder: InputBorder.none,
-                              isDense: true,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                SizedBox(
+                  width: 85,
+                  child: FutureBuilder<Crypto>(
+                    future: _getCryptoBySymbol(widget.transaction.tokenPrice),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return DropdownSearch<Crypto>(
+                          mode: Mode.BOTTOM_SHEET,
+                          showSearchBox: true,
+                          autoFocusSearchBox: true,
+                          dropdownSearchDecoration: const InputDecoration(
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                            isDense: true,
+                          ),
+                          onFind: (String filter) => _getCryptoList(),
+                          compareFn: (i, s) => i.isEqual(s!),
+                          dropdownButtonBuilder: (_) => const Padding(
+                            padding: EdgeInsets.all(6),
+                            child: Icon(
+                              Icons.arrow_drop_down,
+                              size: 18,
+                              color: Colors.black,
                             ),
-                            onFind: (String filter) => _getCryptoList(),
-                            compareFn: (i, s) => i.isEqual(s!),
-                            dropdownButtonBuilder: (_) => const Padding(
-                              padding: EdgeInsets.all(6),
-                              child: Icon(
-                                Icons.arrow_drop_down,
-                                size: 18,
-                                color: Colors.black,
-                              ),
-                            ),
-                            popupItemBuilder: _customPopupItemBuilder,
-                            dropdownBuilder: _customDropDown,
-                            selectedItem: snapshot.data,
-                            onChanged: (newValue) async {
-                              widget.transaction.tokenPrice = newValue!.symbol;
-                            },
-                          );
-                        } else if (snapshot.hasError) {
-                          return Text('${snapshot.error}');
-                        }
+                          ),
+                          popupItemBuilder: _customPopupItemBuilder,
+                          dropdownBuilder: _customDropDown,
+                          selectedItem: snapshot.data,
+                          onChanged: (newValue) async {
+                            widget.transaction.tokenPrice = newValue!.symbol;
+                          },
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text('${snapshot.error}');
+                      }
 
-                        return const Text('');
-                      },
-                    ),
+                      return const Text('');
+                    },
                   ),
-                ],
-              )),
+                ),
+              ],
+            ),
+          ),
           ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 6),
             leading: SizedBox(
@@ -475,9 +565,11 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     ],
                     validator: (value) {
                       try {
-                        double.parse(value!.toCurrencyString(
-                            mantissaLength: 6,
-                            thousandSeparator: ThousandSeparator.None));
+                        double.parse(
+                          value!.toCurrencyString(
+                              mantissaLength: 6,
+                              thousandSeparator: ThousandSeparator.None),
+                        );
                       } catch (e) {
                         return 'Please enter a whole number';
                       }
@@ -485,16 +577,18 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     },
                     onChanged: (newValue) {
                       try {
-                        widget.transaction
-                            .price = double.parse(newValue.toCurrencyString(
-                                mantissaLength: 6,
-                                thousandSeparator: ThousandSeparator.None)) /
+                        widget.transaction.price = double.parse(
+                              newValue.toCurrencyString(
+                                  mantissaLength: 6,
+                                  thousandSeparator: ThousandSeparator.None),
+                            ) /
                             widget.transaction.amountMain;
 
                         widget.transaction.amountReference = double.parse(
-                            newValue.toCurrencyString(
-                                mantissaLength: 6,
-                                thousandSeparator: ThousandSeparator.None));
+                          newValue.toCurrencyString(
+                              mantissaLength: 6,
+                              thousandSeparator: ThousandSeparator.None),
+                        );
                       } on FormatException {
                         // ignore: avoid_print
                         print(
@@ -596,9 +690,11 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     ],
                     validator: (value) {
                       try {
-                        double.parse(value!.toCurrencyString(
-                            mantissaLength: 6,
-                            thousandSeparator: ThousandSeparator.None));
+                        double.parse(
+                          value!.toCurrencyString(
+                              mantissaLength: 6,
+                              thousandSeparator: ThousandSeparator.None),
+                        );
                       } catch (e) {
                         return 'Please enter a whole number';
                       }
@@ -607,9 +703,10 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                     onChanged: (newValue) {
                       try {
                         widget.transaction.amountFee = double.parse(
-                            newValue.toCurrencyString(
-                                mantissaLength: 6,
-                                thousandSeparator: ThousandSeparator.None));
+                          newValue.toCurrencyString(
+                              mantissaLength: 6,
+                              thousandSeparator: ThousandSeparator.None),
+                        );
                       } on FormatException {
                         // ignore: avoid_print
                         print(
@@ -778,9 +875,14 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                             .api
                             .positions
                             .insert(
-                                widget.portfolio.id,
-                                Position(widget.transaction.tokenMain, 0,
-                                    DateTime.now()));
+                              widget.portfolio.id,
+                              Position(
+                                widget.transaction.tokenMain, 0,
+                                0, //TODO - averagePurchasePrice
+                                0, //TODO - realizedGain
+                                DateTime.now(),
+                              ),
+                            );
                       } finally {
                         final oldPositionMain =
                             await Provider.of<AppState>(context, listen: false)
@@ -804,9 +906,23 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                             .api
                             .positions
                             .insert(
-                                widget.portfolio.id,
-                                Position(widget.transaction.tokenReference, 0,
-                                    DateTime.now()));
+                              widget.portfolio.id,
+                              Position(
+                                widget.transaction.tokenReference, 0,
+                                0, //TODO - averagePurchasePrice
+                                0, //TODO - realizedGain
+                                DateTime.now(),
+                              ),
+                            );
+                      } finally {
+                        final oldPositionReference =
+                            await Provider.of<AppState>(context, listen: false)
+                                .api
+                                .positions
+                                .get(widget.portfolio.id,
+                                    widget.transaction.tokenReference);
+                        widget.positionReference.amount =
+                            oldPositionReference.amount;
                       }
 
                       widget.onDone(true);
@@ -820,6 +936,23 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
         ],
       ),
     );
+  }
+
+  Widget _getTransactionTypeLabel(int index) {
+    switch (index) {
+      case 0:
+        return Text(
+          'Buy',
+          style: Theme.of(context).textTheme.subtitle1,
+        );
+      case 1:
+        return Text(
+          'Sell',
+          style: Theme.of(context).textTheme.subtitle1,
+        );
+      default:
+        return const Text('');
+    }
   }
 
   Widget _customDropDown(
@@ -861,13 +994,17 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
     final boxCrypto = await Hive.openBox<CryptoHive>(cryptoListBox);
 
     final cryptos = <Crypto>[];
-    boxCrypto.toMap().entries.forEach((e) => cryptos.add(Crypto(
-        category: e.value.category,
-        id: e.value.id,
-        logo: e.value.logo,
-        name: e.value.name,
-        slug: e.value.slug,
-        symbol: e.value.symbol)));
+    boxCrypto.toMap().entries.forEach(
+          (e) => cryptos.add(
+            Crypto(
+                category: e.value.category,
+                id: e.value.id,
+                logo: e.value.logo,
+                name: e.value.name,
+                slug: e.value.slug,
+                symbol: e.value.symbol),
+          ),
+        );
 
     //cryptos.sort();
 

@@ -223,52 +223,110 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
       portfolio: widget.portfolio,
       positionMain: widget.positionMain,
       positionReference: widget.positionReference,
+      showToogleSwitch: false,
       onDone: (shouldUpdate) async {
         if (shouldUpdate) {
-          // first regarding the Main part of the transaction
+          // Main axis of the transaction (Buy or Sell Main against Reference)
           try {
-            final newPositionMain = Position(
+            Position newPositionMain;
+
+            // Buy
+            if (widget.transaction.transactionType == 0) {
+              newPositionMain = Position(
                 widget.positionMain.token,
                 widget.positionMain.amount -
                     widget.transactionCache.amountMain +
                     widget.transaction.amountMain,
-                widget.positionMain.time);
+                widget.positionMain
+                    .averagePurchasePrice, //TODO - averagePurchasePrice
+                widget.positionMain.realizedGain, //TODO - realizedGain
+                widget.positionMain.time,
+              );
+            }
 
-            // if we find the position, we need to update it
-            await api.positions.update(widget.portfolio.id,
-                widget.transaction.tokenMain, newPositionMain);
+            // Sell
+            else {
+              newPositionMain = Position(
+                widget.positionMain.token,
+                widget.positionMain.amount +
+                    widget.transactionCache.amountMain -
+                    widget.transaction.amountMain,
+                widget.positionMain
+                    .averagePurchasePrice, //TODO - averagePurchasePrice
+                widget.positionMain.realizedGain, //TODO - realizedGain
+                widget.positionMain.time,
+              );
+            }
+
+            // if we are able to find the position, we need to update it
+            await api.positions.update(
+              widget.portfolio.id,
+              widget.transaction.tokenMain,
+              newPositionMain,
+            );
           } catch (e) {
-            // if not, we should get an error then insert the new position
+            // if not, we should catch an error then insert the new position
             await api.positions.insert(
-                widget.portfolio.id,
-                Position(
-                    widget.transaction.tokenMain,
-                    widget.transaction.amountMain.toDouble(),
-                    widget.transaction.time));
+              widget.portfolio.id,
+              Position(
+                widget.transaction.tokenMain,
+                widget.transaction.amountMain.toDouble(),
+                0, //TODO - averagePurchasePrice
+                0, //TODO - realizedGain
+                widget.transaction.time,
+              ),
+            );
           }
 
           if (widget.transaction.withImpactOnSecondPosition)
-          // then regarding the Reference part of the transaction
+          // Reference axis of the transaction (Buy or Sell Main against Reference)
           {
             try {
-              final newPositionReference = Position(
+              Position newPositionReference;
+
+              // Buy
+              if (widget.transaction.transactionType == 0) {
+                newPositionReference = Position(
                   widget.positionReference.token,
                   widget.positionReference.amount +
                       widget.transactionCache.amountReference -
                       widget.transaction.amountReference,
-                  widget.positionReference.time);
+                  widget.positionReference
+                      .averagePurchasePrice, //TODO - averagePurchasePrice
+                  widget.positionReference.realizedGain, //TODO - realizedGain
+                  widget.positionReference.time,
+                );
+              }
 
-              // if we find the position, we need to update it
+              // Sell
+              else {
+                newPositionReference = Position(
+                  widget.positionReference.token,
+                  widget.positionReference.amount -
+                      widget.transactionCache.amountReference +
+                      widget.transaction.amountReference,
+                  widget.positionReference
+                      .averagePurchasePrice, //TODO - averagePurchasePrice
+                  widget.positionReference.realizedGain, //TODO - realizedGain
+                  widget.positionReference.time,
+                );
+              }
+
+              // if we are able to find the position, we need to update it
               await api.positions.update(widget.portfolio.id,
                   widget.transaction.tokenReference, newPositionReference);
             } catch (e) {
-              // if not, we should get an error then insert the new position
+              // if not, we should catch an error then insert the new position
               await api.positions.insert(
-                  widget.portfolio.id,
-                  Position(
-                      widget.transaction.tokenReference,
-                      -widget.transaction.amountReference.toDouble(),
-                      widget.transaction.time));
+                widget.portfolio.id,
+                Position(
+                  widget.transaction.tokenReference,
+                  -widget.transaction.amountReference.toDouble(),
+                  0, //TODO - averagePurchasePrice
+                  0, //TODO - realizedGain
+                  widget.transaction.time,
+                ),
+              );
             }
           }
 
@@ -278,18 +336,20 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
 
           // finally insert the transaction linked to the portfolio
           await api.transactions.insert(
-              widget.portfolio.id,
-              Transaction(
-                  widget.transaction.tokenMain,
-                  widget.transaction.tokenReference,
-                  widget.transaction.tokenFee,
-                  widget.transaction.tokenPrice,
-                  widget.transaction.amountMain.toDouble(),
-                  widget.transaction.amountReference.toDouble(),
-                  widget.transaction.amountFee.toDouble(),
-                  widget.transaction.price.toDouble(),
-                  widget.transaction.time,
-                  widget.transaction.withImpactOnSecondPosition));
+            widget.portfolio.id,
+            Transaction(
+                widget.transaction.transactionType,
+                widget.transaction.tokenMain,
+                widget.transaction.tokenReference,
+                widget.transaction.tokenFee,
+                widget.transaction.tokenPrice,
+                widget.transaction.amountMain.toDouble(),
+                widget.transaction.amountReference.toDouble(),
+                widget.transaction.amountFee.toDouble(),
+                widget.transaction.price.toDouble(),
+                widget.transaction.time,
+                widget.transaction.withImpactOnSecondPosition),
+          );
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

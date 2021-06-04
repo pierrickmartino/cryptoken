@@ -19,7 +19,9 @@ Future<void> main() async {
 
   await Hive.openBox(settingsBox);
 
-  Hive.registerAdapter(CryptoHiveAdapter());
+  Hive.registerAdapter(
+    CryptoHiveAdapter(),
+  );
   final boxCrypto = await Hive.openBox<CryptoHive>(cryptoListBox);
 
   final cryptoJsonString = await rootBundle.loadString('data/crypto.json');
@@ -38,6 +40,10 @@ Future<void> main() async {
     await boxCrypto.put(crypto.symbol, crypto);
   }
 
-  runApp(DashboardApp.mock());
-  //runApp(DashboardApp.firebase());
+  runApp(
+    DashboardApp.mock(),
+  );
+  // runApp(
+  //   DashboardApp.firebase(),
+  // );
 }
