@@ -53,11 +53,13 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
     0,
     0,
     0,
+    0,
     DateTime.now(),
   );
 
   final Position _positionReference = Position(
     'USDT',
+    0,
     0,
     0,
     0,
@@ -102,14 +104,26 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
               try {
                 Position newPositionMain;
 
+                print('Insert Mode');
+                print(
+                    '_positionMain.purchaseAmount : ${_positionMain.purchaseAmount}');
+                print(
+                    '_positionMain.averagePurchasePrice : ${_positionMain.averagePurchasePrice}');
+                print('_transaction.amountMain : ${_transaction.amountMain}');
+                print('_transaction.price : ${_transaction.price}');
+
                 // Buy
                 if (_transaction.transactionType == 0) {
                   newPositionMain = Position(
                     _positionMain.token,
                     _positionMain.amount + _transaction.amountMain,
-                    _positionMain
-                        .averagePurchasePrice, //TODO - averagePurchasePrice
-                    _positionMain.realizedGain,
+                    ((_positionMain.purchaseAmount *
+                                _positionMain.averagePurchasePrice) +
+                            (_transaction.amountMain * _transaction.price)) /
+                        (_positionMain.purchaseAmount +
+                            _transaction.amountMain),
+                    _positionMain.purchaseAmount + _transaction.amountMain,
+                    _positionMain.realizedGain, // Not used for Buy
                     _positionMain.time,
                   );
                 }
@@ -119,7 +133,8 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                   newPositionMain = Position(
                     _positionMain.token,
                     _positionMain.amount - _transaction.amountMain,
-                    _positionMain.averagePurchasePrice,
+                    _positionMain.averagePurchasePrice, // Not used for Sell
+                    _positionMain.purchaseAmount, // Not used for Sell
                     _positionMain.realizedGain, //TODO - realizedGain
                     _positionMain.time,
                   );
@@ -133,14 +148,32 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                 );
               } catch (e) {
                 // if not, we should catch an error then insert the new position
-                await api.positions.insert(
-                  _selected!.id,
-                  Position(
-                    _transaction.tokenMain,
-                    _transaction.amountMain.toDouble(),
-                    0, //TODO - averagePurchasePrice
-                    0, //TODO - realizedGain
-                    _transaction.time,
+
+                //TODO : Is this section really usefull ?
+                // It seems that we are already creating the missing
+                // position in the validate function of the form
+
+                // Buy
+                if (_transaction.transactionType == 0) {
+                  await api.positions.insert(
+                    _selected!.id,
+                    Position(
+                      _transaction.tokenMain,
+                      _transaction.amountMain.toDouble(),
+                      _transaction.amountReference.toDouble() /
+                          _transaction.amountMain.toDouble(),
+                      _transaction.amountMain.toDouble(),
+                      0, //TODO - realizedGain
+                      _transaction.time,
+                    ),
+                  );
+                }
+
+                // Sell
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    backgroundColor: Colors.red,
+                    content: Text('This operation is not authorized'),
                   ),
                 );
               }
@@ -158,6 +191,7 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                       _positionReference.amount - _transaction.amountReference,
                       _positionReference
                           .averagePurchasePrice, //TODO - averagePurchasePrice
+                      _positionReference.purchaseAmount,
                       _positionReference.realizedGain, //TODO - realizedGain
                       _positionReference.time,
                     );
@@ -170,6 +204,7 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                       _positionReference.amount + _transaction.amountReference,
                       _positionReference
                           .averagePurchasePrice, //TODO - averagePurchasePrice
+                      _positionReference.purchaseAmount,
                       _positionReference.realizedGain, //TODO - realizedGain
                       _positionReference.time,
                     );
@@ -183,12 +218,18 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                   );
                 } catch (e) {
                   // if not, we should catch an error then insert the new position
+
+                  //TODO : Is this section really usefull ?
+                  // It seems that we are already creating the missing
+                  // position in the validate function of the form
+
                   await api.positions.insert(
                     _selected!.id,
                     Position(
                       _transaction.tokenReference,
                       -_transaction.amountReference.toDouble(),
                       0, //TODO - averagePurchasePrice
+                      0, //TODO - purchaseAmount
                       0, //TODO - realizedGain
                       _transaction.time,
                     ),
@@ -877,8 +918,10 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                             .insert(
                               widget.portfolio.id,
                               Position(
-                                widget.transaction.tokenMain, 0,
+                                widget.transaction.tokenMain,
+                                0,
                                 0, //TODO - averagePurchasePrice
+                                0, //TODO - purchaseAmount
                                 0, //TODO - realizedGain
                                 DateTime.now(),
                               ),
@@ -891,6 +934,10 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                                 .get(widget.portfolio.id,
                                     widget.transaction.tokenMain);
                         widget.positionMain.amount = oldPositionMain.amount;
+                        widget.positionMain.averagePurchasePrice =
+                            oldPositionMain.averagePurchasePrice;
+                        widget.positionMain.purchaseAmount =
+                            oldPositionMain.purchaseAmount;
                       }
 
                       try {
@@ -908,8 +955,10 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                             .insert(
                               widget.portfolio.id,
                               Position(
-                                widget.transaction.tokenReference, 0,
+                                widget.transaction.tokenReference,
+                                0,
                                 0, //TODO - averagePurchasePrice
+                                0, //TODO - purchaseAmount
                                 0, //TODO - realizedGain
                                 DateTime.now(),
                               ),
@@ -923,6 +972,10 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                                     widget.transaction.tokenReference);
                         widget.positionReference.amount =
                             oldPositionReference.amount;
+                        widget.positionReference.averagePurchasePrice =
+                            oldPositionReference.averagePurchasePrice;
+                        widget.positionReference.purchaseAmount =
+                            oldPositionReference.purchaseAmount;
                       }
 
                       widget.onDone(true);

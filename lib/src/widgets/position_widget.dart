@@ -262,12 +262,16 @@ class _PositionsState extends State<PositionWidget> {
                     future: futureVariation24,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
+                        final _color = snapshot.data!.priceChangePercent < 0
+                            ? const Color(0xffef476f)
+                            : const Color(0xff06d6a0);
+
                         return Text(
                           _numberFormat
                               .format(snapshot.data!.priceChangePercent),
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.black.withOpacity(0.6),
+                            color: _color,
                           ),
                         );
                       } else if (snapshot.hasError) {
@@ -301,7 +305,7 @@ class _PositionsState extends State<PositionWidget> {
               child: Row(
                 children: [
                   Text(
-                    _numberFormat.format(0),
+                    _numberFormat.format(widget.position.averagePurchasePrice),
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.black.withOpacity(0.6),
@@ -344,12 +348,39 @@ class _PositionsState extends State<PositionWidget> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  Text(
-                    _numberFormat.format(0),
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.black.withOpacity(0.6),
-                    ),
+                  FutureBuilder<Price>(
+                    future: futurePrice,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final _averagePurchasePrice = (snapshot.data!.price -
+                                widget.position.averagePurchasePrice
+                                    .toDouble()) *
+                            widget.position.amount.toDouble();
+                        final _color = _averagePurchasePrice < 0
+                            ? const Color(0xffef476f)
+                            : const Color(0xff06d6a0);
+
+                        return Text(
+                          _numberFormat.format(_averagePurchasePrice),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: _color,
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        //print('${snapshot.error}');
+                        return Text('${snapshot.error}');
+                      }
+
+                      // By default, show a loading spinner.
+                      return Text(
+                        '-',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                      );
+                    },
                   ),
                   const Spacer(),
                   Text(

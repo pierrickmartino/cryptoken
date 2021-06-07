@@ -139,12 +139,12 @@ class Transaction {
 @JsonSerializable()
 class Position {
   Position(this.token, this.amount, this.averagePurchasePrice,
-      this.realizedGain, this.time);
+      this.purchaseAmount, this.realizedGain, this.time);
   factory Position.fromJson(Map<String, dynamic> json) =>
       _$PositionFromJson(json);
 
   String token;
-  double amount, averagePurchasePrice, realizedGain;
+  double amount, averagePurchasePrice, purchaseAmount, realizedGain;
 
   @JsonKey(fromJson: _timestampToDateTime, toJson: _dateTimeToTimestamp)
   DateTime time;

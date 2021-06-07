@@ -230,6 +230,17 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
           try {
             Position newPositionMain;
 
+            print('Update Mode');
+            print(
+                'widget.positionMain.purchaseAmount : ${widget.positionMain.purchaseAmount}');
+            print(
+                'widget.positionMain.averagePurchasePrice : ${widget.positionMain.averagePurchasePrice}');
+            print(
+                'widget.transaction.amountMain : ${widget.transaction.amountMain}');
+            print(
+                'widget.transactionCache.amountMain : ${widget.transactionCache.amountMain}');
+            print('widget.transaction.price : ${widget.transaction.price}');
+
             // Buy
             if (widget.transaction.transactionType == 0) {
               newPositionMain = Position(
@@ -237,9 +248,21 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                 widget.positionMain.amount -
                     widget.transactionCache.amountMain +
                     widget.transaction.amountMain,
-                widget.positionMain
-                    .averagePurchasePrice, //TODO - averagePurchasePrice
-                widget.positionMain.realizedGain, //TODO - realizedGain
+
+                (((widget.positionMain.purchaseAmount -
+                                widget.transactionCache.amountMain) *
+                            widget.positionMain.averagePurchasePrice) +
+                        (widget.transaction.amountMain +
+                            widget.transaction.price)) /
+                    ((widget.positionMain.purchaseAmount -
+                            widget.transactionCache.amountMain) +
+                        widget.transaction
+                            .amountMain), //TODO - averagePurchasePrice
+
+                widget.positionMain.purchaseAmount -
+                    widget.transactionCache.amountMain +
+                    widget.transaction.amountMain,
+                widget.positionMain.realizedGain, // Not used for Buy
                 widget.positionMain.time,
               );
             }
@@ -251,8 +274,8 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                 widget.positionMain.amount +
                     widget.transactionCache.amountMain -
                     widget.transaction.amountMain,
-                widget.positionMain
-                    .averagePurchasePrice, //TODO - averagePurchasePrice
+                widget.positionMain.averagePurchasePrice, // Not used for Sell
+                widget.positionMain.purchaseAmount, // Not used for Sell
                 widget.positionMain.realizedGain, //TODO - realizedGain
                 widget.positionMain.time,
               );
@@ -266,17 +289,36 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
             );
           } catch (e) {
             // if not, we should catch an error then insert the new position
-            await api.positions.insert(
-              widget.portfolio.id,
-              Position(
-                widget.transaction.tokenMain,
-                widget.transaction.amountMain.toDouble(),
-                0, //TODO - averagePurchasePrice
-                0, //TODO - realizedGain
-                widget.transaction.time,
-              ),
-            );
+
+            //TODO : Is this section really usefull ?
+            // It seems that we are already creating the missing
+            // position in the validate function of the form
+
+            // Buy
+            if (widget.transaction.transactionType == 0) {
+              await api.positions.insert(
+                widget.portfolio.id,
+                Position(
+                  widget.transaction.tokenMain,
+                  widget.transaction.amountMain.toDouble(),
+                  widget.transaction.amountReference.toDouble() /
+                      widget.transaction.amountMain
+                          .toDouble(), //TODO - averagePurchasePrice
+                  0, //TODO - purchaseAmount
+                  0, //TODO - realizedGain
+                  widget.transaction.time,
+                ),
+              );
+            }
           }
+
+          // Sell
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.red,
+              content: Text('This operation is not authorized'),
+            ),
+          );
 
           if (widget.transaction.withImpactOnSecondPosition)
           // Reference axis of the transaction (Buy or Sell Main against Reference)
@@ -293,6 +335,8 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                       widget.transaction.amountReference,
                   widget.positionReference
                       .averagePurchasePrice, //TODO - averagePurchasePrice
+                  widget
+                      .positionReference.purchaseAmount, //TODO - purchaseAmount
                   widget.positionReference.realizedGain, //TODO - realizedGain
                   widget.positionReference.time,
                 );
@@ -307,6 +351,7 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                       widget.transaction.amountReference,
                   widget.positionReference
                       .averagePurchasePrice, //TODO - averagePurchasePrice
+                  widget.positionReference.purchaseAmount,
                   widget.positionReference.realizedGain, //TODO - realizedGain
                   widget.positionReference.time,
                 );
@@ -323,6 +368,7 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
                   widget.transaction.tokenReference,
                   -widget.transaction.amountReference.toDouble(),
                   0, //TODO - averagePurchasePrice
+                  0, //TODO - purchaseAmount
                   0, //TODO - realizedGain
                   widget.transaction.time,
                 ),

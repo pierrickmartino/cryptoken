@@ -50,11 +50,15 @@ class MockDashboardApi implements DashboardApi {
 
     await positions.insert(
       portfolio0.id,
-      Position(tokenMainBTC, valueMainBTC.toDouble(),
-          valueReferenceBTC.toDouble() / valueMainBTC.toDouble(), 0, dateBTC),
+      Position(
+          tokenMainBTC,
+          valueMainBTC.toDouble(),
+          valueReferenceBTC.toDouble() / valueMainBTC.toDouble(),
+          valueMainBTC.toDouble(),
+          0,
+          dateBTC),
     );
-    // await positions.insert(portfolio0.id,
-    //     Position(tokenReferenceBTC, valueReferenceBTC.toDouble(), dateBTC),);
+
     await transactions.insert(
       portfolio0.id,
       Transaction(
@@ -86,6 +90,7 @@ class MockDashboardApi implements DashboardApi {
         tokenMainETH,
         valueMainETH.toDouble(),
         valueReferenceETH.toDouble() / valueMainETH.toDouble(),
+        valueMainETH.toDouble(),
         0,
         dateETH,
       ),
@@ -115,14 +120,11 @@ class MockDashboardApi implements DashboardApi {
     final portfolio2 = await portfolios.insert(
       Portfolio('PTF ${randomString(9)}'),
     );
-    final portfolio3 = await portfolios.insert(
-      Portfolio('PTF ${randomString(9)}'),
-    );
     final monthAgo = DateTime.now().subtract(
       const Duration(days: 30),
     );
 
-    for (final portfolio in [portfolio1, portfolio2, portfolio3]) {
+    for (final portfolio in [portfolio1, portfolio2]) {
       for (var i = 0; i < 3; i++) {
         final date = monthAgo.add(
           const Duration(days: 1),
@@ -140,8 +142,9 @@ class MockDashboardApi implements DashboardApi {
           final newPositionMain = Position(
             oldPositionMain.token,
             oldPositionMain.amount + valueMain,
-            0,
-            0,
+            oldPositionMain.averagePurchasePrice,
+            oldPositionMain.purchaseAmount,
+            oldPositionMain.realizedGain,
             oldPositionMain.time,
           );
 
@@ -154,7 +157,8 @@ class MockDashboardApi implements DashboardApi {
             Position(
               tokenMain,
               valueMain.toDouble(),
-              0,
+              valueReference.toDouble() / valueMain.toDouble(),
+              valueMain.toDouble(),
               0,
               date,
             ),
@@ -171,6 +175,7 @@ class MockDashboardApi implements DashboardApi {
             oldPositionReference.amount - valueReference,
             0,
             0,
+            0,
             oldPositionReference.time,
           );
 
@@ -184,6 +189,7 @@ class MockDashboardApi implements DashboardApi {
             Position(
               tokenReference,
               valueReference.toDouble(),
+              0,
               0,
               0,
               date,
@@ -278,8 +284,9 @@ class MockPositionApi implements PositionApi {
     final newPosition = Position(
       position.token,
       position.amount,
-      0,
-      0,
+      position.averagePurchasePrice,
+      position.purchaseAmount,
+      position.realizedGain,
       position.time,
     )..id = position.token;
     //..id = id;

@@ -52,6 +52,7 @@ Position _$PositionFromJson(Map<String, dynamic> json) {
     json['token'] as String,
     (json['amount'] as num).toDouble(),
     (json['averagePurchasePrice'] as num).toDouble(),
+    (json['purchaseAmount'] as num).toDouble(),
     (json['realizedGain'] as num).toDouble(),
     Position._timestampToDateTime(json['time'] as Timestamp),
   );
@@ -61,6 +62,7 @@ Map<String, dynamic> _$PositionToJson(Position instance) => <String, dynamic>{
       'token': instance.token,
       'amount': instance.amount,
       'averagePurchasePrice': instance.averagePurchasePrice,
+      'purchaseAmount': instance.purchaseAmount,
       'realizedGain': instance.realizedGain,
       'time': Position._dateTimeToTimestamp(instance.time),
     };

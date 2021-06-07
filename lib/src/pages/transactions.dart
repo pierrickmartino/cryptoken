@@ -229,6 +229,7 @@ class TransactionTile extends StatelessWidget {
                     oldPositionMain.token,
                     oldPositionMain.amount - transaction.amountMain,
                     0, //TODO - averagePurchasePrice
+                    0, //TODO - purchaseAmount
                     0, //TODO - realizedGain
                     oldPositionMain.time);
 
@@ -242,6 +243,7 @@ class TransactionTile extends StatelessWidget {
                     oldPositionReference.token,
                     oldPositionReference.amount + transaction.amountReference,
                     0, //TODO - averagePurchasePrice
+                    0, //TODO - purchaseAmount
                     0, //TODO - realizedGain
                     oldPositionReference.time);
 
