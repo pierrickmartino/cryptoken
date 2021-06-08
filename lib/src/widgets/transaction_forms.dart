@@ -104,13 +104,13 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
               try {
                 Position newPositionMain;
 
-                print('Insert Mode');
-                print(
-                    '_positionMain.purchaseAmount : ${_positionMain.purchaseAmount}');
-                print(
-                    '_positionMain.averagePurchasePrice : ${_positionMain.averagePurchasePrice}');
-                print('_transaction.amountMain : ${_transaction.amountMain}');
-                print('_transaction.price : ${_transaction.price}');
+                // print('Insert Mode');
+                // print(
+                //     '_positionMain.purchaseAmount : ${_positionMain.purchaseAmount}');
+                // print(
+                //     '_positionMain.averagePurchasePrice : ${_positionMain.averagePurchasePrice}');
+                // print('_transaction.amountMain : ${_transaction.amountMain}');
+                // print('_transaction.price : ${_transaction.price}');
 
                 // Buy
                 if (_transaction.transactionType == 0) {

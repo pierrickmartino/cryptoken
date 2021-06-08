@@ -2,11 +2,14 @@ import 'dart:async';
 import 'dart:core';
 import 'dart:math';
 
+import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart' as uuid;
+import 'package:web_dashboard/src/hive/portfolio_hive.dart';
 
 import 'api.dart';
 
 const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const portfolioListBox = 'portfolioList';
 
 String randomString(int strlen) {
   final Random rnd = Random(DateTime.now().millisecondsSinceEpoch);
@@ -39,6 +42,18 @@ class MockDashboardApi implements DashboardApi {
     final portfolio0 = await portfolios.insert(
       Portfolio('Benchmark'),
     );
+
+    final boxPortfolio = await Hive.openBox<PortfolioHive>(portfolioListBox);
+
+    final _portfolio = PortfolioHive()
+      ..id = portfolio0.id
+      ..name = portfolio0.name
+      ..valuation = 0
+      ..variation24 = 0
+      ..realizedGain = 10
+      ..unrealizedGain = 0;
+
+    await boxPortfolio.put(_portfolio.id, _portfolio);
 
     // POSITION BTC
     final dateBTC = DateTime.utc(2021, 4);

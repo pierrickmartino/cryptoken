@@ -230,16 +230,16 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
           try {
             Position newPositionMain;
 
-            print('Update Mode');
-            print(
-                'widget.positionMain.purchaseAmount : ${widget.positionMain.purchaseAmount}');
-            print(
-                'widget.positionMain.averagePurchasePrice : ${widget.positionMain.averagePurchasePrice}');
-            print(
-                'widget.transaction.amountMain : ${widget.transaction.amountMain}');
-            print(
-                'widget.transactionCache.amountMain : ${widget.transactionCache.amountMain}');
-            print('widget.transaction.price : ${widget.transaction.price}');
+            // print('Update Mode');
+            // print(
+            //     'widget.positionMain.purchaseAmount : ${widget.positionMain.purchaseAmount}');
+            // print(
+            //     'widget.positionMain.averagePurchasePrice : ${widget.positionMain.averagePurchasePrice}');
+            // print(
+            //     'widget.transaction.amountMain : ${widget.transaction.amountMain}');
+            // print(
+            //     'widget.transactionCache.amountMain : ${widget.transactionCache.amountMain}');
+            // print('widget.transaction.price : ${widget.transaction.price}');
 
             // Buy
             if (widget.transaction.transactionType == 0) {

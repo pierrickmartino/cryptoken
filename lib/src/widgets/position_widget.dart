@@ -16,9 +16,15 @@ import '../app.dart';
 import '../pages/transactions.dart';
 
 const cryptoListBox = 'cryptoList';
+const debitColor = Color(0xffef476f);
+const creditColor = Color(0xff06d6a0);
 
 final _numberFormat =
     NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 2);
+
+bool _isLargeScreen(BuildContext context) {
+  return MediaQuery.of(context).size.width > 960.0;
+}
 
 Future<Price> fetchPrice(String symbol) async {
   if (symbol == 'INIT') {
@@ -115,15 +121,20 @@ Future<Variation24> fetchVariation24(String symbol) async {
   }
 }
 
+typedef DoubleCallback = void Function(double val);
+
 class PositionWidget extends StatefulWidget {
   const PositionWidget({
     Key? key,
     required this.position,
+    required this.onValuationUpdated,
+    required this.onUnrealizedGainUpdated,
     this.portfolio,
   }) : super(key: key);
 
   final Position position;
   final Portfolio? portfolio;
+  final DoubleCallback onValuationUpdated, onUnrealizedGainUpdated;
 
   @override
   _PositionsState createState() => _PositionsState();
@@ -245,7 +256,7 @@ class _PositionsState extends State<PositionWidget> {
                   ),
                   const Spacer(),
                   Text(
-                    'MarketPrice',
+                    _isLargeScreen(context) ? 'MarketPrice' : 'MarketPr.',
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.black.withOpacity(0.6),
@@ -263,8 +274,8 @@ class _PositionsState extends State<PositionWidget> {
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         final _color = snapshot.data!.priceChangePercent < 0
-                            ? const Color(0xffef476f)
-                            : const Color(0xff06d6a0);
+                            ? debitColor
+                            : creditColor;
 
                         return Text(
                           _numberFormat
@@ -313,7 +324,9 @@ class _PositionsState extends State<PositionWidget> {
                   ),
                   const Spacer(),
                   Text(
-                    'AvgPurchPrice',
+                    _isLargeScreen(context)
+                        ? 'AvgPurchasePrice'
+                        : 'AvgPurchPr.',
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.black.withOpacity(0.6),
@@ -335,7 +348,7 @@ class _PositionsState extends State<PositionWidget> {
                   ),
                   const Spacer(),
                   Text(
-                    'RealizedGain',
+                    _isLargeScreen(context) ? 'RealizedGain' : 'Realized',
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.black.withOpacity(0.6),
@@ -352,16 +365,15 @@ class _PositionsState extends State<PositionWidget> {
                     future: futurePrice,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        final _averagePurchasePrice = (snapshot.data!.price -
+                        final _unrealizedGain = (snapshot.data!.price -
                                 widget.position.averagePurchasePrice
                                     .toDouble()) *
                             widget.position.amount.toDouble();
-                        final _color = _averagePurchasePrice < 0
-                            ? const Color(0xffef476f)
-                            : const Color(0xff06d6a0);
+                        final _color =
+                            _unrealizedGain < 0 ? debitColor : creditColor;
 
                         return Text(
-                          _numberFormat.format(_averagePurchasePrice),
+                          _numberFormat.format(_unrealizedGain),
                           style: TextStyle(
                             fontSize: 13,
                             color: _color,
@@ -384,7 +396,7 @@ class _PositionsState extends State<PositionWidget> {
                   ),
                   const Spacer(),
                   Text(
-                    'UnrealizedGain',
+                    _isLargeScreen(context) ? 'UnrealizedGain' : 'Unrealized',
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.black.withOpacity(0.6),
@@ -393,9 +405,9 @@ class _PositionsState extends State<PositionWidget> {
                 ],
               ),
             ),
-            const Divider(
-                //height: 14,
-                ),
+            // const Divider(
+            //   height: 14,
+            // ),
             const Spacer(),
             ButtonBar(
               buttonHeight: 10,
@@ -410,7 +422,14 @@ class _PositionsState extends State<PositionWidget> {
                   color: Colors.black.withOpacity(0.6),
                   onPressed: () {
                     setState(() {
-                      futurePrice = fetchPrice(widget.position.token);
+                      futurePrice = fetchPrice(widget.position.token)
+                        ..then((value) => widget.onValuationUpdated(
+                            value.price * widget.position.amount))
+                        ..then((value) => widget.onUnrealizedGainUpdated(
+                            (value.price -
+                                    widget.position.averagePurchasePrice
+                                        .toDouble()) *
+                                widget.position.amount.toDouble()));
                       futureVariation24 =
                           fetchVariation24(widget.position.token);
                     });

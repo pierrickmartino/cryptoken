@@ -7,21 +7,34 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:web_dashboard/src/hive/crypto_hive.dart';
+import 'package:web_dashboard/src/hive/portfolio_hive.dart';
 
 import 'src/app.dart';
 import 'src/class/cryptos_list.dart';
 
 const settingsBox = 'settings';
 const cryptoListBox = 'cryptoList';
+const portfolioListBox = 'portfolioList';
 
 Future<void> main() async {
+  // initialization
   await Hive.initFlutter();
 
+  // open the box dedicated to Settings
   await Hive.openBox(settingsBox);
 
+  // register the adapter to insert Portfolio in box
+  Hive.registerAdapter(
+    PortfolioHiveAdapter(),
+  );
+  // open the box dedicated to Portfolios
+  await Hive.openBox<PortfolioHive>(portfolioListBox);
+
+  // register the adapter to insert Crypto in box
   Hive.registerAdapter(
     CryptoHiveAdapter(),
   );
+  // open the box dedicated to Cryptos
   final boxCrypto = await Hive.openBox<CryptoHive>(cryptoListBox);
 
   final cryptoJsonString = await rootBundle.loadString('data/crypto.json');
