@@ -53,10 +53,11 @@ class Dashboard extends StatelessWidget {
           padding: const EdgeInsets.all(5),
           child: GridView(
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 1200,
-                mainAxisExtent: 390,
-                mainAxisSpacing: 5,
-                crossAxisSpacing: 5),
+              maxCrossAxisExtent: 1200,
+              mainAxisExtent: 350, // adjust the height of the position widget
+              mainAxisSpacing: 5,
+              crossAxisSpacing: 5,
+            ),
             children: [
               ...portfolios!.map(
                 (portfolio) => Card(
