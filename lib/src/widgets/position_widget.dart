@@ -147,8 +147,14 @@ class _PositionsState extends State<PositionWidget> {
   @override
   void initState() {
     super.initState();
-    futurePrice = fetchPrice('INIT');
-    futureVariation24 = fetchVariation24('INIT');
+
+    futurePrice = fetchPrice(widget.position.token)
+      ..then((value) =>
+          widget.onValuationUpdated(value.price * widget.position.amount))
+      ..then((value) => widget.onUnrealizedGainUpdated(
+          (value.price - widget.position.averagePurchasePrice.toDouble()) *
+              widget.position.amount.toDouble()));
+    futureVariation24 = fetchVariation24(widget.position.token);
   }
 
   @override
@@ -189,7 +195,13 @@ class _PositionsState extends State<PositionWidget> {
                     );
                   } else if (snapshot.hasError) {
                     //print('${snapshot.error}');
-                    return Text('${snapshot.error}');
+                    return Text(
+                      'N/A',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.black.withOpacity(0.6),
+                      ),
+                    );
                   }
 
                   // By default, show a loading spinner.
@@ -203,7 +215,9 @@ class _PositionsState extends State<PositionWidget> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: _isLargeScreen(context)
+                  ? const EdgeInsets.fromLTRB(16, 5, 16, 0)
+                  : const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   Text(
@@ -225,7 +239,9 @@ class _PositionsState extends State<PositionWidget> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: _isLargeScreen(context)
+                  ? const EdgeInsets.fromLTRB(16, 5, 16, 0)
+                  : const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   FutureBuilder<Price>(
@@ -241,7 +257,13 @@ class _PositionsState extends State<PositionWidget> {
                         );
                       } else if (snapshot.hasError) {
                         //print('${snapshot.error}');
-                        return Text('${snapshot.error}');
+                        return Text(
+                          'N/A',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.black.withOpacity(0.6),
+                          ),
+                        );
                       }
 
                       // By default, show a loading spinner.
@@ -266,7 +288,9 @@ class _PositionsState extends State<PositionWidget> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: _isLargeScreen(context)
+                  ? const EdgeInsets.fromLTRB(16, 5, 16, 0)
+                  : const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   FutureBuilder<Variation24>(
@@ -287,7 +311,13 @@ class _PositionsState extends State<PositionWidget> {
                         );
                       } else if (snapshot.hasError) {
                         //print('${snapshot.error}');
-                        return Text('${snapshot.error}');
+                        return Text(
+                          'N/A',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.black.withOpacity(0.6),
+                          ),
+                        );
                       }
 
                       // By default, show a loading spinner.
@@ -312,7 +342,9 @@ class _PositionsState extends State<PositionWidget> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: _isLargeScreen(context)
+                  ? const EdgeInsets.fromLTRB(16, 5, 16, 0)
+                  : const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   Text(
@@ -336,7 +368,9 @@ class _PositionsState extends State<PositionWidget> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: _isLargeScreen(context)
+                  ? const EdgeInsets.fromLTRB(16, 5, 16, 0)
+                  : const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   Text(
@@ -358,7 +392,9 @@ class _PositionsState extends State<PositionWidget> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: _isLargeScreen(context)
+                  ? const EdgeInsets.fromLTRB(16, 5, 16, 0)
+                  : const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   FutureBuilder<Price>(
@@ -381,7 +417,13 @@ class _PositionsState extends State<PositionWidget> {
                         );
                       } else if (snapshot.hasError) {
                         //print('${snapshot.error}');
-                        return Text('${snapshot.error}');
+                        return Text(
+                          'N/A',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.black.withOpacity(0.6),
+                          ),
+                        );
                       }
 
                       // By default, show a loading spinner.

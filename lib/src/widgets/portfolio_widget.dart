@@ -34,6 +34,7 @@ class PortfolioWidget extends StatefulWidget {
 
 class _PortfolioWidgetState extends State<PortfolioWidget> {
   double _valuation = 0, _unrealizedGain = 0;
+
   set valuation(double value) => setState(() => _valuation = value);
   set unrealizedGain(double value) => setState(() => _unrealizedGain = value);
 
@@ -56,8 +57,15 @@ class _PortfolioWidgetState extends State<PortfolioWidget> {
                       style: const TextStyle(color: Color(0xff3A6EA5)),
                     ),
                     const Spacer(),
+                    // IconButton(
+                    //   icon: const Icon(Icons.refresh_rounded),
+                    //   color: const Color(0xff3A6EA5),
+                    //   onPressed: () {
+                    //     setState(() {});
+                    //   },
+                    // ),
                     IconButton(
-                      icon: const Icon(Icons.add),
+                      icon: const Icon(Icons.add_rounded),
                       color: const Color(0xff3A6EA5),
                       onPressed: () {
                         if (_isLargeScreen(context)) {
@@ -80,7 +88,7 @@ class _PortfolioWidgetState extends State<PortfolioWidget> {
                       },
                     ),
                     IconButton(
-                      icon: const Icon(Icons.settings),
+                      icon: const Icon(Icons.settings_rounded),
                       color: const Color(0xff3A6EA5),
                       onPressed: () {
                         showDialog<EditPortfolioDialog>(
@@ -174,9 +182,6 @@ class _PortfolioWidgetState extends State<PortfolioWidget> {
               //   ),
               // ),
 
-              // const SizedBox(
-              //   height: 10,
-              // ),
               Expanded(
                 // Load the initial snapshot using a FutureBuilder, and subscribe to
                 // additional updates with a StreamBuilder.
@@ -264,7 +269,7 @@ class _ListPositionsState extends State<_ListPositions> {
           maxCrossAxisExtent: 500,
           //childAspectRatio: 1,
           // crossAxisSpacing: 20,
-          mainAxisExtent: 270,
+          mainAxisExtent: 275,
           mainAxisSpacing: 5,
         ),
         scrollDirection: Axis.horizontal,
