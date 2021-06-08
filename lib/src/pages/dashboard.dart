@@ -1,7 +1,3 @@
-// Copyright 2020, the Flutter project authors. Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -57,11 +53,11 @@ class Dashboard extends StatelessWidget {
           padding: const EdgeInsets.all(5),
           child: GridView(
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                childAspectRatio: 1,
-                maxCrossAxisExtent: 1200,
-                mainAxisExtent: 390,
-                mainAxisSpacing: 5,
-                crossAxisSpacing: 5),
+              maxCrossAxisExtent: 1200,
+              mainAxisExtent: 350, // adjust the height of the position widget
+              mainAxisSpacing: 5,
+              crossAxisSpacing: 5,
+            ),
             children: [
               ...portfolios!.map(
                 (portfolio) => Card(

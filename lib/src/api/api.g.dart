@@ -18,6 +18,7 @@ Map<String, dynamic> _$PortfolioToJson(Portfolio instance) => <String, dynamic>{
 
 Transaction _$TransactionFromJson(Map<String, dynamic> json) {
   return Transaction(
+    json['transactionType'] as int,
     json['tokenMain'] as String,
     json['tokenReference'] as String,
     json['tokenFee'] as String,
@@ -33,6 +34,7 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
     <String, dynamic>{
+      'transactionType': instance.transactionType,
       'tokenMain': instance.tokenMain,
       'tokenReference': instance.tokenReference,
       'tokenFee': instance.tokenFee,
@@ -49,6 +51,9 @@ Position _$PositionFromJson(Map<String, dynamic> json) {
   return Position(
     json['token'] as String,
     (json['amount'] as num).toDouble(),
+    (json['averagePurchasePrice'] as num).toDouble(),
+    (json['purchaseAmount'] as num).toDouble(),
+    (json['realizedGain'] as num).toDouble(),
     Position._timestampToDateTime(json['time'] as Timestamp),
   );
 }
@@ -56,5 +61,8 @@ Position _$PositionFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$PositionToJson(Position instance) => <String, dynamic>{
       'token': instance.token,
       'amount': instance.amount,
+      'averagePurchasePrice': instance.averagePurchasePrice,
+      'purchaseAmount': instance.purchaseAmount,
+      'realizedGain': instance.realizedGain,
       'time': Position._dateTimeToTimestamp(instance.time),
     };

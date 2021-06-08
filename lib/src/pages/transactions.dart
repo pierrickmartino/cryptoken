@@ -1,7 +1,3 @@
-// Copyright 2020, the Flutter project authors. Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart' as intl;
@@ -13,6 +9,10 @@ import '../widgets/portfolios_dropdown.dart';
 
 final _priceFormat =
     intl.NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 6);
+
+bool _isLargeScreen(BuildContext context) {
+  return MediaQuery.of(context).size.width > 960.0;
+}
 
 class TransactionsPage extends StatefulWidget {
   const TransactionsPage({Key? key}) : super(key: key);
@@ -29,11 +29,14 @@ class _TransactionsPageState extends State<TransactionsPage> {
     return Column(
       children: [
         PortfolioDropdown(
-            api: appState.api.portfolios,
-            onSelected: (portfolio) => setState(() => _selected = portfolio)),
+          api: appState.api.portfolios,
+          onSelected: (portfolio) => setState(() => _selected = portfolio),
+        ),
         Expanded(
           child: _selected == null
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
               : TransactionsList(
                   portfolio: _selected!,
                   api: appState.api.transactions,
@@ -48,7 +51,9 @@ class TransactionsList extends StatefulWidget {
   TransactionsList({
     required this.portfolio,
     required this.api,
-  }) : super(key: ValueKey(portfolio.id));
+  }) : super(
+          key: ValueKey(portfolio.id),
+        );
 
   final Portfolio portfolio;
   final TransactionApi api;
@@ -89,7 +94,9 @@ class _TransactionsListState extends State<TransactionsList> {
   }
 
   Widget _buildLoadingIndicator() {
-    return const Center(child: CircularProgressIndicator());
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
   }
 }
 
@@ -110,11 +117,29 @@ class TransactionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final api = Provider.of<AppState>(context).api;
 
+    Widget _transactionLabel() {
+      switch (transaction.transactionType) {
+        case 0:
+          return Text(
+            'Buy ${transaction.amountMain} ${transaction.tokenMain} at ${_priceFormat.format(transaction.price)} ${transaction.tokenPrice} against ${transaction.amountReference} ${transaction.tokenReference}',
+            style: const TextStyle(fontSize: 14),
+          );
+        case 1:
+          return Text(
+            'Sell ${transaction.amountMain} ${transaction.tokenMain} at ${_priceFormat.format(transaction.price)} ${transaction.tokenPrice} against ${transaction.amountReference} ${transaction.tokenReference}',
+            style: const TextStyle(fontSize: 14),
+          );
+        default:
+          return const Text('N/A');
+      }
+    }
+
     return ListTile(
-      title: Text(
-          '${transaction.amountMain} ${transaction.tokenMain} at ${_priceFormat.format(transaction.price)} ${transaction.tokenPrice}'),
-      subtitle:
-          Text(intl.DateFormat('dd/MM/yy HH:mm').format(transaction.time)),
+      title: _transactionLabel(),
+      subtitle: Text(
+        intl.DateFormat('dd/MM/yy HH:mm').format(transaction.time),
+        style: const TextStyle(fontSize: 13),
+      ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -125,34 +150,48 @@ class TransactionTile extends StatelessWidget {
               positionReference = await api.positions
                   .get(portfolio.id, transaction.tokenReference);
               transactionCache = await api.transactions.insert(
-                  portfolio.id,
-                  Transaction(
-                      transaction.tokenMain,
-                      transaction.tokenReference,
-                      transaction.tokenFee,
-                      transaction.tokenPrice,
-                      transaction.amountMain.toDouble(),
-                      transaction.amountReference.toDouble(),
-                      transaction.amountFee.toDouble(),
-                      transaction.price.toDouble(),
-                      transaction.time,
-                      transaction.withImpactOnSecondPosition));
-
-              // print(
-              //     'transactionCache Main : ${transactionCache!.tokenMain} : ${transactionCache!.amountMain.toString()}');
-
-              await showDialog<void>(
-                context: context,
-                builder: (context) {
-                  return EditTransactionDialog(
-                    portfolio: portfolio,
-                    transaction: transaction,
-                    transactionCache: transactionCache!,
-                    positionMain: positionMain!,
-                    positionReference: positionReference!,
-                  );
-                },
+                portfolio.id,
+                Transaction(
+                    transaction.transactionType,
+                    transaction.tokenMain,
+                    transaction.tokenReference,
+                    transaction.tokenFee,
+                    transaction.tokenPrice,
+                    transaction.amountMain.toDouble(),
+                    transaction.amountReference.toDouble(),
+                    transaction.amountFee.toDouble(),
+                    transaction.price.toDouble(),
+                    transaction.time,
+                    transaction.withImpactOnSecondPosition),
               );
+
+              if (_isLargeScreen(context)) {
+                await showDialog<EditTransactionDialog>(
+                  context: context,
+                  builder: (context) {
+                    return EditTransactionDialog(
+                      portfolio: portfolio,
+                      transaction: transaction,
+                      transactionCache: transactionCache!,
+                      positionMain: positionMain!,
+                      positionReference: positionReference!,
+                    );
+                  },
+                );
+              } else {
+                await showGeneralDialog<EditTransactionDialog>(
+                  context: context,
+                  pageBuilder: (context, animation, secondaryAnimation) {
+                    return EditTransactionDialog(
+                      portfolio: portfolio,
+                      transaction: transaction,
+                      transactionCache: transactionCache!,
+                      positionMain: positionMain!,
+                      positionReference: positionReference!,
+                    );
+                  },
+                );
+              }
 
               await api.transactions.delete(portfolio.id, transactionCache!.id);
             },
@@ -189,6 +228,9 @@ class TransactionTile extends StatelessWidget {
                 final newPositionMain = Position(
                     oldPositionMain.token,
                     oldPositionMain.amount - transaction.amountMain,
+                    0, //TODO - averagePurchasePrice
+                    0, //TODO - purchaseAmount
+                    0, //TODO - realizedGain
                     oldPositionMain.time);
 
                 final oldPositionReference =
@@ -200,6 +242,9 @@ class TransactionTile extends StatelessWidget {
                 final newPositionReference = Position(
                     oldPositionReference.token,
                     oldPositionReference.amount + transaction.amountReference,
+                    0, //TODO - averagePurchasePrice
+                    0, //TODO - purchaseAmount
+                    0, //TODO - realizedGain
                     oldPositionReference.time);
 
                 // 2. Update the positions

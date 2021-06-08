@@ -1,9 +1,7 @@
-// Copyright 2020, the Flutter project authors. Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'api/api.dart';
@@ -14,6 +12,8 @@ import 'auth/firebase.dart';
 import 'auth/mock.dart';
 import 'pages/home.dart';
 import 'pages/sign_in.dart';
+
+const settingsBox = 'settings';
 
 /// The global state the app.
 class AppState {
@@ -54,6 +54,7 @@ class DashboardApp extends StatefulWidget {
 
 class _DashboardAppState extends State<DashboardApp> {
   late AppState _appState;
+  final box = Hive.box(settingsBox);
 
   @override
   void initState() {
@@ -63,22 +64,29 @@ class _DashboardAppState extends State<DashboardApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Provider.value(
-      value: _appState,
-      child: MaterialApp(
-        theme: ThemeData(
-          primaryColor: const Color(0xff004e98),
-          accentColor: const Color(0xffff6700),
-          dividerColor: const Color(0xffc0c0c0),
-          canvasColor: const Color(0xffEBEBEB),
-        ),
-        debugShowCheckedModeBanner: false,
-        home: SignInSwitcher(
-          appState: _appState,
-          apiBuilder: widget.apiBuilder,
-        ),
-      ),
-    );
+    return ValueListenableBuilder(
+        valueListenable: Hive.box(settingsBox).listenable(),
+        builder: (listenerContext, Box<dynamic> box, listenerWidget) {
+          final darkMode = box.get('darkMode', defaultValue: false);
+          return Provider.value(
+            value: _appState,
+            child: MaterialApp(
+              themeMode: darkMode ? ThemeMode.dark : ThemeMode.light,
+              darkTheme: ThemeData.dark(),
+              theme: ThemeData(
+                primaryColor: const Color(0xff004e98),
+                accentColor: const Color(0xffff6700),
+                dividerColor: const Color(0xffc0c0c0),
+                canvasColor: const Color(0xffEBEBEB),
+              ),
+              debugShowCheckedModeBanner: false,
+              home: SignInSwitcher(
+                appState: _appState,
+                apiBuilder: widget.apiBuilder,
+              ),
+            ),
+          );
+        });
   }
 }
 

@@ -1,7 +1,3 @@
-// Copyright 2020, the Flutter project authors. Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -10,14 +6,16 @@ import '../api/api.dart';
 /// Subscribes to the latest list of categories and allows the user to select
 /// one.
 class PortfolioDropdown extends StatefulWidget {
-  const PortfolioDropdown({
+  PortfolioDropdown({
     Key? key,
     required this.api,
     required this.onSelected,
+    this.initPortfolio,
   }) : super(key: key);
 
   final PortfolioApi api;
   final ValueChanged<Portfolio> onSelected;
+  Portfolio? initPortfolio;
 
   @override
   _PortfolioDropdownState createState() => _PortfolioDropdownState();
@@ -46,6 +44,11 @@ class _PortfolioDropdownState extends State<PortfolioDropdown> {
     // *before* the build is triggered by the FutureBuilder.
     _future = widget.api.list().then((portfolios) {
       if (portfolios.isEmpty) {
+        return portfolios;
+      }
+
+      if (widget.initPortfolio != null) {
+        _setSelected(widget.initPortfolio!);
         return portfolios;
       }
 

@@ -1,22 +1,30 @@
-// Copyright 2020, the Flutter project authors. Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
-import 'dart:async';
+import 'dart:async' show Future;
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:web_dashboard/src/class/price.dart';
+import 'package:web_dashboard/src/class/variation24.dart';
+import 'package:web_dashboard/src/hive/crypto_hive.dart';
 
 import '../api/api.dart';
 import '../app.dart';
 import '../pages/transactions.dart';
 
+const cryptoListBox = 'cryptoList';
+const debitColor = Color(0xffef476f);
+const creditColor = Color(0xff06d6a0);
+
 final _numberFormat =
     NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 2);
+
+bool _isLargeScreen(BuildContext context) {
+  return MediaQuery.of(context).size.width > 960.0;
+}
 
 Future<Price> fetchPrice(String symbol) async {
   if (symbol == 'INIT') {
@@ -29,12 +37,15 @@ Future<Price> fetchPrice(String symbol) async {
   symbol = '${symbol}USDT';
 
   final response = await http.get(
-      Uri.parse('https://api3.binance.com/api/v3/ticker/price?symbol=$symbol'));
+    Uri.parse('https://api3.binance.com/api/v3/ticker/price?symbol=$symbol'),
+  );
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    return Price.fromJson(jsonDecode(response.body));
+    return Price.fromJson(
+      jsonDecode(response.body),
+    );
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
@@ -93,13 +104,16 @@ Future<Variation24> fetchVariation24(String symbol) async {
   symbol = '${symbol}USDT';
 
   final response = await http.get(
-      Uri.parse('https://api3.binance.com/api/v3/ticker/24hr?symbol=$symbol'));
+    Uri.parse('https://api3.binance.com/api/v3/ticker/24hr?symbol=$symbol'),
+  );
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
 
-    return Variation24.fromJson(jsonDecode(response.body));
+    return Variation24.fromJson(
+      jsonDecode(response.body),
+    );
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
@@ -107,100 +121,20 @@ Future<Variation24> fetchVariation24(String symbol) async {
   }
 }
 
-class Price {
-  Price({
-    required this.symbol,
-    required this.price,
-  });
-
-  factory Price.fromJson(Map<String, dynamic> json) {
-    return Price(
-      symbol: json['symbol'],
-      price: double.parse(json['price']),
-    );
-  }
-
-  final String symbol;
-  final double price;
-}
-
-class Variation24 {
-  Variation24({
-    required this.symbol,
-    required this.priceChange,
-    required this.priceChangePercent,
-    required this.weightedAvgPrice,
-    required this.prevClosePrice,
-    required this.lastPrice,
-    required this.lastQty,
-    required this.bidPrice,
-    required this.askPrice,
-    required this.openPrice,
-    required this.highPrice,
-    required this.lowPrice,
-    required this.volume,
-    required this.quoteVolume,
-    required this.openTime,
-    required this.closeTime,
-    required this.firstId,
-    required this.lastId,
-    required this.count,
-  });
-
-  factory Variation24.fromJson(Map<String, dynamic> json) {
-    return Variation24(
-      symbol: json['symbol'],
-      priceChange: double.parse(json['priceChange']),
-      priceChangePercent: double.parse(json['priceChangePercent']),
-      weightedAvgPrice: double.parse(json['weightedAvgPrice']),
-      prevClosePrice: double.parse(json['prevClosePrice']),
-      lastPrice: double.parse(json['lastPrice']),
-      lastQty: double.parse(json['lastQty']),
-      bidPrice: double.parse(json['bidPrice']),
-      askPrice: double.parse(json['askPrice']),
-      openPrice: double.parse(json['openPrice']),
-      highPrice: double.parse(json['highPrice']),
-      lowPrice: double.parse(json['lowPrice']),
-      volume: double.parse(json['volume']),
-      quoteVolume: double.parse(json['quoteVolume']),
-      openTime: json['openTime'], // already an int
-      closeTime: json['closeTime'], // already an int
-      firstId: json['firstId'], // already an int
-      lastId: json['lastId'], // already an int
-      count: json['count'], // already an int
-    );
-  }
-
-  final String symbol;
-  final double priceChange;
-  final double priceChangePercent;
-  final double weightedAvgPrice;
-  final double prevClosePrice;
-  final double lastPrice;
-  final double lastQty;
-  final double bidPrice;
-  final double askPrice;
-  final double openPrice;
-  final double highPrice;
-  final double lowPrice;
-  final double volume;
-  final double quoteVolume;
-  final int openTime; // TODO : Transform in DateTime
-  final int closeTime; // TODO : Transform in DateTime
-  final int firstId;
-  final int lastId;
-  final int count;
-}
+typedef DoubleCallback = void Function(double val);
 
 class PositionWidget extends StatefulWidget {
   const PositionWidget({
     Key? key,
     required this.position,
+    required this.onValuationUpdated,
+    required this.onUnrealizedGainUpdated,
     this.portfolio,
   }) : super(key: key);
 
   final Position position;
   final Portfolio? portfolio;
+  final DoubleCallback onValuationUpdated, onUnrealizedGainUpdated;
 
   @override
   _PositionsState createState() => _PositionsState();
@@ -228,7 +162,19 @@ class _PositionsState extends State<PositionWidget> {
         child: Column(
           children: [
             ListTile(
-              leading: const Icon(Icons.all_inclusive),
+              leading: FutureBuilder(
+                future: _getIconFromCryptoHive(widget.position.token),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Image.network(
+                      snapshot.data.toString(),
+                      height: 28,
+                    );
+                  } else {
+                    return const Icon(Icons.all_inclusive);
+                  }
+                },
+              ),
               title: Text(widget.position.token),
               trailing: FutureBuilder<Price>(
                 future: futurePrice,
@@ -247,10 +193,12 @@ class _PositionsState extends State<PositionWidget> {
                   }
 
                   // By default, show a loading spinner.
-                  return Text('-',
-                      style: TextStyle(
-                        color: Colors.black.withOpacity(0.6),
-                      ));
+                  return Text(
+                    '-',
+                    style: TextStyle(
+                      color: Colors.black.withOpacity(0.6),
+                    ),
+                  );
                 },
               ),
             ),
@@ -284,27 +232,31 @@ class _PositionsState extends State<PositionWidget> {
                     future: futurePrice,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        return Text(_numberFormat.format(snapshot.data!.price),
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.black.withOpacity(0.6),
-                            ));
+                        return Text(
+                          _numberFormat.format(snapshot.data!.price),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.black.withOpacity(0.6),
+                          ),
+                        );
                       } else if (snapshot.hasError) {
                         //print('${snapshot.error}');
                         return Text('${snapshot.error}');
                       }
 
                       // By default, show a loading spinner.
-                      return Text('-',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.black.withOpacity(0.6),
-                          ));
+                      return Text(
+                        '-',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                      );
                     },
                   ),
                   const Spacer(),
                   Text(
-                    'MarketPrice',
+                    _isLargeScreen(context) ? 'MarketPrice' : 'MarketPr.',
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.black.withOpacity(0.6),
@@ -321,22 +273,31 @@ class _PositionsState extends State<PositionWidget> {
                     future: futureVariation24,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
+                        final _color = snapshot.data!.priceChangePercent < 0
+                            ? debitColor
+                            : creditColor;
+
                         return Text(
-                            _numberFormat
-                                .format(snapshot.data!.priceChangePercent),
-                            style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.black.withOpacity(0.6)));
+                          _numberFormat
+                              .format(snapshot.data!.priceChangePercent),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: _color,
+                          ),
+                        );
                       } else if (snapshot.hasError) {
                         //print('${snapshot.error}');
                         return Text('${snapshot.error}');
                       }
 
                       // By default, show a loading spinner.
-                      return Text('-',
-                          style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.black.withOpacity(0.6)));
+                      return Text(
+                        '-',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                      );
                     },
                   ),
                   const Spacer(),
@@ -355,7 +316,7 @@ class _PositionsState extends State<PositionWidget> {
               child: Row(
                 children: [
                   Text(
-                    _numberFormat.format(0),
+                    _numberFormat.format(widget.position.averagePurchasePrice),
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.black.withOpacity(0.6),
@@ -363,7 +324,9 @@ class _PositionsState extends State<PositionWidget> {
                   ),
                   const Spacer(),
                   Text(
-                    'AvgPurchPrice',
+                    _isLargeScreen(context)
+                        ? 'AvgPurchasePrice'
+                        : 'AvgPurchPr.',
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.black.withOpacity(0.6),
@@ -385,7 +348,7 @@ class _PositionsState extends State<PositionWidget> {
                   ),
                   const Spacer(),
                   Text(
-                    'RealizedGain',
+                    _isLargeScreen(context) ? 'RealizedGain' : 'Realized',
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.black.withOpacity(0.6),
@@ -398,16 +361,42 @@ class _PositionsState extends State<PositionWidget> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  Text(
-                    _numberFormat.format(0),
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.black.withOpacity(0.6),
-                    ),
+                  FutureBuilder<Price>(
+                    future: futurePrice,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final _unrealizedGain = (snapshot.data!.price -
+                                widget.position.averagePurchasePrice
+                                    .toDouble()) *
+                            widget.position.amount.toDouble();
+                        final _color =
+                            _unrealizedGain < 0 ? debitColor : creditColor;
+
+                        return Text(
+                          _numberFormat.format(_unrealizedGain),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: _color,
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        //print('${snapshot.error}');
+                        return Text('${snapshot.error}');
+                      }
+
+                      // By default, show a loading spinner.
+                      return Text(
+                        '-',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                      );
+                    },
                   ),
                   const Spacer(),
                   Text(
-                    'UnrealizedGain',
+                    _isLargeScreen(context) ? 'UnrealizedGain' : 'Unrealized',
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.black.withOpacity(0.6),
@@ -416,9 +405,9 @@ class _PositionsState extends State<PositionWidget> {
                 ],
               ),
             ),
-            const Divider(
-                //height: 14,
-                ),
+            // const Divider(
+            //   height: 14,
+            // ),
             const Spacer(),
             ButtonBar(
               buttonHeight: 10,
@@ -433,7 +422,14 @@ class _PositionsState extends State<PositionWidget> {
                   color: Colors.black.withOpacity(0.6),
                   onPressed: () {
                     setState(() {
-                      futurePrice = fetchPrice(widget.position.token);
+                      futurePrice = fetchPrice(widget.position.token)
+                        ..then((value) => widget.onValuationUpdated(
+                            value.price * widget.position.amount))
+                        ..then((value) => widget.onUnrealizedGainUpdated(
+                            (value.price -
+                                    widget.position.averagePurchasePrice
+                                        .toDouble()) *
+                                widget.position.amount.toDouble()));
                       futureVariation24 =
                           fetchVariation24(widget.position.token);
                     });
@@ -459,7 +455,11 @@ class _PositionsState extends State<PositionWidget> {
                                 padding: const EdgeInsets.all(8),
                                 child: Row(
                                   children: [
-                                    const Text('Transactions'),
+                                    Text(
+                                      'Transactions',
+                                      style:
+                                          Theme.of(context).textTheme.headline6,
+                                    ),
                                     const Spacer(),
                                     OutlinedButton(
                                       onPressed: () => Navigator.pop(context),
@@ -487,5 +487,12 @@ class _PositionsState extends State<PositionWidget> {
         ),
       ),
     );
+  }
+
+  Future<String> _getIconFromCryptoHive(String symbol) async {
+    final boxCrypto = await Hive.openBox<CryptoHive>(cryptoListBox);
+    final CryptoHive cryptos = boxCrypto.get(symbol)!;
+
+    return cryptos.logo;
   }
 }

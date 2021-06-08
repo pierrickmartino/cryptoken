@@ -1,7 +1,3 @@
-// Copyright 2020, the Flutter project authors. Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -89,6 +85,7 @@ class Portfolio {
 @JsonSerializable()
 class Transaction {
   Transaction(
+    this.transactionType,
     this.tokenMain,
     this.tokenReference,
     this.tokenFee,
@@ -104,6 +101,7 @@ class Transaction {
   factory Transaction.fromJson(Map<String, dynamic> json) =>
       _$TransactionFromJson(json);
 
+  int transactionType;
   String tokenMain, tokenReference, tokenFee, tokenPrice;
   double amountMain, amountReference, amountFee, price;
   bool withImpactOnSecondPosition;
@@ -138,15 +136,15 @@ class Transaction {
   }
 }
 
-/// todo : modify the definition of the position (token, amount, etc..)
 @JsonSerializable()
 class Position {
-  Position(this.token, this.amount, this.time);
+  Position(this.token, this.amount, this.averagePurchasePrice,
+      this.purchaseAmount, this.realizedGain, this.time);
   factory Position.fromJson(Map<String, dynamic> json) =>
       _$PositionFromJson(json);
 
   String token;
-  double amount;
+  double amount, averagePurchasePrice, purchaseAmount, realizedGain;
 
   @JsonKey(fromJson: _timestampToDateTime, toJson: _dateTimeToTimestamp)
   DateTime time;
