@@ -457,26 +457,26 @@ class _PositionsState extends State<PositionWidget> {
               buttonPadding: const EdgeInsets.all(0),
               alignment: MainAxisAlignment.end,
               children: [
-                IconButton(
-                  iconSize: 20,
-                  padding: const EdgeInsets.all(6),
-                  icon: const Icon(Icons.refresh),
-                  color: Colors.black.withOpacity(0.6),
-                  onPressed: () {
-                    setState(() {
-                      futurePrice = fetchPrice(widget.position.token)
-                        ..then((value) => widget.onValuationUpdated(
-                            value.price * widget.position.amount))
-                        ..then((value) => widget.onUnrealizedGainUpdated(
-                            (value.price -
-                                    widget.position.averagePurchasePrice
-                                        .toDouble()) *
-                                widget.position.amount.toDouble()));
-                      futureVariation24 =
-                          fetchVariation24(widget.position.token);
-                    });
-                  },
-                ),
+                // IconButton(
+                //   iconSize: 20,
+                //   padding: const EdgeInsets.all(6),
+                //   icon: const Icon(Icons.refresh),
+                //   color: Colors.black.withOpacity(0.6),
+                //   onPressed: () {
+                //     setState(() {
+                //       futurePrice = fetchPrice(widget.position.token)
+                //         ..then((value) => widget.onValuationUpdated(
+                //             value.price * widget.position.amount))
+                //         ..then((value) => widget.onUnrealizedGainUpdated(
+                //             (value.price -
+                //                     widget.position.averagePurchasePrice
+                //                         .toDouble()) *
+                //                 widget.position.amount.toDouble()));
+                //       futureVariation24 =
+                //           fetchVariation24(widget.position.token);
+                //     });
+                //   },
+                // ),
                 IconButton(
                   iconSize: 20,
                   padding: const EdgeInsets.all(6),
