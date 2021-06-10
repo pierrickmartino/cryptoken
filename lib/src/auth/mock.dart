@@ -48,9 +48,9 @@ class MockUser implements User {
   @override
   String get uid => '123';
   @override
-  String get name => 'John Doe';
+  String get name => '-';
   @override
-  String get userEmail => 'john.doe@gmail.com';
+  String get userEmail => '-';
   @override
   String get imageUrl => 'https://picsum.photos/250?image=9';
 }

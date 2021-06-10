@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:web_dashboard/src/auth/auth.dart';
 
-import '../auth/mock.dart';
 import '../widgets/dialogs.dart';
 import '../widgets/third_party/adaptive_scaffold.dart';
 
@@ -17,9 +16,11 @@ class HomePage extends StatefulWidget {
   const HomePage({
     Key? key,
     required this.onSignOut,
+    required this.user,
   }) : super(key: key);
 
   final VoidCallback onSignOut;
+  final User user;
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -28,15 +29,21 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _pageIndex = 0;
 
-  final User user = MockUser();
-
   @override
   Widget build(BuildContext context) {
     return AdaptiveScaffold(
       title: const Text('Cryptoken'),
       actions: [
         Center(
-          child: Text(user.name),
+          child: CircleAvatar(
+            radius: 15,
+            backgroundImage: NetworkImage(widget.user.imageUrl),
+            child: Container(),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Center(
+          child: Text(widget.user.name),
         ),
         const SizedBox(width: 10),
         Padding(

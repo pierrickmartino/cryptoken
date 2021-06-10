@@ -80,9 +80,9 @@ class _SignInButtonState extends State<SignInButton> {
         }
 
         // If sign in failed, show toast and the login button
-        if (snapshot.hasError) {
-          _showError();
-        }
+        // if (snapshot.hasError) {
+        //   _showError();
+        // }
 
         return ElevatedButton(
           onPressed: _signIn,
@@ -93,10 +93,11 @@ class _SignInButtonState extends State<SignInButton> {
   }
 
   void _showError() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Unable to sign in.'),
-      ),
-    );
+    print('Unable to sign in.');
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   const SnackBar(
+    //     content: Text('Unable to sign in.'),
+    //   ),
+    // );
   }
 }

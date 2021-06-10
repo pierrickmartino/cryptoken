@@ -111,14 +111,34 @@ class _SignInSwitcherState extends State<SignInSwitcher> {
 
   @override
   Widget build(BuildContext context) {
+    //final FirebaseAuth _auth = FirebaseAuth.instance;
+
     return AnimatedSwitcher(
       switchInCurve: Curves.easeOut,
       switchOutCurve: Curves.easeOut,
       duration: const Duration(milliseconds: 200),
       child: _isSignedIn
-          ? HomePage(
-              onSignOut: _handleSignOut,
-            )
+          ? FutureBuilder<User>(
+              builder: (context, futureSnapshot) {
+                if (!futureSnapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                if (futureSnapshot.hasError) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                return HomePage(
+                  onSignOut: _handleSignOut,
+                  user: futureSnapshot.data!,
+                );
+              },
+              future: _getUser(),
+              initialData: MockUser())
           : SignInPage(
               auth: widget.appState!.auth!,
               onSuccess: _handleSignIn,
@@ -132,6 +152,15 @@ class _SignInSwitcherState extends State<SignInSwitcher> {
     setState(() {
       _isSignedIn = true;
     });
+  }
+
+  Future<User> _getUser() async {
+    final _user = await widget.appState!.auth!.signIn();
+    if (_user == null) {
+      return MockUser();
+    } else {
+      return _user;
+    }
   }
 
   Future<void> _handleSignOut() async {
