@@ -48,11 +48,17 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(width: 10),
         Padding(
           padding: const EdgeInsets.all(12),
-          child: TextButton(
-            style: TextButton.styleFrom(primary: Colors.white),
-            onPressed: _handleSignOut,
-            child: const Text('Sign Out'),
-          ),
+          child: _isLargeScreen(context)
+              ? TextButton(
+                  style: TextButton.styleFrom(primary: Colors.white),
+                  onPressed: _handleSignOut,
+                  child: const Text('Sign Out'),
+                )
+              : IconButton(
+                  onPressed: _handleSignOut,
+                  icon: const Icon(Icons.logout_rounded),
+                  color: Colors.white,
+                ),
         )
       ],
       currentIndex: _pageIndex,
