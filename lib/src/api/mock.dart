@@ -140,7 +140,7 @@ class MockDashboardApi implements DashboardApi {
     );
 
     for (final portfolio in [portfolio1, portfolio2]) {
-      for (var i = 0; i < 3; i++) {
+      for (var i = 0; i < 15; i++) {
         final date = monthAgo.add(
           const Duration(days: 1),
         );

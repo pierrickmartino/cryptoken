@@ -119,7 +119,8 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
                     _positionMain.amount + _transaction.amountMain,
                     ((_positionMain.purchaseAmount *
                                 _positionMain.averagePurchasePrice) +
-                            (_transaction.amountMain * _transaction.price)) /
+                            (_transaction.amountReference *
+                                _transaction.price)) /
                         (_positionMain.purchaseAmount +
                             _transaction.amountMain),
                     _positionMain.purchaseAmount + _transaction.amountMain,

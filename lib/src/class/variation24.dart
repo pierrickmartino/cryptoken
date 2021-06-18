@@ -3,22 +3,22 @@ class Variation24 {
     required this.symbol,
     required this.priceChange,
     required this.priceChangePercent,
-    required this.weightedAvgPrice,
-    required this.prevClosePrice,
-    required this.lastPrice,
-    required this.lastQty,
-    required this.bidPrice,
-    required this.askPrice,
-    required this.openPrice,
-    required this.highPrice,
-    required this.lowPrice,
-    required this.volume,
-    required this.quoteVolume,
-    required this.openTime,
-    required this.closeTime,
-    required this.firstId,
-    required this.lastId,
-    required this.count,
+    this.weightedAvgPrice = 0,
+    this.prevClosePrice = 0,
+    this.lastPrice = 0,
+    this.lastQty = 0,
+    this.bidPrice = 0,
+    this.askPrice = 0,
+    this.openPrice = 0,
+    this.highPrice = 0,
+    this.lowPrice = 0,
+    this.volume = 0,
+    this.quoteVolume = 0,
+    this.openTime = 0,
+    this.closeTime = 0,
+    this.firstId = 0,
+    this.lastId = 0,
+    this.count = 0,
   });
 
   factory Variation24.fromJson(Map<String, dynamic> json) {
@@ -48,20 +48,20 @@ class Variation24 {
   final String symbol;
   final double priceChange;
   final double priceChangePercent;
-  final double weightedAvgPrice;
-  final double prevClosePrice;
-  final double lastPrice;
-  final double lastQty;
-  final double bidPrice;
-  final double askPrice;
-  final double openPrice;
-  final double highPrice;
-  final double lowPrice;
-  final double volume;
-  final double quoteVolume;
-  final int openTime; // TODO : Transform in DateTime
-  final int closeTime; // TODO : Transform in DateTime
-  final int firstId;
-  final int lastId;
-  final int count;
+  double weightedAvgPrice;
+  double prevClosePrice;
+  double lastPrice;
+  double lastQty;
+  double bidPrice;
+  double askPrice;
+  double openPrice;
+  double highPrice;
+  double lowPrice;
+  double volume;
+  double quoteVolume;
+  int openTime; // TODO : Transform in DateTime
+  int closeTime; // TODO : Transform in DateTime
+  int firstId;
+  int lastId;
+  int count;
 }

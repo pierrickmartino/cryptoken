@@ -1,12 +1,10 @@
 import 'dart:async' show Future;
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import 'package:http/http.dart' as http;
 import 'package:web_dashboard/src/class/price.dart';
 import 'package:web_dashboard/src/class/variation24.dart';
 import 'package:web_dashboard/src/hive/crypto_hive.dart';
@@ -26,135 +24,72 @@ bool _isLargeScreen(BuildContext context) {
   return MediaQuery.of(context).size.width > 960.0;
 }
 
-Future<Price> fetchPrice(String symbol) async {
-  if (symbol == 'INIT') {
-    return Price(price: 0, symbol: '');
-  }
-  if (symbol == 'USDT') {
-    return Price(price: 1, symbol: 'USDT');
-  }
-
-  symbol = '${symbol}USDT';
-
-  final response = await http.get(
-    Uri.parse('https://api3.binance.com/api/v3/ticker/price?symbol=$symbol'),
-  );
-
-  if (response.statusCode == 200) {
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
-    return Price.fromJson(
-      jsonDecode(response.body),
-    );
-  } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
-    throw Exception('Failed to load price');
-  }
-}
-
-Future<Variation24> fetchVariation24(String symbol) async {
-  if (symbol == 'INIT') {
-    return Variation24(
-      priceChange: 0,
-      symbol: '',
-      askPrice: 0,
-      bidPrice: 0,
-      count: 0,
-      firstId: 0,
-      highPrice: 0,
-      lastId: 0,
-      lastQty: 0,
-      lowPrice: 0,
-      lastPrice: 0,
-      openPrice: 0,
-      prevClosePrice: 0,
-      priceChangePercent: 0,
-      quoteVolume: 0,
-      volume: 0,
-      weightedAvgPrice: 0,
-      closeTime: 0,
-      openTime: 0,
-    );
-  }
-  if (symbol == 'USDT') {
-    return Variation24(
-      priceChange: 0,
-      symbol: 'USDT',
-      askPrice: 0,
-      bidPrice: 0,
-      count: 0,
-      firstId: 0,
-      highPrice: 0,
-      lastId: 0,
-      lastQty: 0,
-      lowPrice: 0,
-      lastPrice: 0,
-      openPrice: 0,
-      prevClosePrice: 0,
-      priceChangePercent: 0,
-      quoteVolume: 0,
-      volume: 0,
-      weightedAvgPrice: 0,
-      closeTime: 0,
-      openTime: 0,
-    );
-  }
-
-  symbol = '${symbol}USDT';
-
-  final response = await http.get(
-    Uri.parse('https://api3.binance.com/api/v3/ticker/24hr?symbol=$symbol'),
-  );
-
-  if (response.statusCode == 200) {
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
-
-    return Variation24.fromJson(
-      jsonDecode(response.body),
-    );
-  } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
-    throw Exception('Failed to load price');
-  }
-}
-
-typedef DoubleCallback = void Function(double val);
-
-class PositionWidget extends StatefulWidget {
+class PositionWidget extends StatelessWidget {
   const PositionWidget({
     Key? key,
     required this.position,
-    required this.onValuationUpdated,
-    required this.onUnrealizedGainUpdated,
     this.portfolio,
+    required this.positionPrice,
+    this.positionVariation24,
   }) : super(key: key);
 
   final Position position;
   final Portfolio? portfolio;
-  final DoubleCallback onValuationUpdated, onUnrealizedGainUpdated;
+  final Price positionPrice;
+  final Variation24? positionVariation24;
 
-  @override
-  _PositionsState createState() => _PositionsState();
-}
+  Widget _getPositionUnrealizedGain() {
+    final _unrealizedGain =
+        (positionPrice.price - position.averagePurchasePrice.toDouble()) *
+            position.amount.toDouble();
+    final _color = _unrealizedGain < 0 ? debitColor : creditColor;
 
-class _PositionsState extends State<PositionWidget> {
-  late Future<Price> futurePrice;
-  late Future<Variation24> futureVariation24;
+    return Text(
+      _numberFormat.format(_unrealizedGain),
+      style: TextStyle(
+        fontSize: 13,
+        color: _color,
+      ),
+    );
+  }
 
-  @override
-  void initState() {
-    super.initState();
+  Widget _getPositionPrice() {
+    return Text(
+      _numberFormat.format(positionPrice.price),
+      style: TextStyle(
+        fontSize: 13,
+        color: Colors.black.withOpacity(0.6),
+      ),
+    );
+  }
 
-    futurePrice = fetchPrice(widget.position.token)
-      ..then((value) =>
-          widget.onValuationUpdated(value.price * widget.position.amount))
-      ..then((value) => widget.onUnrealizedGainUpdated(
-          (value.price - widget.position.averagePurchasePrice.toDouble()) *
-              widget.position.amount.toDouble()));
-    futureVariation24 = fetchVariation24(widget.position.token);
+  Widget _getPositionValuation() {
+    return Text(
+      _numberFormat.format(positionPrice.price * position.amount),
+      style: TextStyle(
+        color: Colors.black.withOpacity(0.6),
+      ),
+    );
+  }
+
+  Widget _getPositionVariation24() {
+    final _color =
+        positionVariation24!.priceChangePercent < 0 ? debitColor : creditColor;
+
+    return Text(
+      _numberFormat.format(positionVariation24!.priceChangePercent),
+      style: TextStyle(
+        fontSize: 13,
+        color: _color,
+      ),
+    );
+  }
+
+  Future<String> _getIconFromCryptoHive(String symbol) async {
+    final boxCrypto = await Hive.openBox<CryptoHive>(cryptoListBox);
+    final CryptoHive cryptos = boxCrypto.get(symbol)!;
+
+    return cryptos.logo;
   }
 
   @override
@@ -169,7 +104,7 @@ class _PositionsState extends State<PositionWidget> {
           children: [
             ListTile(
               leading: FutureBuilder(
-                future: _getIconFromCryptoHive(widget.position.token),
+                future: _getIconFromCryptoHive(position.token),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return Image.network(
@@ -181,38 +116,8 @@ class _PositionsState extends State<PositionWidget> {
                   }
                 },
               ),
-              title: Text(widget.position.token),
-              trailing: FutureBuilder<Price>(
-                future: futurePrice,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Text(
-                      _numberFormat.format(
-                          snapshot.data!.price * widget.position.amount),
-                      style: TextStyle(
-                        color: Colors.black.withOpacity(0.6),
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    //print('${snapshot.error}');
-                    return Text(
-                      'N/A',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.black.withOpacity(0.6),
-                      ),
-                    );
-                  }
-
-                  // By default, show a loading spinner.
-                  return Text(
-                    '-',
-                    style: TextStyle(
-                      color: Colors.black.withOpacity(0.6),
-                    ),
-                  );
-                },
-              ),
+              title: Text(position.token),
+              trailing: _getPositionValuation(),
             ),
             Padding(
               padding: _isLargeScreen(context)
@@ -221,7 +126,7 @@ class _PositionsState extends State<PositionWidget> {
               child: Row(
                 children: [
                   Text(
-                    _numberFormat.format(widget.position.amount),
+                    _numberFormat.format(position.amount),
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.black.withOpacity(0.6),
@@ -244,38 +149,7 @@ class _PositionsState extends State<PositionWidget> {
                   : const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  FutureBuilder<Price>(
-                    future: futurePrice,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Text(
-                          _numberFormat.format(snapshot.data!.price),
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.black.withOpacity(0.6),
-                          ),
-                        );
-                      } else if (snapshot.hasError) {
-                        //print('${snapshot.error}');
-                        return Text(
-                          'N/A',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.black.withOpacity(0.6),
-                          ),
-                        );
-                      }
-
-                      // By default, show a loading spinner.
-                      return Text(
-                        '-',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.black.withOpacity(0.6),
-                        ),
-                      );
-                    },
-                  ),
+                  _getPositionPrice(),
                   const Spacer(),
                   Text(
                     _isLargeScreen(context) ? 'MarketPrice' : 'MarketPr.',
@@ -293,43 +167,7 @@ class _PositionsState extends State<PositionWidget> {
                   : const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  FutureBuilder<Variation24>(
-                    future: futureVariation24,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final _color = snapshot.data!.priceChangePercent < 0
-                            ? debitColor
-                            : creditColor;
-
-                        return Text(
-                          _numberFormat
-                              .format(snapshot.data!.priceChangePercent),
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: _color,
-                          ),
-                        );
-                      } else if (snapshot.hasError) {
-                        //print('${snapshot.error}');
-                        return Text(
-                          'N/A',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.black.withOpacity(0.6),
-                          ),
-                        );
-                      }
-
-                      // By default, show a loading spinner.
-                      return Text(
-                        '-',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.black.withOpacity(0.6),
-                        ),
-                      );
-                    },
-                  ),
+                  _getPositionVariation24(),
                   const Spacer(),
                   Text(
                     '24hr Var.',
@@ -348,7 +186,7 @@ class _PositionsState extends State<PositionWidget> {
               child: Row(
                 children: [
                   Text(
-                    _numberFormat.format(widget.position.averagePurchasePrice),
+                    _numberFormat.format(position.averagePurchasePrice),
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.black.withOpacity(0.6),
@@ -397,45 +235,7 @@ class _PositionsState extends State<PositionWidget> {
                   : const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  FutureBuilder<Price>(
-                    future: futurePrice,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final _unrealizedGain = (snapshot.data!.price -
-                                widget.position.averagePurchasePrice
-                                    .toDouble()) *
-                            widget.position.amount.toDouble();
-                        final _color =
-                            _unrealizedGain < 0 ? debitColor : creditColor;
-
-                        return Text(
-                          _numberFormat.format(_unrealizedGain),
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: _color,
-                          ),
-                        );
-                      } else if (snapshot.hasError) {
-                        //print('${snapshot.error}');
-                        return Text(
-                          'N/A',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.black.withOpacity(0.6),
-                          ),
-                        );
-                      }
-
-                      // By default, show a loading spinner.
-                      return Text(
-                        '-',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.black.withOpacity(0.6),
-                        ),
-                      );
-                    },
-                  ),
+                  _getPositionUnrealizedGain(),
                   const Spacer(),
                   Text(
                     _isLargeScreen(context) ? 'UnrealizedGain' : 'Unrealized',
@@ -447,9 +247,6 @@ class _PositionsState extends State<PositionWidget> {
                 ],
               ),
             ),
-            // const Divider(
-            //   height: 14,
-            // ),
             const Spacer(),
             ButtonBar(
               buttonHeight: 10,
@@ -457,26 +254,6 @@ class _PositionsState extends State<PositionWidget> {
               buttonPadding: const EdgeInsets.all(0),
               alignment: MainAxisAlignment.end,
               children: [
-                // IconButton(
-                //   iconSize: 20,
-                //   padding: const EdgeInsets.all(6),
-                //   icon: const Icon(Icons.refresh),
-                //   color: Colors.black.withOpacity(0.6),
-                //   onPressed: () {
-                //     setState(() {
-                //       futurePrice = fetchPrice(widget.position.token)
-                //         ..then((value) => widget.onValuationUpdated(
-                //             value.price * widget.position.amount))
-                //         ..then((value) => widget.onUnrealizedGainUpdated(
-                //             (value.price -
-                //                     widget.position.averagePurchasePrice
-                //                         .toDouble()) *
-                //                 widget.position.amount.toDouble()));
-                //       futureVariation24 =
-                //           fetchVariation24(widget.position.token);
-                //     });
-                //   },
-                // ),
                 IconButton(
                   iconSize: 20,
                   padding: const EdgeInsets.all(6),
@@ -512,7 +289,7 @@ class _PositionsState extends State<PositionWidget> {
                               ),
                               Expanded(
                                 child: TransactionsList(
-                                  portfolio: widget.portfolio!,
+                                  portfolio: portfolio!,
                                   api: appState.api.transactions,
                                 ),
                               ),
@@ -529,12 +306,5 @@ class _PositionsState extends State<PositionWidget> {
         ),
       ),
     );
-  }
-
-  Future<String> _getIconFromCryptoHive(String symbol) async {
-    final boxCrypto = await Hive.openBox<CryptoHive>(cryptoListBox);
-    final CryptoHive cryptos = boxCrypto.get(symbol)!;
-
-    return cryptos.logo;
   }
 }
