@@ -83,8 +83,7 @@ class FirebasePortfolioApi implements PortfolioApi {
 
 class FirebaseTransactionApi implements TransactionApi {
   FirebaseTransactionApi(this.firestore, this.userId)
-      : _positionsRef =
-            firestore.collection('users/$userId/portfolios/positions');
+      : _positionsRef = firestore.collection('users/$userId/portfolios');
 
   final dynamic firestore;
   final String userId;
@@ -198,8 +197,10 @@ class FirebasePositionApi implements PositionApi {
     final document = await _portfoliosRef
         .doc(portfolioId)
         .collection('positions')
-        .add(position.toJson());
-    return await get(portfolioId, document.id);
+        .doc(position.token)
+        .set(position.toJson());
+
+    return await get(portfolioId, position.token);
   }
 
   @override

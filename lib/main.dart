@@ -37,6 +37,7 @@ Future<void> main() async {
   // open the box dedicated to Cryptos
   final boxCrypto = await Hive.openBox<CryptoHive>(cryptoListBox);
 
+  // retrieve the crypto list from the Json crypto.json (from coinmarketcap)
   final cryptoJsonString = await rootBundle.loadString('data/crypto.json');
   final cryptoJsonResponse = json.decode(cryptoJsonString);
   final CryptosList cryptosList = CryptosList.fromJson(cryptoJsonResponse);
@@ -53,10 +54,13 @@ Future<void> main() async {
     await boxCrypto.put(crypto.symbol, crypto);
   }
 
-  runApp(
-    DashboardApp.mock(),
-  );
+  // to debug : flutter run -d chrome
   // runApp(
-  //   DashboardApp.firebase(),
+  //   DashboardApp.mock(),
   // );
+
+  // to debug : flutter run -d chrome --web-port=5000
+  runApp(
+    DashboardApp.firebase(),
+  );
 }
