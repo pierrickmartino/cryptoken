@@ -103,6 +103,19 @@ class FirebaseTransactionApi implements TransactionApi {
   }
 
   @override
+  Stream<List<Transaction>> subscribeAll() {
+    final snapshots =
+        _positionsRef.doc().collection('transactions').snapshots();
+    final result = snapshots.map((querySnapshot) {
+      return querySnapshot.docs.map((snapshot) {
+        return Transaction.fromJson(snapshot.data())..id = snapshot.id;
+      }).toList();
+    });
+
+    return result;
+  }
+
+  @override
   Future<Transaction> delete(String positionId, String id) async {
     final document = _positionsRef.doc('$positionId/transactions/$id');
     final transaction = await get(positionId, document.id);
@@ -134,8 +147,23 @@ class FirebaseTransactionApi implements TransactionApi {
 
   @override
   Future<List<Transaction>> list(String positionId) async {
-    final transactionsRef =
-        _positionsRef.doc(positionId).collection('transactions');
+    final transactionsRef = _positionsRef
+        .doc(positionId)
+        .collection('transactions')
+        .orderBy('transactionDate')
+        .limit(5);
+    final querySnapshot = await transactionsRef.get();
+    final transactions = querySnapshot.docs
+        .map((doc) => Transaction.fromJson(doc.data())..id = doc.id)
+        .toList();
+
+    return transactions;
+  }
+
+  @override
+  Future<List<Transaction>> listAll() async {
+    final transactionsRef = _positionsRef.doc().collection(
+        'transactions'); // TODO : Use an iteration on each available position
     final querySnapshot = await transactionsRef.get();
     final transactions = querySnapshot.docs
         .map((doc) => Transaction.fromJson(doc.data())..id = doc.id)

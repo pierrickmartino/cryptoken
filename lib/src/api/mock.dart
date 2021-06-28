@@ -140,7 +140,7 @@ class MockDashboardApi implements DashboardApi {
     );
 
     for (final portfolio in [portfolio1, portfolio2]) {
-      for (var i = 0; i < 15; i++) {
+      for (var i = 0; i < 6; i++) {
         final date = monthAgo.add(
           const Duration(days: 1),
         );
@@ -404,6 +404,14 @@ class MockTransactionApi implements TransactionApi {
   }
 
   @override
+  Future<List<Transaction>> listAll() async {
+    return _storage.keys.map((k) => _storage[k]!).toList()
+        //.sublist(1, 5)
+        //.toList()
+        ;
+  }
+
+  @override
   Future<Transaction> update(
       String positionId, String id, Transaction transaction) async {
     _storage['$positionId-$id'] = transaction;
@@ -416,6 +424,11 @@ class MockTransactionApi implements TransactionApi {
     return _streamController.stream
         .where((event) => event.positionId == positionId)
         .map((event) => event.transactions);
+  }
+
+  @override
+  Stream<List<Transaction>> subscribeAll() {
+    return _streamController.stream.map((event) => event.transactions);
   }
 
   void _emit(String positionId) {

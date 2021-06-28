@@ -55,12 +55,12 @@ Future<void> main() async {
   }
 
   // to debug : flutter run -d chrome
-  // runApp(
-  //   DashboardApp.mock(),
-  // );
+  runApp(
+    DashboardApp.mock(),
+  );
 
   // to debug : flutter run -d chrome --web-port=5000
-  runApp(
-    DashboardApp.firebase(),
-  );
+  // runApp(
+  //   DashboardApp.firebase(),
+  // );
 }

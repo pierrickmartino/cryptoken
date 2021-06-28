@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,8 @@ import 'api/mock.dart';
 import 'auth/auth.dart';
 import 'auth/firebase.dart';
 import 'auth/mock.dart';
+import 'constants.dart';
+import 'controllers/menu_controller.dart';
 import 'pages/home.dart';
 import 'pages/sign_in.dart';
 
@@ -58,35 +61,46 @@ class _DashboardAppState extends State<DashboardApp> {
 
   @override
   void initState() {
-    super.initState();
     _appState = AppState(widget.auth);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-        valueListenable: Hive.box(settingsBox).listenable(),
-        builder: (listenerContext, Box<dynamic> box, listenerWidget) {
-          final darkMode = box.get('darkMode', defaultValue: false);
-          return Provider.value(
-            value: _appState,
-            child: MaterialApp(
-              themeMode: darkMode ? ThemeMode.dark : ThemeMode.light,
-              darkTheme: ThemeData.dark(),
-              theme: ThemeData(
-                primaryColor: const Color(0xff004e98),
-                accentColor: const Color(0xffff6700),
-                dividerColor: const Color(0xffc0c0c0),
-                canvasColor: const Color(0xffEBEBEB),
-              ),
-              debugShowCheckedModeBanner: false,
-              home: SignInSwitcher(
-                appState: _appState,
-                apiBuilder: widget.apiBuilder,
-              ),
-            ),
-          );
-        });
+    return
+        // ValueListenableBuilder(
+        //     valueListenable: Hive.box(settingsBox).listenable(),
+        //     builder: (listenerContext, Box<dynamic> box, listenerWidget) {
+        //       final darkMode = box.get('darkMode', defaultValue: false);
+        // return
+        Provider.value(
+      value: _appState,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        //themeMode: darkMode ? ThemeMode.dark : ThemeMode.light,
+        darkTheme: ThemeData.dark(),
+
+        theme: ThemeData.dark().copyWith(
+          scaffoldBackgroundColor: bgColor,
+          textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)
+              .apply(bodyColor: Colors.white),
+          canvasColor: secondaryColor,
+        ),
+        // ThemeData(
+        //   primaryColor: const Color(0xff004e98),
+        //   accentColor: const Color(0xffff6700),
+        //   dividerColor: const Color(0xffc0c0c0),
+        //   canvasColor: const Color(0xffEBEBEB),
+        // ),
+
+        home: SignInSwitcher(
+          appState: _appState,
+          apiBuilder: widget.apiBuilder,
+        ),
+      ),
+      //);
+      //}
+    );
   }
 }
 
@@ -116,7 +130,7 @@ class _SignInSwitcherState extends State<SignInSwitcher> {
     return AnimatedSwitcher(
       switchInCurve: Curves.easeOut,
       switchOutCurve: Curves.easeOut,
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 600),
       child: _isSignedIn
           ? FutureBuilder<User>(
               builder: (context, futureSnapshot) {
@@ -132,9 +146,16 @@ class _SignInSwitcherState extends State<SignInSwitcher> {
                   );
                 }
 
-                return HomePage(
-                  onSignOut: _handleSignOut,
-                  user: futureSnapshot.data!,
+                return MultiProvider(
+                  providers: [
+                    ChangeNotifierProvider(
+                      create: (context) => MenuController(),
+                    ),
+                  ],
+                  child: HomePage(
+                    onSignOut: _handleSignOut,
+                    user: futureSnapshot.data!,
+                  ),
                 );
               },
               future: _getUser(),
