@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/services.dart' show rootBundle;
-
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:web_dashboard/src/hive/crypto_hive.dart';
@@ -11,17 +12,19 @@ import 'package:web_dashboard/src/hive/portfolio_hive.dart';
 
 import 'src/app.dart';
 import 'src/class/cryptos_list.dart';
+import 'src/controllers/controllers.dart';
 
-const settingsBox = 'settings';
 const cryptoListBox = 'cryptoList';
 const portfolioListBox = 'portfolioList';
 
-Future<void> main() async {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await GetStorage.init();
+  Get.put<ThemeController>(ThemeController());
+  Get.put<ZeroPositionController>(ZeroPositionController());
+
   // initialization
   await Hive.initFlutter();
-
-  // open the box dedicated to Settings
-  await Hive.openBox(settingsBox);
 
   // register the adapter to insert Portfolio in box
   Hive.registerAdapter(

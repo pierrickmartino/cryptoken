@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'api/api.dart';
@@ -12,7 +11,7 @@ import 'auth/auth.dart';
 import 'auth/firebase.dart';
 import 'auth/mock.dart';
 import 'constants.dart';
-import 'controllers/menu_controller.dart';
+import 'controllers/controllers.dart';
 import 'pages/home.dart';
 import 'pages/sign_in.dart';
 
@@ -57,7 +56,6 @@ class DashboardApp extends StatefulWidget {
 
 class _DashboardAppState extends State<DashboardApp> {
   late AppState _appState;
-  final box = Hive.box(settingsBox);
 
   @override
   void initState() {
@@ -75,11 +73,10 @@ class _DashboardAppState extends State<DashboardApp> {
         // return
         Provider.value(
       value: _appState,
-      child: MaterialApp(
+      child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        //themeMode: darkMode ? ThemeMode.dark : ThemeMode.light,
         darkTheme: ThemeData.dark(),
-
+        initialRoute: '/',
         theme: ThemeData.dark().copyWith(
           scaffoldBackgroundColor: bgColor,
           textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)

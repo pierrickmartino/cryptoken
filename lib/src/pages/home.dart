@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../src/auth/auth.dart';
-import '../../src/controllers/menu_controller.dart';
+import '../../src/controllers/controllers.dart';
 
 import '../widgets/dialogs.dart';
 

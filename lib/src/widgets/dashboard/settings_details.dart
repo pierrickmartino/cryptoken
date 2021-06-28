@@ -1,27 +1,16 @@
-import 'package:hive/hive.dart';
-
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../constants.dart';
+import '../../controllers/controllers.dart';
 
-const settingsBox = 'settings';
-
-class SettingsDetails extends StatefulWidget {
+class SettingsDetails extends StatelessWidget {
   const SettingsDetails({
     Key? key,
   }) : super(key: key);
-  @override
-  _SettingsDetailsState createState() => _SettingsDetailsState();
-}
-
-class _SettingsDetailsState extends State<SettingsDetails> {
-  final box = Hive.box(settingsBox);
 
   @override
   Widget build(BuildContext context) {
-    final darkMode = box.get('darkMode', defaultValue: false);
-    final showZeroPosition = box.get('showZeroPosition', defaultValue: false);
-
     return Container(
       padding: const EdgeInsets.all(defaultPadding),
       decoration: const BoxDecoration(
@@ -44,13 +33,13 @@ class _SettingsDetailsState extends State<SettingsDetails> {
               'Theme mode light/dark',
               style: TextStyle(fontSize: 14),
             ),
-            trailing: Switch(
-              value: darkMode,
-              onChanged: (val) {
-                setState(() {
-                  box.put('darkMode', !darkMode);
-                });
-              },
+            trailing: GetBuilder<ThemeController>(
+              builder: (controller) => Switch(
+                value: getThemeModeFromString(controller.currentTheme),
+                onChanged: (val) {
+                  controller.setThemeMode(val ? 'dark' : 'light');
+                },
+              ),
             ),
           ),
           ListTile(
@@ -58,17 +47,28 @@ class _SettingsDetailsState extends State<SettingsDetails> {
               'Show position with zero amount',
               style: TextStyle(fontSize: 14),
             ),
-            trailing: Switch(
-              value: showZeroPosition,
-              onChanged: (val) {
-                setState(() {
-                  box.put('showZeroPosition', !showZeroPosition);
-                });
-              },
+            trailing: GetBuilder<ZeroPositionController>(
+              builder: (controller) => Switch(
+                value: controller.currentZeroPosition,
+                onChanged: (val) {
+                  controller.setZeroPositionDisplay(val);
+                },
+              ),
             ),
-          )
+          ),
         ],
       ),
     );
+  }
+
+  bool getThemeModeFromString(String themeString) {
+    bool _setThemeMode = false;
+    if (themeString == 'light') {
+      _setThemeMode = false;
+    }
+    if (themeString == 'dark') {
+      _setThemeMode = true;
+    }
+    return _setThemeMode;
   }
 }
