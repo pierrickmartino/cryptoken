@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:web_dashboard/src/class/price.dart';
 import 'package:web_dashboard/src/class/variation24.dart';
 import 'package:web_dashboard/src/hive/crypto_hive.dart';
+import 'package:web_dashboard/wallet/model/wallet_model.dart';
 
 import '../api/api.dart';
 import '../app.dart';
@@ -34,7 +35,7 @@ class PositionWidget extends StatelessWidget {
   }) : super(key: key);
 
   final Position position;
-  final Portfolio? portfolio;
+  final WalletModel? portfolio;
   final Price positionPrice;
   final Variation24? positionVariation24;
 

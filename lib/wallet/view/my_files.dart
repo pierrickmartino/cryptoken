@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:web_dashboard/src/api/api.dart';
+import 'package:web_dashboard/wallet/controller/wallet_controller.dart';
+import 'package:web_dashboard/wallet/model/wallet_model.dart';
 
-import '../../src/widgets/dialogs.dart';
+import '../../constant.dart';
 
-import '../app.dart';
-import '../constants.dart';
-import '../responsive.dart';
-
+import '../../src/responsive.dart';
 import 'file_info_card.dart';
+import 'new_wallet.dart';
 
 class MyFiles extends StatelessWidget {
   const MyFiles({
@@ -36,9 +34,9 @@ class MyFiles extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                showDialog<NewPortfolioDialog>(
+                showDialog<NewWalletDialog>(
                   context: context,
-                  builder: (context) => const NewPortfolioDialog(),
+                  builder: (context) => const NewWalletDialog(),
                 );
               },
               icon: const Icon(Icons.add),
@@ -74,42 +72,45 @@ class FileInfoCardGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appState = Provider.of<AppState>(context);
+    final WalletController walletController = WalletController.to;
 
-    return FutureBuilder<List<Portfolio>>(
-      future: appState.api.portfolios.list(),
-      builder: (context, futureSnapshot) {
-        if (!futureSnapshot.hasData) {
+    //final appState = Provider.of<AppState>(context);
+    //return const Text('');
+
+    // return FutureBuilder<List<Portfolio>>(
+    //   future: appState.api.portfolios.list(),
+    //   builder: (context, futureSnapshot) {
+    //     if (!futureSnapshot.hasData) {
+    //       return const Center(
+    //         child: CircularProgressIndicator(),
+    //       );
+    //     }
+    return StreamBuilder<List<WalletModel>>(
+      //initialData: futureSnapshot.data,
+      stream: walletController.streamFirestoreWalletList(),
+      builder: (context, snapshot) {
+        if (snapshot.data == null) {
           return const Center(
             child: CircularProgressIndicator(),
           );
         }
-        return StreamBuilder<List<Portfolio>>(
-          initialData: futureSnapshot.data,
-          stream: appState.api.portfolios.subscribe(),
-          builder: (context, snapshot) {
-            if (snapshot.data == null) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            return GridView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: snapshot.data!.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                crossAxisSpacing: defaultPadding,
-                mainAxisSpacing: defaultPadding,
-                childAspectRatio: childAspectRatio,
-              ),
-              itemBuilder: (context, index) =>
-                  FileInfoCard(portfolio: snapshot.data![index]),
-            );
-          },
+        return GridView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: snapshot.data!.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: defaultPadding,
+            mainAxisSpacing: defaultPadding,
+            childAspectRatio: childAspectRatio,
+          ),
+          itemBuilder: (context, index) =>
+              FileInfoCard(portfolio: snapshot.data![index]),
         );
       },
     );
+    //   },
+    // );
 
     // return GridView.builder(
     //   physics: const NeverScrollableScrollPhysics(),

@@ -1,110 +1,100 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:web_dashboard/src/api/api.dart';
-import 'package:web_dashboard/src/app.dart';
+// import 'package:flutter/material.dart';
+// import 'package:web_dashboard/wallet/controller/wallet_controller.dart';
+// import 'package:web_dashboard/wallet/model/wallet_model.dart';
 
-class NewPortfolioForm extends StatefulWidget {
-  const NewPortfolioForm({Key? key}) : super(key: key);
+// class NewPortfolioForm extends StatelessWidget {
+//   NewPortfolioForm({Key? key}) : super(key: key);
 
-  @override
-  _NewPortfolioFormState createState() => _NewPortfolioFormState();
-}
+//   final WalletModel _portfolio = WalletModel(name: 'Empty');
 
-class _NewPortfolioFormState extends State<NewPortfolioForm> {
-  final Portfolio _portfolio = Portfolio('');
+//   @override
+//   Widget build(BuildContext context) {
+//     //final api = Provider.of<AppState>(context).api;
+//     return EditPortfolioForm(
+//       portfolio: _portfolio,
+//       // onDone: (shouldInsert) {
+//       //   if (shouldInsert) {
+//       //     debugPrint('shouldInsert');
+//       //   }
+//       //   Navigator.of(context).pop();
+//       // },
+//     );
+//   }
+// }
 
-  @override
-  Widget build(BuildContext context) {
-    final api = Provider.of<AppState>(context).api;
-    return EditPortfolioForm(
-      portfolio: _portfolio,
-      onDone: (shouldInsert) {
-        if (shouldInsert) {
-          api.portfolios.insert(_portfolio);
+// class EditPortfolioForm extends StatelessWidget {
+//   EditPortfolioForm({
+//     Key? key,
+//     required this.portfolio,
+//   }) : super(key: key);
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Portfolio inserted'),
-            ),
-          );
-        }
-        Navigator.of(context).pop();
-      },
-    );
-  }
-}
+//   final WalletModel portfolio;
 
-class EditPortfolioForm extends StatefulWidget {
-  const EditPortfolioForm({
-    Key? key,
-    required this.portfolio,
-    required this.onDone,
-  }) : super(key: key);
+//   final _formKey = GlobalKey<FormState>();
+//   final WalletController walletController = WalletController.to;
 
-  final Portfolio portfolio;
-  final ValueChanged<bool> onDone;
+//   @override
+//   Widget build(BuildContext context) {
+//     return Form(
+//       key: _formKey,
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           Padding(
+//             padding: const EdgeInsets.only(bottom: 16),
+//             child: TextFormField(
+//               style: const TextStyle(fontSize: 14),
+//               initialValue: portfolio.name,
+//               decoration: const InputDecoration(
+//                 isDense: true,
+//                 hintText: 'Name',
+//               ),
+//               onChanged: (value) => null,
+//               validator: (value) {
+//                 if (value!.isEmpty) {
+//                   return 'Please enter a name';
+//                 }
+//                 return null;
+//               },
+//             ),
+//           ),
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.end,
+//             children: [
+//               Padding(
+//                 padding: const EdgeInsets.only(left: 8, right: 8),
+//                 child: ElevatedButton(
+//                   onPressed: () {
+//                     debugPrint('CancelInsert');
+//                     //onDone(false);
+//                   },
+//                   child: const Text('Cancel'),
+//                 ),
+//               ),
+//               Padding(
+//                 padding: const EdgeInsets.only(left: 8, right: 8),
+//                 child: ElevatedButton(
+//                   onPressed: () {
+//                     if (_formKey.currentState!.validate()) {
+//                       WalletModel _newWallet =
+//                           WalletModel(name: portfolio.name);
+//                       walletController.insertFirestoreWallet(_newWallet);
+//                       //api.portfolios.insert(_portfolio);
 
-  @override
-  _EditPortfolioFormState createState() => _EditPortfolioFormState();
-}
-
-class _EditPortfolioFormState extends State<EditPortfolioForm> {
-  final _formKey = GlobalKey<FormState>();
-
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: TextFormField(
-              style: const TextStyle(fontSize: 14),
-              initialValue: widget.portfolio.name,
-              decoration: const InputDecoration(
-                isDense: true,
-                hintText: 'Name',
-              ),
-              onChanged: (newValue) {
-                widget.portfolio.name = newValue;
-              },
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Please enter a name';
-                }
-                return null;
-              },
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 8, right: 8),
-                child: ElevatedButton(
-                  onPressed: () {
-                    widget.onDone(false);
-                  },
-                  child: const Text('Cancel'),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8, right: 8),
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      widget.onDone(true);
-                    }
-                  },
-                  child: const Text('OK'),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
+//                       ScaffoldMessenger.of(context).showSnackBar(
+//                         const SnackBar(
+//                           content: Text('Portfolio inserted'),
+//                         ),
+//                       );
+//                     }
+//                   },
+//                   child: const Text('OK'),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }

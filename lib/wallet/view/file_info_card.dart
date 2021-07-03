@@ -1,35 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:web_dashboard/src/widgets/dialogs.dart';
-import '../../src/api/api.dart';
+import 'package:web_dashboard/wallet/model/wallet_model.dart';
+import 'package:web_dashboard/wallet/view/edit_wallet.dart';
 
-import '../constants.dart';
+import '../../constant.dart';
 
-class FileInfoCard extends StatefulWidget {
-  const FileInfoCard({
+class FileInfoCard extends StatelessWidget {
+  FileInfoCard({
     Key? key,
     required this.portfolio,
   }) : super(key: key);
 
-  final Portfolio portfolio;
-
-  @override
-  State<FileInfoCard> createState() => _FileInfoCardState();
-}
-
-/// This is the private State class that goes with MyStatefulWidget.
-class _FileInfoCardState extends State<FileInfoCard> {
-  Color boxDecorationColor = secondaryColor;
+  final WalletModel portfolio;
+  final Color boxDecorationColor = secondaryColor;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        setState(() {
-          boxDecorationColor == secondaryColor
-              ? boxDecorationColor = quaternaryColor
-              : boxDecorationColor = secondaryColor;
-        });
+        // setState(() {
+        //   boxDecorationColor == secondaryColor
+        //       ? boxDecorationColor = quaternaryColor
+        //       : boxDecorationColor = secondaryColor;
+        // });
       },
       child: Container(
         padding: const EdgeInsets.all(defaultPadding),
@@ -63,11 +57,11 @@ class _FileInfoCardState extends State<FileInfoCard> {
                   onSelected: (value) {
                     switch (value) {
                       case 1:
-                        showDialog<EditPortfolioDialog>(
+                        showDialog<EditWalletDialog>(
                           context: context,
                           builder: (context) {
-                            return EditPortfolioDialog(
-                              portfolio: widget.portfolio,
+                            return EditWalletDialog(
+                              portfolio: portfolio,
                             );
                           },
                         );
@@ -78,7 +72,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
                           pageBuilder:
                               (context, animation, secondaryAnimation) =>
                                   NewTransactionDialog(
-                            selectedPortfolio: widget.portfolio,
+                            selectedPortfolio: portfolio,
                           ),
                         );
                         break;
@@ -99,7 +93,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
               ],
             ),
             Text(
-              widget.portfolio.name,
+              portfolio.name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

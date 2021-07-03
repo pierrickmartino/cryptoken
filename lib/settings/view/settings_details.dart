@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:web_dashboard/position/controller/position_controller.dart';
 
-import '../../constants.dart';
-import '../../controllers/controllers.dart';
+import '../../constant.dart';
 
 class SettingsDetails extends StatelessWidget {
   const SettingsDetails({
@@ -30,20 +30,6 @@ class SettingsDetails extends StatelessWidget {
           const SizedBox(height: defaultPadding),
           ListTile(
             title: const Text(
-              'Theme mode light/dark',
-              style: TextStyle(fontSize: 14),
-            ),
-            trailing: GetBuilder<ThemeController>(
-              builder: (controller) => Switch(
-                value: getThemeModeFromString(controller.currentTheme),
-                onChanged: (val) {
-                  controller.setThemeMode(val ? 'dark' : 'light');
-                },
-              ),
-            ),
-          ),
-          ListTile(
-            title: const Text(
               'Show position with zero amount',
               style: TextStyle(fontSize: 14),
             ),
@@ -59,16 +45,5 @@ class SettingsDetails extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  bool getThemeModeFromString(String themeString) {
-    bool _setThemeMode = false;
-    if (themeString == 'light') {
-      _setThemeMode = false;
-    }
-    if (themeString == 'dark') {
-      _setThemeMode = true;
-    }
-    return _setThemeMode;
   }
 }

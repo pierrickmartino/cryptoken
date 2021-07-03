@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:web_dashboard/src/class/price.dart';
 import 'package:web_dashboard/src/class/variation24.dart';
+import 'package:web_dashboard/wallet/model/wallet_model.dart';
 import '../api/api.dart';
 import 'dialogs.dart';
 import 'position_widget.dart';
@@ -94,7 +95,7 @@ class PortfolioWidget extends StatefulWidget {
     required this.api,
   }) : super(key: key);
 
-  final Portfolio portfolio;
+  final WalletModel portfolio;
   final DashboardApi api;
 
   @override
@@ -234,14 +235,14 @@ class _PortfolioWidgetState extends State<PortfolioWidget> {
                       icon: const Icon(Icons.settings_rounded),
                       color: const Color(0xff3A6EA5),
                       onPressed: () {
-                        showDialog<EditPortfolioDialog>(
-                          context: context,
-                          builder: (context) {
-                            return EditPortfolioDialog(
-                              portfolio: widget.portfolio,
-                            );
-                          },
-                        );
+                        // showDialog<EditPortfolioDialog>(
+                        //   context: context,
+                        //   builder: (context) {
+                        //     return EditPortfolioDialog(
+                        //       portfolio: widget.portfolio,
+                        //     );
+                        //   },
+                        // );
                       },
                     ),
                   ],
@@ -358,7 +359,7 @@ class _ListPositions extends StatelessWidget {
   }) : super(key: key);
 
   final List<Position?>? positions;
-  final Portfolio? portfolio;
+  final WalletModel? portfolio;
   final List<Price> priceList;
   final List<Variation24> variation24List;
 
@@ -377,19 +378,6 @@ class _ListPositions extends StatelessWidget {
       List<Price> priceList, List<Variation24> variation24List) {
     final List<Widget> positionsList = [];
     for (var index = 0; index < positions!.length; index++) {
-      // priceList.forEach((element) {
-      //   print('${element.symbol} -> ${element.price.toString()}');
-      // });
-      // priceList
-      //     .lastWhere(
-      //         (element) => element.symbol == '${positions![index]!.token}USDT')
-      //     .forEach((element) {
-      //   print('${element.symbol} -> ${element.price.toString()}');
-      // });
-
-      // print(priceList
-      //     .where((element) => element.symbol == positions![index]!.token));
-
       positionsList.add(PositionWidget(
           position: positions![index]!,
           portfolio: portfolio,

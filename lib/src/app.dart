@@ -2,18 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
+import '../constant.dart';
+import '../route.dart';
 import 'api/api.dart';
 import 'api/firebase.dart';
 import 'api/mock.dart';
 import 'auth/auth.dart';
 import 'auth/firebase.dart';
-import 'auth/mock.dart';
-import 'constants.dart';
-import 'controllers/controllers.dart';
-import 'pages/home.dart';
-import 'pages/sign_in.dart';
 
 const settingsBox = 'settings';
 
@@ -32,18 +28,21 @@ typedef ApiBuilder = DashboardApi Function(User user);
 
 /// An app that displays a personalized dashboard.
 class DashboardApp extends StatefulWidget {
+  const DashboardApp({Key? key, required this.auth, required this.apiBuilder})
+      : super(key: key);
+
   /// Runs the app using Firebase
   DashboardApp.firebase()
       : auth = FirebaseAuthService(),
         apiBuilder = _apiBuilder;
 
   /// Runs the app using mock data
-  DashboardApp.mock()
-      : auth = MockAuthService(),
-        apiBuilder = _mockApiBuilder;
+  // DashboardApp.mock()
+  //     : auth = MockAuthService(),
+  //       apiBuilder = _mockApiBuilder;
 
-  static final ApiBuilder _mockApiBuilder =
-      (user) => MockDashboardApi()..fillWithMockData();
+  // static final ApiBuilder _mockApiBuilder =
+  //     (user) => MockDashboardApi()..fillWithMockData();
   static final ApiBuilder _apiBuilder =
       (user) => FirebaseDashboardApi(FirebaseFirestore.instance, user.uid);
 
@@ -55,11 +54,11 @@ class DashboardApp extends StatefulWidget {
 }
 
 class _DashboardAppState extends State<DashboardApp> {
-  late AppState _appState;
+  //late AppState appState;
 
   @override
   void initState() {
-    _appState = AppState(widget.auth);
+    //appState = AppState(widget.auth);
     super.initState();
   }
 
@@ -71,30 +70,32 @@ class _DashboardAppState extends State<DashboardApp> {
         //     builder: (listenerContext, Box<dynamic> box, listenerWidget) {
         //       final darkMode = box.get('darkMode', defaultValue: false);
         // return
-        Provider.value(
-      value: _appState,
-      child: GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-        darkTheme: ThemeData.dark(),
-        initialRoute: '/',
-        theme: ThemeData.dark().copyWith(
-          scaffoldBackgroundColor: bgColor,
-          textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)
-              .apply(bodyColor: Colors.white),
-          canvasColor: secondaryColor,
-        ),
-        // ThemeData(
-        //   primaryColor: const Color(0xff004e98),
-        //   accentColor: const Color(0xffff6700),
-        //   dividerColor: const Color(0xffc0c0c0),
-        //   canvasColor: const Color(0xffEBEBEB),
-        // ),
+        //Provider.value(
+        // value: _appState,
+        // child:
+        GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      darkTheme: ThemeData.dark(),
 
-        home: SignInSwitcher(
-          appState: _appState,
-          apiBuilder: widget.apiBuilder,
-        ),
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: bgColor,
+        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)
+            .apply(bodyColor: Colors.white),
+        canvasColor: secondaryColor,
       ),
+      // ThemeData(
+      //   primaryColor: const Color(0xff004e98),
+      //   accentColor: const Color(0xffff6700),
+      //   dividerColor: const Color(0xffc0c0c0),
+      //   canvasColor: const Color(0xffEBEBEB),
+      // ),
+      initialRoute: '/',
+      getPages: AppRoutes.routes,
+      // home: SignInSwitcher(
+      //   appState: _appState,
+      //   apiBuilder: widget.apiBuilder,
+      // ),
+      //),
       //);
       //}
     );
@@ -103,88 +104,88 @@ class _DashboardAppState extends State<DashboardApp> {
 
 /// Switches between showing the [SignInPage] or [HomePage], depending on
 /// whether or not the user is signed in.
-class SignInSwitcher extends StatefulWidget {
-  const SignInSwitcher({
-    Key? key,
-    this.appState,
-    this.apiBuilder,
-  }) : super(key: key);
+// class SignInSwitcher extends StatefulWidget {
+//   const SignInSwitcher({
+//     Key? key,
+//     this.appState,
+//     this.apiBuilder,
+//   }) : super(key: key);
 
-  final AppState? appState;
-  final ApiBuilder? apiBuilder;
+//   final AppState? appState;
+//   final ApiBuilder? apiBuilder;
 
-  @override
-  _SignInSwitcherState createState() => _SignInSwitcherState();
-}
+//   @override
+//   _SignInSwitcherState createState() => _SignInSwitcherState();
+// }
 
-class _SignInSwitcherState extends State<SignInSwitcher> {
-  bool _isSignedIn = false;
+// class _SignInSwitcherState extends State<SignInSwitcher> {
+//   bool _isSignedIn = false;
 
-  @override
-  Widget build(BuildContext context) {
-    //final FirebaseAuth _auth = FirebaseAuth.instance;
+//   @override
+//   Widget build(BuildContext context) {
+//     //final FirebaseAuth _auth = FirebaseAuth.instance;
 
-    return AnimatedSwitcher(
-      switchInCurve: Curves.easeOut,
-      switchOutCurve: Curves.easeOut,
-      duration: const Duration(milliseconds: 600),
-      child: _isSignedIn
-          ? FutureBuilder<User>(
-              builder: (context, futureSnapshot) {
-                if (!futureSnapshot.hasData) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
+//     return AnimatedSwitcher(
+//       switchInCurve: Curves.easeOut,
+//       switchOutCurve: Curves.easeOut,
+//       duration: const Duration(milliseconds: 600),
+//       child: _isSignedIn
+//           ? FutureBuilder<User>(
+//               builder: (context, futureSnapshot) {
+//                 if (!futureSnapshot.hasData) {
+//                   return const Center(
+//                     child: CircularProgressIndicator(),
+//                   );
+//                 }
 
-                if (futureSnapshot.hasError) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
+//                 if (futureSnapshot.hasError) {
+//                   return const Center(
+//                     child: CircularProgressIndicator(),
+//                   );
+//                 }
 
-                return MultiProvider(
-                  providers: [
-                    ChangeNotifierProvider(
-                      create: (context) => MenuController(),
-                    ),
-                  ],
-                  child: HomePage(
-                    onSignOut: _handleSignOut,
-                    user: futureSnapshot.data!,
-                  ),
-                );
-              },
-              future: _getUser(),
-              initialData: MockUser())
-          : SignInPage(
-              auth: widget.appState!.auth!,
-              onSuccess: _handleSignIn,
-            ),
-    );
-  }
+//                 return MultiProvider(
+//                   providers: [
+//                     ChangeNotifierProvider(
+//                       create: (context) => MenuController(),
+//                     ),
+//                   ],
+//                   child: HomePage(
+//                     onSignOut: _handleSignOut,
+//                     user: futureSnapshot.data!,
+//                   ),
+//                 );
+//               },
+//               future: _getUser(),
+//               initialData: MockUser())
+//           : SignInPage(
+//               auth: widget.appState!.auth!,
+//               onSuccess: _handleSignIn,
+//             ),
+//     );
+//   }
 
-  void _handleSignIn(User user) {
-    widget.appState!.api = widget.apiBuilder!(user);
+//   void _handleSignIn(User user) {
+//     widget.appState!.api = widget.apiBuilder!(user);
 
-    setState(() {
-      _isSignedIn = true;
-    });
-  }
+//     setState(() {
+//       _isSignedIn = true;
+//     });
+//   }
 
-  Future<User> _getUser() async {
-    final _user = await widget.appState!.auth!.signIn();
-    if (_user == null) {
-      return MockUser();
-    } else {
-      return _user;
-    }
-  }
+//   Future<User> _getUser() async {
+//     final _user = await widget.appState!.auth!.signIn();
+//     if (_user == null) {
+//       return MockUser();
+//     } else {
+//       return _user;
+//     }
+//   }
 
-  Future<void> _handleSignOut() async {
-    await widget.appState!.auth!.signOut();
-    setState(() {
-      _isSignedIn = false;
-    });
-  }
-}
+//   Future<void> _handleSignOut() async {
+//     await widget.appState!.auth!.signOut();
+//     setState(() {
+//       _isSignedIn = false;
+//     });
+//   }
+// }

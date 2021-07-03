@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:web_dashboard/wallet/model/wallet_model.dart';
 
 import '../api/api.dart';
 import '../app.dart';
@@ -21,17 +22,17 @@ class TransactionsPage extends StatefulWidget {
 }
 
 class _TransactionsPageState extends State<TransactionsPage> {
-  Portfolio? _selected;
+  WalletModel? _selected;
 
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
     return Column(
       children: [
-        PortfolioDropdown(
-          api: appState.api.portfolios,
-          onSelected: (portfolio) => setState(() => _selected = portfolio),
-        ),
+        // PortfolioDropdown(
+        //   api: appState.api.portfolios,
+        //   onSelected: (portfolio) => setState(() => _selected = portfolio),
+        // ),
         Expanded(
           child: _selected == null
               ? const Center(
@@ -55,7 +56,7 @@ class TransactionsList extends StatefulWidget {
           key: ValueKey(portfolio.id),
         );
 
-  final Portfolio portfolio;
+  final WalletModel portfolio;
   final TransactionApi api;
 
   @override
@@ -107,7 +108,7 @@ class TransactionTile extends StatelessWidget {
     required this.transaction,
   }) : super(key: key);
 
-  final Portfolio portfolio;
+  final WalletModel portfolio;
   final Transaction transaction;
 
   Position? positionMain, positionReference;

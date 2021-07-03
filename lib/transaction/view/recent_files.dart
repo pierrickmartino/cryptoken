@@ -4,8 +4,8 @@ import 'package:intl/intl.dart' as intl;
 import 'package:provider/provider.dart';
 import 'package:web_dashboard/src/api/api.dart';
 
-import '../../app.dart';
-import '../../constants.dart';
+import '../../src/app.dart';
+import '../../constant.dart';
 
 final _priceFormat =
     intl.NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 6);
@@ -24,7 +24,7 @@ class RecentFiles extends StatefulWidget {
 class _RecentFilesState extends State<RecentFiles> {
   @override
   Widget build(BuildContext context) {
-    final appState = Provider.of<AppState>(context);
+    //final appState = Provider.of<AppState>(context);
 
     return Container(
       padding: const EdgeInsets.all(defaultPadding),
@@ -41,51 +41,52 @@ class _RecentFilesState extends State<RecentFiles> {
           ),
           SizedBox(
             width: double.infinity,
-            child: FutureBuilder<List<Transaction>>(
-              future: appState.api.transactions.listAll(),
-              builder: (context, futureSnapshot) {
-                if (!futureSnapshot.hasData) {
-                  return _buildLoadingIndicator();
-                }
-                return StreamBuilder<List<Transaction?>>(
-                  initialData: futureSnapshot.data,
-                  stream: appState.api.transactions.subscribeAll(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return _buildLoadingIndicator();
-                    }
-                    return DataTable(
-                      horizontalMargin: 0,
-                      columnSpacing: defaultPadding,
-                      columns: const [
-                        DataColumn(
-                          label: Text('Type'),
-                        ),
-                        DataColumn(
-                          label: Text('Date'),
-                        ),
-                        DataColumn(
-                          label: Text('Amount'),
-                        ),
-                        DataColumn(
-                          label: Text('Price'),
-                        ),
-                        DataColumn(
-                          label: Text('Total'),
-                        ),
-                        DataColumn(
-                          label: Text('Fees (incl.)'),
-                        ),
-                      ],
-                      rows: List.generate(
-                        snapshot.data!.length,
-                        (index) => recentFileDataRow(snapshot.data![index]!),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
+            child: Text(''),
+            // FutureBuilder<List<Transaction>>(
+            //   future: appState.api.transactions.listAll(),
+            //   builder: (context, futureSnapshot) {
+            //     if (!futureSnapshot.hasData) {
+            //       return _buildLoadingIndicator();
+            //     }
+            //     return StreamBuilder<List<Transaction?>>(
+            //       initialData: futureSnapshot.data,
+            //       stream: appState.api.transactions.subscribeAll(),
+            //       builder: (context, snapshot) {
+            //         if (!snapshot.hasData) {
+            //           return _buildLoadingIndicator();
+            //         }
+            //         return DataTable(
+            //           horizontalMargin: 0,
+            //           columnSpacing: defaultPadding,
+            //           columns: const [
+            //             DataColumn(
+            //               label: Text('Type'),
+            //             ),
+            //             DataColumn(
+            //               label: Text('Date'),
+            //             ),
+            //             DataColumn(
+            //               label: Text('Amount'),
+            //             ),
+            //             DataColumn(
+            //               label: Text('Price'),
+            //             ),
+            //             DataColumn(
+            //               label: Text('Total'),
+            //             ),
+            //             DataColumn(
+            //               label: Text('Fees (incl.)'),
+            //             ),
+            //           ],
+            //           rows: List.generate(
+            //             snapshot.data!.length,
+            //             (index) => recentFileDataRow(snapshot.data![index]!),
+            //           ),
+            //         );
+            //       },
+            //     );
+            //   },
+            // ),
           ),
         ],
       ),

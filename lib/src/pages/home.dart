@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../../src/auth/auth.dart';
-import '../../src/controllers/controllers.dart';
-
-import '../widgets/dialogs.dart';
+import 'package:get/get.dart';
+import 'package:web_dashboard/auth/controller/auth_controller.dart';
 
 import 'dashboard_screen.dart';
 
@@ -12,45 +8,26 @@ bool _isLargeScreen(BuildContext context) {
   return MediaQuery.of(context).size.width > 960.0;
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({
+class HomeUI extends StatelessWidget {
+  const HomeUI({
     Key? key,
-    required this.onSignOut,
-    required this.user,
   }) : super(key: key);
-
-  final VoidCallback onSignOut;
-  final User user;
-
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  final int _pageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: context.read<MenuController>().scaffoldKey,
-      //drawer: const SideMenu(),
-      body: SafeArea(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            // We want this side menu only for large screen
-            // if (Responsive.isDesktop(context))
-            //   const Expanded(
-            //     // default flex = 1
-            //     // and it takes 1/7 part of the screen
-            //     child: SideMenu(),
-            //   ),
-            Expanded(
-              // It takes 6/7 part of the screen
-              //flex: 6,
-              child: DashboardScreen(),
-            ),
-          ],
+    debugPrint('Enter HomeUI');
+    return GetBuilder<AuthController>(
+      init: AuthController(),
+      builder: (controller) => Scaffold(
+        body: SafeArea(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Expanded(
+                child: DashboardScreen(),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -116,61 +93,61 @@ class _HomePageState extends State<HomePage> {
   //   );
   // }
 
-  void _handleFabPressed() {
-    if (_pageIndex == 0) {
-      showDialog<NewPortfolioDialog>(
-        context: context,
-        builder: (context) => const NewPortfolioDialog(),
-      );
-      return;
-    }
+  // void _handleFabPressed() {
+  //   if (pageIndex == 0) {
+  //     showDialog<NewPortfolioDialog>(
+  //       context: context,
+  //       builder: (context) => const NewPortfolioDialog(),
+  //     );
+  //     return;
+  //   }
 
-    if (_pageIndex == 1) {
-      if (_isLargeScreen(context)) {
-        showDialog<NewTransactionDialog>(
-          context: context,
-          builder: (context) => NewTransactionDialog(),
-        );
-      } else {
-        showGeneralDialog<NewTransactionDialog>(
-          context: context,
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              NewTransactionDialog(),
-        );
-      }
+  //   if (pageIndex == 1) {
+  //     if (_isLargeScreen(context)) {
+  //       showDialog<NewTransactionDialog>(
+  //         context: context,
+  //         builder: (context) => NewTransactionDialog(),
+  //       );
+  //     } else {
+  //       showGeneralDialog<NewTransactionDialog>(
+  //         context: context,
+  //         pageBuilder: (context, animation, secondaryAnimation) =>
+  //             NewTransactionDialog(),
+  //       );
+  //     }
 
-      return;
-    }
-  }
+  //     return;
+  //   }
+  // }
 
-  Future<void> _handleSignOut() async {
-    final shouldSignOut = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Are you sure you want to sign out?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-            child: const Text('No'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
-            child: const Text('Yes'),
-          ),
-        ],
-      ),
-    );
+  // Future<void> _handleSignOut() async {
+  //   final shouldSignOut = await showDialog<bool>(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('Are you sure you want to sign out?'),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () {
+  //             Navigator.of(context).pop(false);
+  //           },
+  //           child: const Text('No'),
+  //         ),
+  //         TextButton(
+  //           onPressed: () {
+  //             Navigator.of(context).pop(true);
+  //           },
+  //           child: const Text('Yes'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
 
-    if (!shouldSignOut!) {
-      return;
-    }
+  //   if (!shouldSignOut!) {
+  //     return;
+  //   }
 
-    widget.onSignOut();
-  }
+  //   widget.onSignOut();
+  // }
 
 //   static Widget _pageAtIndex(int index, BuildContext context) {
 //     if (index == 0) {

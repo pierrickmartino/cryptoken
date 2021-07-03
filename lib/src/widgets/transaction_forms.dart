@@ -9,6 +9,7 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:provider/provider.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:web_dashboard/wallet/model/wallet_model.dart';
 
 import '../../src/api/api.dart';
 import '../../src/class/crypto.dart';
@@ -25,14 +26,14 @@ bool _isLargeScreen(BuildContext context) {
 class NewTransactionForm extends StatefulWidget {
   NewTransactionForm({Key? key, this.selectedPortfolio}) : super(key: key);
 
-  Portfolio? selectedPortfolio;
+  WalletModel? selectedPortfolio;
 
   @override
   _NewTransactionFormState createState() => _NewTransactionFormState();
 }
 
 class _NewTransactionFormState extends State<NewTransactionForm> {
-  Portfolio? _selected = Portfolio('');
+  WalletModel? _selected = WalletModel(name: 'Empty');
 
   final Transaction _transaction = Transaction(
     0,
@@ -79,19 +80,20 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(0),
-          child: PortfolioDropdown(
-            initPortfolio: widget.selectedPortfolio,
-            api: api.portfolios,
-            onSelected: (portfolio) {
-              setState(() {
-                _selected = portfolio;
-              });
-            },
-          ),
-        ),
-        const SizedBox(height: 14),
+        // Padding(
+        //   padding: const EdgeInsets.all(0),
+        //   child:
+        // PortfolioDropdown(
+        //   initPortfolio: widget.selectedPortfolio,
+        //   api: api.portfolios,
+        //   onSelected: (portfolio) {
+        //     setState(() {
+        //       _selected = portfolio;
+        //     });
+        //   },
+        // ),
+        //),
+        //const SizedBox(height: 14),
         EditTransactionForm(
           transaction: _transaction,
           portfolio: _selected!,
@@ -103,14 +105,6 @@ class _NewTransactionFormState extends State<NewTransactionForm> {
               // Main axis of the transaction (Buy or Sell Main against Reference)
               try {
                 Position newPositionMain;
-
-                // print('Insert Mode');
-                // print(
-                //     '_positionMain.purchaseAmount : ${_positionMain.purchaseAmount}');
-                // print(
-                //     '_positionMain.averagePurchasePrice : ${_positionMain.averagePurchasePrice}');
-                // print('_transaction.amountMain : ${_transaction.amountMain}');
-                // print('_transaction.price : ${_transaction.price}');
 
                 // Buy
                 if (_transaction.transactionType == 0) {
@@ -282,7 +276,7 @@ class EditTransactionForm extends StatefulWidget {
   }) : super(key: key);
 
   final Transaction transaction;
-  final Portfolio portfolio;
+  final WalletModel portfolio;
   final Position positionMain, positionReference;
   final bool showToogleSwitch;
   final ValueChanged<bool> onDone;
@@ -389,8 +383,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                               thousandSeparator: ThousandSeparator.None),
                         );
                       } on FormatException {
-                        // ignore: avoid_print
-                        print(
+                        debugPrint(
                             'Transaction cannot contain "$newValue". Expected a number');
                       }
                     },
@@ -509,8 +502,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                               thousandSeparator: ThousandSeparator.None),
                         );
                       } on FormatException {
-                        // ignore: avoid_print
-                        print(
+                        debugPrint(
                             'Transaction cannot contain "$newValue". Expected a number');
                       }
                     },
@@ -632,8 +624,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                               thousandSeparator: ThousandSeparator.None),
                         );
                       } on FormatException {
-                        // ignore: avoid_print
-                        print(
+                        debugPrint(
                             'Transaction cannot contain "$newValue". Expected a number');
                       }
                     },
@@ -750,8 +741,7 @@ class _EditTransactionFormState extends State<EditTransactionForm> {
                               thousandSeparator: ThousandSeparator.None),
                         );
                       } on FormatException {
-                        // ignore: avoid_print
-                        print(
+                        debugPrint(
                             'Transaction cannot contain "$newValue". Expected a number');
                       }
                     },

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:web_dashboard/src/api/api.dart';
 import 'package:web_dashboard/src/widgets/transaction_forms.dart';
 import 'package:web_dashboard/src/widgets/portfolio_forms.dart';
+import 'package:web_dashboard/wallet/model/wallet_model.dart';
 
 import '../app.dart';
 
@@ -10,89 +11,79 @@ bool _isLargeScreen(BuildContext context) {
   return MediaQuery.of(context).size.width > 960.0;
 }
 
-class NewPortfolioDialog extends StatelessWidget {
-  const NewPortfolioDialog({Key? key}) : super(key: key);
+// class NewPortfolioDialog extends StatelessWidget {
+//   const NewPortfolioDialog({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return SimpleDialog(
-      title: const Text('New Portfolio'),
-      titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-      contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-      children: [
-        Container(
-          width: _isLargeScreen(context)
-              ? 600
-              : MediaQuery.of(context).size.width - 10,
-          child: Column(
-            children: const [
-              NewPortfolioForm(),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return SimpleDialog(
+//       title: const Text('New Portfolio'),
+//       titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+//       contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+//       children: [
+//         Container(
+//           width: _isLargeScreen(context)
+//               ? 600
+//               : MediaQuery.of(context).size.width - 10,
+//           child: Column(
+//             children: [
+//               NewPortfolioForm(),
+//             ],
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
 
-class EditPortfolioDialog extends StatelessWidget {
-  const EditPortfolioDialog({
-    Key? key,
-    required this.portfolio,
-  }) : super(key: key);
+// class EditPortfolioDialog extends StatelessWidget {
+//   const EditPortfolioDialog({
+//     Key? key,
+//     required this.portfolio,
+//   }) : super(key: key);
 
-  final Portfolio portfolio;
+//   final WalletModel portfolio;
 
-  @override
-  Widget build(BuildContext context) {
-    final api = Provider.of<AppState>(context).api;
+//   @override
+//   Widget build(BuildContext context) {
+//     //final api = Provider.of<AppState>(context).api;
 
-    return SimpleDialog(
-      title: const Text('Edit Portfolio'),
-      titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-      contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-      children: [
-        Container(
-          width: _isLargeScreen(context)
-              ? 600
-              : MediaQuery.of(context).size.width - 10,
-          child: Column(children: [
-            EditPortfolioForm(
-              portfolio: portfolio,
-              onDone: (shouldUpdate) {
-                if (shouldUpdate) {
-                  api.portfolios.update(portfolio, portfolio.id);
+//     return SimpleDialog(
+//       title: const Text('Edit Portfolio'),
+//       titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+//       contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+//       children: [
+//         Container(
+//           width: _isLargeScreen(context)
+//               ? 600
+//               : MediaQuery.of(context).size.width - 10,
+//           child: Column(children: [
+//             EditPortfolioForm(
+//               portfolio: portfolio,
+//               // onDone: (shouldUpdate) {
+//               //   if (shouldUpdate) {
+//               //     api.portfolios.update(portfolio, portfolio.id);
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Portfolio updated'),
-                    ),
-                  );
-                }
-                Navigator.of(context).pop();
-              },
-            ),
-          ]),
-        ),
-      ],
-    );
-  }
-}
+//               //     ScaffoldMessenger.of(context).showSnackBar(
+//               //       const SnackBar(
+//               //         content: Text('Portfolio updated'),
+//               //       ),
+//               //     );
+//               //   }
+//               //   Navigator.of(context).pop();
+//               // },
+//             ),
+//           ]),
+//         ),
+//       ],
+//     );
+//   }
+// }
 
-class NewTransactionDialog extends StatefulWidget {
+class NewTransactionDialog extends StatelessWidget {
   NewTransactionDialog({Key? key, this.selectedPortfolio}) : super(key: key);
 
-  Portfolio? selectedPortfolio;
-
-  @override
-  _NewTransactionDialogState createState() => _NewTransactionDialogState();
-}
-
-class _NewTransactionDialogState extends State<NewTransactionDialog> {
-  @override
-  void initState() {
-    super.initState();
-  }
+  WalletModel? selectedPortfolio;
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +98,7 @@ class _NewTransactionDialogState extends State<NewTransactionDialog> {
             child: Column(
               children: [
                 NewTransactionForm(
-                  selectedPortfolio: widget.selectedPortfolio,
+                  selectedPortfolio: selectedPortfolio,
                 ),
               ],
             ),
@@ -132,7 +123,7 @@ class _NewTransactionDialogState extends State<NewTransactionDialog> {
                 child: Column(
                   children: [
                     NewTransactionForm(
-                      selectedPortfolio: widget.selectedPortfolio,
+                      selectedPortfolio: selectedPortfolio,
                     )
                   ],
                 ),
@@ -156,7 +147,7 @@ class EditTransactionDialog extends StatefulWidget {
   }) : super(key: key);
 
   final Transaction transaction, transactionCache;
-  final Portfolio portfolio;
+  final WalletModel portfolio;
   final Position positionMain, positionReference;
 
   @override
@@ -229,17 +220,6 @@ class _EditTransactionDialogState extends State<EditTransactionDialog> {
           // Main axis of the transaction (Buy or Sell Main against Reference)
           try {
             Position newPositionMain;
-
-            // print('Update Mode');
-            // print(
-            //     'widget.positionMain.purchaseAmount : ${widget.positionMain.purchaseAmount}');
-            // print(
-            //     'widget.positionMain.averagePurchasePrice : ${widget.positionMain.averagePurchasePrice}');
-            // print(
-            //     'widget.transaction.amountMain : ${widget.transaction.amountMain}');
-            // print(
-            //     'widget.transactionCache.amountMain : ${widget.transactionCache.amountMain}');
-            // print('widget.transaction.price : ${widget.transaction.price}');
 
             // Buy
             if (widget.transaction.transactionType == 0) {

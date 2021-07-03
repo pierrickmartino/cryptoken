@@ -5,23 +5,29 @@ import 'package:flutter/services.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:web_dashboard/src/hive/crypto_hive.dart';
 import 'package:web_dashboard/src/hive/portfolio_hive.dart';
+import 'package:web_dashboard/wallet/controller/wallet_controller.dart';
 
-import 'src/app.dart';
+import 'auth/controller/auth_controller.dart';
+import 'constant.dart';
+import 'position/controller/position_controller.dart';
+import 'route.dart';
 import 'src/class/cryptos_list.dart';
-import 'src/controllers/controllers.dart';
 
 const cryptoListBox = 'cryptoList';
 const portfolioListBox = 'portfolioList';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
-  Get.put<ThemeController>(ThemeController());
-  Get.put<ZeroPositionController>(ZeroPositionController());
+  Get
+    ..put<AuthController>(AuthController())
+    ..put<ZeroPositionController>(ZeroPositionController())
+    ..put<WalletController>(WalletController());
 
   // initialization
   await Hive.initFlutter();
@@ -57,13 +63,26 @@ void main() async {
     await boxCrypto.put(crypto.symbol, crypto);
   }
 
-  // to debug : flutter run -d chrome
-  runApp(
-    DashboardApp.mock(),
-  );
-
   // to debug : flutter run -d chrome --web-port=5000
-  // runApp(
-  //   DashboardApp.firebase(),
-  // );
+  runApp(const CryptokenApp());
+}
+
+class CryptokenApp extends StatelessWidget {
+  const CryptokenApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      darkTheme: ThemeData.dark(),
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: bgColor,
+        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)
+            .apply(bodyColor: Colors.white),
+        canvasColor: secondaryColor,
+      ),
+      initialRoute: '/',
+      getPages: AppRoutes.routes,
+    );
+  }
 }

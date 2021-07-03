@@ -228,8 +228,6 @@ class FirebaseAuthService implements auth.Auth {
     name = null;
     userEmail = null;
     imageUrl = null;
-
-    //print('User signed out of Google account');
   }
 }
 

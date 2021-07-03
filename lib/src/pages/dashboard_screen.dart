@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:web_dashboard/src/widgets/dashboard/settings_details.dart';
+import 'package:web_dashboard/settings/view/settings_details.dart';
+import 'package:web_dashboard/wallet/view/my_files.dart';
 
-import '../../src/widgets/dashboard/recent_files.dart';
-import '../../src/widgets/dashboard/storage_details.dart';
-
-import '../constants.dart';
+import '../../constant.dart';
+import '../../transaction/view/recent_files.dart';
+import '../../position/view/storage_details.dart';
 import '../responsive.dart';
-
 import '../widgets/dashboard/header.dart';
-import 'my_files.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -35,6 +33,7 @@ class DashboardScreen extends StatelessWidget {
                       if (Responsive.isMobile(context))
                         const SizedBox(height: defaultPadding),
                       if (Responsive.isMobile(context)) const StorageDetails(),
+                      const SizedBox(height: defaultPadding),
                       if (Responsive.isMobile(context)) const SettingsDetails(),
                     ],
                   ),
