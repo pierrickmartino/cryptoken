@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 
 import '../../../constant.dart';
-import '../../controllers/controllers.dart';
 import '../../responsive.dart';
 
 class Header extends StatelessWidget {

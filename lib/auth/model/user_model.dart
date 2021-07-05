@@ -6,7 +6,7 @@ class UserModel {
       required this.name,
       required this.photoUrl});
 
-  factory UserModel.fromMap(Map data) {
+  factory UserModel.fromMap(Map<dynamic, dynamic> data) {
     return UserModel(
       uid: data['uid'],
       email: data['email'] ?? '',

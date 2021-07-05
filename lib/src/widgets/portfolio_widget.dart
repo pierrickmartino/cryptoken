@@ -4,11 +4,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:web_dashboard/src/class/price.dart';
 import 'package:web_dashboard/src/class/variation24.dart';
 import 'package:web_dashboard/wallet/model/wallet_model.dart';
+
 import '../api/api.dart';
 import 'dialogs.dart';
 import 'position_widget.dart';

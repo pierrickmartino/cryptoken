@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 class WalletModel {
   WalletModel({required this.name});
 
-  factory WalletModel.fromMap(Map data) {
+  factory WalletModel.fromMap(Map<dynamic, dynamic> data) {
     return WalletModel(
       name: data['name'] ?? '',
     );

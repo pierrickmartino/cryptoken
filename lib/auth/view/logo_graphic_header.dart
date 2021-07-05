@@ -5,7 +5,7 @@ class LogoGraphicHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String _imageLogo = 'assets/images/default.png';
+    const String _imageLogo = 'assets/images/default.png';
     return Hero(
       tag: 'App Logo',
       child: CircleAvatar(

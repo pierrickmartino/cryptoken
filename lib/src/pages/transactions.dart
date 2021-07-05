@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:provider/provider.dart';
 import 'package:web_dashboard/wallet/model/wallet_model.dart';
 
 import '../api/api.dart';
 import '../app.dart';
 import '../widgets/dialogs.dart';
-import '../widgets/portfolios_dropdown.dart';
 
 final _priceFormat =
     intl.NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 6);

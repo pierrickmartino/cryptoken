@@ -90,7 +90,7 @@ class AuthController extends GetxController {
       await hideLoadingIndicator();
     } catch (error) {
       await hideLoadingIndicator();
-      Get.snackbar('auth.signInErrorTitle'.tr, 'auth.signInError'.tr,
+      Get.snackbar<void>('auth.signInErrorTitle'.tr, 'auth.signInError'.tr,
           snackPosition: SnackPosition.BOTTOM,
           duration: const Duration(seconds: 7),
           backgroundColor: Get.theme.snackBarTheme.backgroundColor,
@@ -130,7 +130,7 @@ class AuthController extends GetxController {
       });
     } on FirebaseAuthException catch (error) {
       await hideLoadingIndicator();
-      Get.snackbar('auth.signUpErrorTitle'.tr, error.message!,
+      Get.snackbar<void>('auth.signUpErrorTitle'.tr, error.message!,
           snackPosition: SnackPosition.BOTTOM,
           duration: const Duration(seconds: 10),
           backgroundColor: Get.theme.snackBarTheme.backgroundColor,
@@ -166,7 +166,7 @@ class AuthController extends GetxController {
         }
       }
       await hideLoadingIndicator();
-      Get.snackbar(_authUpdateUserNoticeTitle, _authUpdateUserNotice,
+      Get.snackbar<void>(_authUpdateUserNoticeTitle, _authUpdateUserNotice,
           snackPosition: SnackPosition.BOTTOM,
           duration: const Duration(seconds: 5),
           backgroundColor: Get.theme.snackBarTheme.backgroundColor,
@@ -185,7 +185,7 @@ class AuthController extends GetxController {
           authError = 'auth.unknownError'.tr;
           break;
       }
-      Get.snackbar('auth.wrongPasswordNoticeTitle'.tr, authError,
+      Get.snackbar<void>('auth.wrongPasswordNoticeTitle'.tr, authError,
           snackPosition: SnackPosition.BOTTOM,
           duration: const Duration(seconds: 10),
           backgroundColor: Get.theme.snackBarTheme.backgroundColor,
@@ -211,7 +211,7 @@ class AuthController extends GetxController {
     try {
       await _auth.sendPasswordResetEmail(email: emailController.text);
       await hideLoadingIndicator();
-      Get.snackbar(
+      Get.snackbar<void>(
           'auth.resetPasswordNoticeTitle'.tr, 'auth.resetPasswordNotice'.tr,
           snackPosition: SnackPosition.BOTTOM,
           duration: const Duration(seconds: 5),
@@ -219,7 +219,7 @@ class AuthController extends GetxController {
           colorText: Get.theme.snackBarTheme.actionTextColor);
     } on FirebaseAuthException catch (error) {
       await hideLoadingIndicator();
-      Get.snackbar('auth.resetPasswordFailed'.tr, error.message!,
+      Get.snackbar<void>('auth.resetPasswordFailed'.tr, error.message!,
           snackPosition: SnackPosition.BOTTOM,
           duration: const Duration(seconds: 10),
           backgroundColor: Get.theme.snackBarTheme.backgroundColor,

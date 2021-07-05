@@ -9,9 +9,7 @@ import 'file_info_card.dart';
 import 'new_wallet.dart';
 
 class MyFiles extends StatelessWidget {
-  const MyFiles({
-    Key? key,
-  }) : super(key: key);
+  const MyFiles({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -74,19 +72,7 @@ class FileInfoCardGridView extends StatelessWidget {
   Widget build(BuildContext context) {
     final WalletController walletController = WalletController.to;
 
-    //final appState = Provider.of<AppState>(context);
-    //return const Text('');
-
-    // return FutureBuilder<List<Portfolio>>(
-    //   future: appState.api.portfolios.list(),
-    //   builder: (context, futureSnapshot) {
-    //     if (!futureSnapshot.hasData) {
-    //       return const Center(
-    //         child: CircularProgressIndicator(),
-    //       );
-    //     }
     return StreamBuilder<List<WalletModel>>(
-      //initialData: futureSnapshot.data,
       stream: walletController.streamFirestoreWalletList(),
       builder: (context, snapshot) {
         if (snapshot.data == null) {
@@ -109,20 +95,5 @@ class FileInfoCardGridView extends StatelessWidget {
         );
       },
     );
-    //   },
-    // );
-
-    // return GridView.builder(
-    //   physics: const NeverScrollableScrollPhysics(),
-    //   shrinkWrap: true,
-    //   itemCount: demoMyFiles.length,
-    //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-    //     crossAxisCount: crossAxisCount,
-    //     crossAxisSpacing: defaultPadding,
-    //     mainAxisSpacing: defaultPadding,
-    //     childAspectRatio: childAspectRatio,
-    //   ),
-    //   itemBuilder: (context, index) => FileInfoCard(info: demoMyFiles[index]),
-    // );
   }
 }

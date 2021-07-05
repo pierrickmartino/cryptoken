@@ -15,7 +15,6 @@ import '../../src/api/api.dart';
 import '../../src/class/crypto.dart';
 import '../../src/hive/crypto_hive.dart';
 import '../app.dart';
-import 'portfolios_dropdown.dart';
 
 const cryptoListBox = 'cryptoList';
 
@@ -33,7 +32,7 @@ class NewTransactionForm extends StatefulWidget {
 }
 
 class _NewTransactionFormState extends State<NewTransactionForm> {
-  WalletModel? _selected = WalletModel(name: 'Empty');
+  final WalletModel? _selected = WalletModel(name: 'Empty');
 
   final Transaction _transaction = Transaction(
     0,

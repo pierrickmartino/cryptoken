@@ -77,7 +77,7 @@ class CryptokenApp extends StatelessWidget {
       darkTheme: ThemeData.dark(),
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: bgColor,
-        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)
+        textTheme: GoogleFonts.notoSansTextTheme(Theme.of(context).textTheme)
             .apply(bodyColor: Colors.white),
         canvasColor: secondaryColor,
       ),

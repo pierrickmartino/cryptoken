@@ -91,19 +91,21 @@ class EditWalletForm extends StatelessWidget {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       debugPrint('portfolio.id : ${portfolio.id}');
-                      debugPrint('_portfolioName : ${_portfolioName}');
-                      WalletModel _newWallet =
+                      debugPrint('_portfolioName : $_portfolioName');
+                      final WalletModel _newWallet =
                           WalletModel(name: _portfolioName);
-                      walletController.updateFirestoreWallet(
-                          _newWallet, portfolio.id);
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Portfolio ${portfolio.name} updated'),
-                        ),
-                      );
-
-                      Get.back();
+                      walletController
+                          .updateFirestoreWallet(_newWallet, portfolio.id)
+                          .then((value) => Get
+                            ..back<void>()
+                            ..snackbar<void>('Successful',
+                                'Portfolio ${portfolio.name} updated !',
+                                snackPosition: SnackPosition.BOTTOM,
+                                duration: const Duration(seconds: 5),
+                                backgroundColor:
+                                    Get.theme.snackBarTheme.backgroundColor,
+                                colorText:
+                                    Get.theme.snackBarTheme.actionTextColor));
                     }
                   },
                   child: const Text('OK'),

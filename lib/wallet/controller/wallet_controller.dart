@@ -49,6 +49,7 @@ class WalletController extends GetxController {
   }
 
   Future<void> insertFirestoreWallet(WalletModel portfolio) async {
+    debugPrint('insertFirestoreWallet');
     await _db
         .collection('/users/${firebaseUser.value!.uid}/portfolios')
         .add(portfolio.toJson());
@@ -61,6 +62,14 @@ class WalletController extends GetxController {
         .collection('/users/${firebaseUser.value!.uid}/portfolios')
         .doc(id)
         .set(portfolio.toJson());
+  }
+
+  Future<void> deleteFirestoreWallet(String id) async {
+    debugPrint('deleteFirestoreWallet');
+    await _db
+        .collection('/users/${firebaseUser.value!.uid}/portfolios')
+        .doc(id)
+        .delete();
   }
 
   Future<WalletModel> getFirestoreUser() {

@@ -4,10 +4,6 @@ import 'package:web_dashboard/auth/controller/auth_controller.dart';
 
 import 'dashboard_screen.dart';
 
-bool _isLargeScreen(BuildContext context) {
-  return MediaQuery.of(context).size.width > 960.0;
-}
-
 class HomeUI extends StatelessWidget {
   const HomeUI({
     Key? key,

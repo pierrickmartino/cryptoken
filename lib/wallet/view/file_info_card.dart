@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:web_dashboard/auth/controller/auth_controller.dart';
 import 'package:web_dashboard/src/widgets/dialogs.dart';
+import 'package:web_dashboard/wallet/controller/wallet_controller.dart';
 import 'package:web_dashboard/wallet/model/wallet_model.dart';
 import 'package:web_dashboard/wallet/view/edit_wallet.dart';
 
@@ -14,6 +17,9 @@ class FileInfoCard extends StatelessWidget {
 
   final WalletModel portfolio;
   final Color boxDecorationColor = secondaryColor;
+
+  final AuthController authController = AuthController.to;
+  final WalletController walletController = WalletController.to;
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +73,19 @@ class FileInfoCard extends StatelessWidget {
                         );
                         break;
                       case 2:
+                        walletController
+                            .deleteFirestoreWallet(portfolio.id)
+                            .then((value) => Get
+                              ..snackbar<void>('Successful',
+                                  'Portfolio ${portfolio.name} deleted !',
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  duration: const Duration(seconds: 5),
+                                  backgroundColor:
+                                      Get.theme.snackBarTheme.backgroundColor,
+                                  colorText:
+                                      Get.theme.snackBarTheme.actionTextColor));
+                        break;
+                      case 3:
                         showGeneralDialog<NewTransactionDialog>(
                           context: context,
                           pageBuilder:
@@ -76,6 +95,7 @@ class FileInfoCard extends StatelessWidget {
                           ),
                         );
                         break;
+
                       default:
                     }
                   },
@@ -84,10 +104,15 @@ class FileInfoCard extends StatelessWidget {
                       value: 1,
                       child: Text('Edit'),
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 2,
+                      enabled: authController.admin.value,
+                      child: const Text('Delete'),
+                    ),
+                    const PopupMenuItem(
+                      value: 3,
                       child: Text('Add transaction'),
-                    )
+                    ),
                   ],
                 )
               ],

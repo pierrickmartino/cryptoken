@@ -33,9 +33,7 @@ class NewWalletDialog extends StatelessWidget {
 }
 
 class NewWalletForm extends StatelessWidget {
-  NewWalletForm({
-    Key? key,
-  }) : super(key: key);
+  NewWalletForm({Key? key}) : super(key: key);
 
   final WalletModel _portfolio = WalletModel(name: '');
 
@@ -84,19 +82,20 @@ class NewWalletForm extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      debugPrint('_portfolioName : ${_portfolioName}');
-                      WalletModel _newWallet =
+                      debugPrint('_portfolioName : $_portfolioName');
+                      final WalletModel _newWallet =
                           WalletModel(name: _portfolioName);
-                      walletController.insertFirestoreWallet(_newWallet);
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content:
-                              Text('Portfolio ${_portfolio.name} inserted'),
-                        ),
-                      );
-
-                      Get.back();
+                      walletController.insertFirestoreWallet(_newWallet).then(
+                          (value) => Get
+                            ..back<void>()
+                            ..snackbar<void>('Successful',
+                                'Portfolio ${_portfolio.name} inserted !',
+                                snackPosition: SnackPosition.BOTTOM,
+                                duration: const Duration(seconds: 5),
+                                backgroundColor:
+                                    Get.theme.snackBarTheme.backgroundColor,
+                                colorText:
+                                    Get.theme.snackBarTheme.actionTextColor));
                     }
                   },
                   child: const Text('OK'),

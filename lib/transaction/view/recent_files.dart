@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart' as intl;
-import 'package:provider/provider.dart';
 import 'package:web_dashboard/src/api/api.dart';
 
-import '../../src/app.dart';
 import '../../constant.dart';
 
 final _priceFormat =
@@ -24,8 +21,6 @@ class RecentFiles extends StatefulWidget {
 class _RecentFilesState extends State<RecentFiles> {
   @override
   Widget build(BuildContext context) {
-    //final appState = Provider.of<AppState>(context);
-
     return Container(
       padding: const EdgeInsets.all(defaultPadding),
       decoration: const BoxDecoration(
@@ -39,7 +34,7 @@ class _RecentFilesState extends State<RecentFiles> {
             'Recent Files',
             style: Theme.of(context).textTheme.subtitle1,
           ),
-          SizedBox(
+          const SizedBox(
             width: double.infinity,
             child: Text(''),
             // FutureBuilder<List<Transaction>>(
