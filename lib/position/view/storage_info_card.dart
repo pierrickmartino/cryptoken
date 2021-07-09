@@ -13,7 +13,7 @@ class StorageInfoCard extends StatelessWidget {
   }) : super(key: key);
 
   final String title, svgSrc, amountOfFiles;
-  final int numOfFiles;
+  final double numOfFiles;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,7 @@ class StorageInfoCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
-                    '$numOfFiles Files',
+                    '$numOfFiles',
                     style: Theme.of(context)
                         .textTheme
                         .caption!

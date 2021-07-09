@@ -10,15 +10,15 @@ bool _isLargeScreen(BuildContext context) {
 class EditWalletDialog extends StatelessWidget {
   const EditWalletDialog({
     Key? key,
-    required this.portfolio,
+    required this.wallet,
   }) : super(key: key);
 
-  final WalletModel portfolio;
+  final WalletModel wallet;
 
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
-      title: const Text('Edit Portfolio'),
+      title: const Text('Edit wallet'),
       titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
       children: [
@@ -28,7 +28,7 @@ class EditWalletDialog extends StatelessWidget {
               : MediaQuery.of(context).size.width - 10,
           child: Column(children: [
             EditWalletForm(
-              portfolio: portfolio,
+              wallet: wallet,
             ),
           ]),
         ),
@@ -40,17 +40,17 @@ class EditWalletDialog extends StatelessWidget {
 class EditWalletForm extends StatelessWidget {
   EditWalletForm({
     Key? key,
-    required this.portfolio,
+    required this.wallet,
   }) : super(key: key);
 
-  final WalletModel portfolio;
+  final WalletModel wallet;
 
   final _formKey = GlobalKey<FormState>();
   final WalletController walletController = WalletController.to;
 
   @override
   Widget build(BuildContext context) {
-    String _portfolioName = '';
+    String _walletName = '';
 
     return Form(
       key: _formKey,
@@ -61,12 +61,12 @@ class EditWalletForm extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 16),
             child: TextFormField(
               style: const TextStyle(fontSize: 14),
-              initialValue: portfolio.name,
+              initialValue: wallet.name,
               decoration: const InputDecoration(
                 isDense: true,
                 hintText: 'Name',
               ),
-              onChanged: (value) => _portfolioName = value,
+              onChanged: (value) => _walletName = value,
               validator: (value) {
                 if (value!.isEmpty) {
                   return 'Please enter a name';
@@ -90,16 +90,14 @@ class EditWalletForm extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      debugPrint('portfolio.id : ${portfolio.id}');
-                      debugPrint('_portfolioName : $_portfolioName');
                       final WalletModel _newWallet =
-                          WalletModel(name: _portfolioName);
+                          WalletModel(name: _walletName);
                       walletController
-                          .updateFirestoreWallet(_newWallet, portfolio.id)
+                          .updateFirestoreWallet(_newWallet, wallet.id)
                           .then((value) => Get
                             ..back<void>()
-                            ..snackbar<void>('Successful',
-                                'Portfolio ${portfolio.name} updated !',
+                            ..snackbar<void>(
+                                'Successful', 'wallet ${wallet.name} updated !',
                                 snackPosition: SnackPosition.BOTTOM,
                                 duration: const Duration(seconds: 5),
                                 backgroundColor:

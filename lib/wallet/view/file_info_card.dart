@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:web_dashboard/auth/controller/auth_controller.dart';
-import 'package:web_dashboard/src/widgets/dialogs.dart';
+import 'package:web_dashboard/transaction/view/new_transaction.dart';
 import 'package:web_dashboard/wallet/controller/wallet_controller.dart';
 import 'package:web_dashboard/wallet/model/wallet_model.dart';
 import 'package:web_dashboard/wallet/view/edit_wallet.dart';
@@ -12,10 +12,10 @@ import '../../constant.dart';
 class FileInfoCard extends StatelessWidget {
   FileInfoCard({
     Key? key,
-    required this.portfolio,
+    required this.wallet,
   }) : super(key: key);
 
-  final WalletModel portfolio;
+  final WalletModel wallet;
   final Color boxDecorationColor = secondaryColor;
 
   final AuthController authController = AuthController.to;
@@ -50,12 +50,12 @@ class FileInfoCard extends StatelessWidget {
                   width: 40,
                   decoration: BoxDecoration(
                     color: primaryColor
-                        .withOpacity(0.1), // portfolio.color!.withOpacity(0.1),
+                        .withOpacity(0.1), // wallet.color!.withOpacity(0.1),
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                   ),
                   child: SvgPicture.asset(
-                    'icons/folder.svg', //portfolio.svgSrc!,
-                    color: primaryColor, // portfolio.color,
+                    'icons/folder.svg', //wallet.svgSrc!,
+                    color: primaryColor, // wallet.color,
                   ),
                 ),
                 PopupMenuButton(
@@ -67,17 +67,16 @@ class FileInfoCard extends StatelessWidget {
                           context: context,
                           builder: (context) {
                             return EditWalletDialog(
-                              portfolio: portfolio,
+                              wallet: wallet,
                             );
                           },
                         );
                         break;
                       case 2:
-                        walletController
-                            .deleteFirestoreWallet(portfolio.id)
-                            .then((value) => Get
+                        walletController.deleteFirestoreWallet(wallet.id).then(
+                            (value) => Get
                               ..snackbar<void>('Successful',
-                                  'Portfolio ${portfolio.name} deleted !',
+                                  'wallet ${wallet.name} deleted !',
                                   snackPosition: SnackPosition.BOTTOM,
                                   duration: const Duration(seconds: 5),
                                   backgroundColor:
@@ -91,7 +90,7 @@ class FileInfoCard extends StatelessWidget {
                           pageBuilder:
                               (context, animation, secondaryAnimation) =>
                                   NewTransactionDialog(
-                            selectedPortfolio: portfolio,
+                            selectedWallet: wallet,
                           ),
                         );
                         break;
@@ -118,27 +117,34 @@ class FileInfoCard extends StatelessWidget {
               ],
             ),
             Text(
-              portfolio.name,
+              wallet.name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
+            Text(wallet.id,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context)
+                    .textTheme
+                    .caption!
+                    .copyWith(color: Colors.white70)),
             const ProgressLine(
-              // color: portfolio.color,
-              percentage: 10, //portfolio.percentage,
+              // color: wallet.color,
+              percentage: 100, //wallet.percentage,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '10 Files',
-                  //'${portfolio.numOfFiles} Files',
+                  'Unrealized',
+                  //'${wallet.numOfFiles} Files',
                   style: Theme.of(context)
                       .textTheme
                       .caption!
                       .copyWith(color: Colors.white70),
                 ),
                 Text(
-                  '1.2GB', //portfolio.totalStorage!,
+                  'Valuation', //wallet.totalStorage!,
                   style: Theme.of(context)
                       .textTheme
                       .caption!

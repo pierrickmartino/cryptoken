@@ -6,7 +6,7 @@ import 'package:web_dashboard/wallet/model/wallet_model.dart';
 
 class WalletController extends GetxController {
   static WalletController get to => Get.find();
-  TextEditingController nameController = TextEditingController();
+  //TextEditingController nameController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   Rxn<User> firebaseUser = Rxn<User>();
@@ -19,7 +19,7 @@ class WalletController extends GetxController {
 
   @override
   void onClose() {
-    nameController.dispose();
+    //nameController.dispose();
     super.onClose();
   }
 
@@ -27,9 +27,10 @@ class WalletController extends GetxController {
   Stream<User?> get user => _auth.authStateChanges();
 
   Stream<List<WalletModel>> streamFirestoreWalletList() {
-    final snapshots = _db
-        .collection('/users/${firebaseUser.value!.uid}/portfolios')
-        .snapshots();
+    debugPrint('streamFirestoreWalletList');
+
+    final snapshots =
+        _db.collection('/users/${firebaseUser.value!.uid}/wallets').snapshots();
     final result = snapshots.map((querySnapshot) {
       return querySnapshot.docs.map((snapshot) {
         return WalletModel.fromJson(snapshot.data())..id = snapshot.id;
@@ -43,37 +44,34 @@ class WalletController extends GetxController {
     debugPrint('streamFirestoreWallet()');
 
     return _db
-        .doc('/users/${firebaseUser.value!.uid}/portfolios')
+        .doc('/users/${firebaseUser.value!.uid}/wallets')
         .snapshots()
         .map((snapshot) => WalletModel.fromMap(snapshot.data()!));
   }
 
-  Future<void> insertFirestoreWallet(WalletModel portfolio) async {
+  Future<void> insertFirestoreWallet(WalletModel wallet) async {
     debugPrint('insertFirestoreWallet');
     await _db
-        .collection('/users/${firebaseUser.value!.uid}/portfolios')
-        .add(portfolio.toJson());
+        .collection('/users/${firebaseUser.value!.uid}/wallets')
+        .add(wallet.toJson());
     update();
   }
 
-  Future<void> updateFirestoreWallet(WalletModel portfolio, String id) async {
+  Future<void> updateFirestoreWallet(WalletModel wallet, String id) async {
     debugPrint('updateFirestoreWallet');
     await _db
-        .collection('/users/${firebaseUser.value!.uid}/portfolios')
+        .collection('/users/${firebaseUser.value!.uid}/wallets')
         .doc(id)
-        .set(portfolio.toJson());
+        .set(wallet.toJson());
+    update();
   }
 
   Future<void> deleteFirestoreWallet(String id) async {
     debugPrint('deleteFirestoreWallet');
     await _db
-        .collection('/users/${firebaseUser.value!.uid}/portfolios')
+        .collection('/users/${firebaseUser.value!.uid}/wallets')
         .doc(id)
         .delete();
-  }
-
-  Future<WalletModel> getFirestoreUser() {
-    return _db.doc('/users/${firebaseUser.value!.uid}/portfolios').get().then(
-        (documentSnapshot) => WalletModel.fromMap(documentSnapshot.data()!));
+    update();
   }
 }

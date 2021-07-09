@@ -80,6 +80,7 @@ class FileInfoCardGridView extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         }
+
         return GridView.builder(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
@@ -91,7 +92,7 @@ class FileInfoCardGridView extends StatelessWidget {
             childAspectRatio: childAspectRatio,
           ),
           itemBuilder: (context, index) =>
-              FileInfoCard(portfolio: snapshot.data![index]),
+              FileInfoCard(wallet: snapshot.data![index]),
         );
       },
     );

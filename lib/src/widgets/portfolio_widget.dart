@@ -214,21 +214,21 @@ class _PortfolioWidgetState extends State<PortfolioWidget> {
                       color: const Color(0xff3A6EA5),
                       onPressed: () {
                         if (_isLargeScreen(context)) {
-                          showDialog<NewTransactionDialog>(
-                            context: context,
-                            builder: (context) => NewTransactionDialog(
-                              selectedPortfolio: widget.portfolio,
-                            ),
-                          );
+                          // showDialog<NewTransactionDialog>(
+                          //   context: context,
+                          //   builder: (context) => NewTransactionDialog(
+                          //     selectedPortfolio: widget.portfolio,
+                          //   ),
+                          //);
                         } else {
-                          showGeneralDialog<NewTransactionDialog>(
-                            context: context,
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    NewTransactionDialog(
-                              selectedPortfolio: widget.portfolio,
-                            ),
-                          );
+                          // showGeneralDialog<NewTransactionDialog>(
+                          //   context: context,
+                          //   pageBuilder:
+                          //       (context, animation, secondaryAnimation) =>
+                          //           NewTransactionDialog(
+                          //     selectedPortfolio: widget.portfolio,
+                          //   ),
+                          // );
                         }
                       },
                     ),

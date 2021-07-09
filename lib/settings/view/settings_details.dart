@@ -33,7 +33,7 @@ class SettingsDetails extends StatelessWidget {
               'Show position with zero amount',
               style: TextStyle(fontSize: 14),
             ),
-            trailing: GetBuilder<ZeroPositionController>(
+            trailing: GetBuilder<PositionController>(
               builder: (controller) => Switch(
                 value: controller.currentZeroPosition,
                 onChanged: (val) {

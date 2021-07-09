@@ -10,6 +10,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:web_dashboard/src/hive/crypto_hive.dart';
 import 'package:web_dashboard/src/hive/portfolio_hive.dart';
+import 'package:web_dashboard/transaction/controller/transaction_controller.dart';
 import 'package:web_dashboard/wallet/controller/wallet_controller.dart';
 
 import 'auth/controller/auth_controller.dart';
@@ -26,8 +27,9 @@ Future<void> main() async {
   await GetStorage.init();
   Get
     ..put<AuthController>(AuthController())
-    ..put<ZeroPositionController>(ZeroPositionController())
-    ..put<WalletController>(WalletController());
+    ..put<PositionController>(PositionController())
+    ..put<WalletController>(WalletController())
+    ..put<TransactionController>(TransactionController());
 
   // initialization
   await Hive.initFlutter();

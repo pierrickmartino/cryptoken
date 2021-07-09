@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:web_dashboard/position/controller/position_controller.dart';
+import 'package:web_dashboard/position/model/position_model.dart';
 
 import '../../constant.dart';
 import 'chart.dart';
@@ -11,50 +13,52 @@ class StorageDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(defaultPadding),
-      decoration: const BoxDecoration(
-        color: secondaryColor,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text(
-            'Storage Details',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
+    final PositionController positionController = PositionController.to;
+
+    return FutureBuilder<List<PositionModel>>(
+        future: positionController.getFirestoreTopPosition(),
+        builder: (context, snapshot) {
+          if (snapshot.data == null) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return Container(
+            padding: const EdgeInsets.all(defaultPadding),
+            decoration: const BoxDecoration(
+              color: secondaryColor,
+              borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
-          ),
-          SizedBox(height: defaultPadding),
-          Chart(),
-          StorageInfoCard(
-            svgSrc: 'icons/Documents.svg',
-            title: 'Documents Files',
-            amountOfFiles: '1.3GB',
-            numOfFiles: 1328,
-          ),
-          StorageInfoCard(
-            svgSrc: 'icons/media.svg',
-            title: 'Media Files',
-            amountOfFiles: '15.3GB',
-            numOfFiles: 1328,
-          ),
-          StorageInfoCard(
-            svgSrc: 'icons/folder.svg',
-            title: 'Other Files',
-            amountOfFiles: '1.3GB',
-            numOfFiles: 1328,
-          ),
-          StorageInfoCard(
-            svgSrc: 'icons/unknown.svg',
-            title: 'Unknown',
-            amountOfFiles: '1.3GB',
-            numOfFiles: 140,
-          ),
-        ],
-      ),
-    );
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Storage Details',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: defaultPadding),
+                const Chart(),
+                Column(
+                  children: List.generate(
+                    snapshot.data!.length,
+                    (index) => storageInfoCard(snapshot.data![index]),
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
   }
+}
+
+StorageInfoCard storageInfoCard(PositionModel positionModel) {
+  return StorageInfoCard(
+    svgSrc: 'icons/Documents.svg',
+    title: positionModel.token,
+    amountOfFiles: '0 USD',
+    numOfFiles: positionModel.amount,
+  );
 }

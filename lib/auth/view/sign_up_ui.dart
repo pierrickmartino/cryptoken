@@ -12,9 +12,12 @@ import 'primary_button.dart';
 import 'sign_in.dart';
 
 class SignUpUI extends StatelessWidget {
+  SignUpUI({Key? key}) : super(key: key);
+
   final AuthController authController = AuthController.to;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Form(
@@ -27,12 +30,12 @@ class SignUpUI extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  LogoGraphicHeader(),
-                  const SizedBox(height: 48),
+                  //LogoGraphicHeader(),
+                  //const SizedBox(height: 48),
                   FormInputFieldWithIcon(
                     controller: authController.nameController,
                     iconPrefix: Icons.person,
-                    labelText: 'auth.nameFormField'.tr,
+                    labelText: 'Username',
                     validator: Validator().name,
                     onChanged: (value) => null,
                     onSaved: (value) =>
@@ -42,7 +45,7 @@ class SignUpUI extends StatelessWidget {
                   FormInputFieldWithIcon(
                     controller: authController.emailController,
                     iconPrefix: Icons.email,
-                    labelText: 'auth.emailFormField'.tr,
+                    labelText: 'Email',
                     validator: Validator().email,
                     keyboardType: TextInputType.emailAddress,
                     onChanged: (value) => null,
@@ -53,7 +56,7 @@ class SignUpUI extends StatelessWidget {
                   FormInputFieldWithIcon(
                     controller: authController.passwordController,
                     iconPrefix: Icons.lock,
-                    labelText: 'auth.passwordFormField'.tr,
+                    labelText: 'Password',
                     validator: Validator().password,
                     obscureText: true,
                     onChanged: (value) => null,
@@ -63,17 +66,18 @@ class SignUpUI extends StatelessWidget {
                   ),
                   FormVerticalSpace(),
                   PrimaryButton(
-                      labelText: 'auth.signUpButton'.tr,
+                      labelText: 'Sign up',
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          SystemChannels.textInput.invokeMethod(
+                          await SystemChannels.textInput.invokeMethod(
                               'TextInput.hide'); //to hide the keyboard - if any
-                          authController.registerWithEmailAndPassword(context);
+                          await authController
+                              .registerWithEmailAndPassword(context);
                         }
                       }),
                   FormVerticalSpace(),
                   LabelButton(
-                    labelText: 'auth.signInLabelButton'.tr,
+                    labelText: 'Sign in',
                     onPressed: () => Get.to(SignInUI()),
                   ),
                 ],

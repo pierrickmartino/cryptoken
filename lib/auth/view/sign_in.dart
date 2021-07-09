@@ -33,12 +33,12 @@ class SignInUI extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  LogoGraphicHeader(),
-                  const SizedBox(height: 48),
+                  // LogoGraphicHeader(),
+                  // const SizedBox(height: 48),
                   FormInputFieldWithIcon(
                     controller: authController.emailController,
                     iconPrefix: Icons.email,
-                    labelText: 'auth.emailFormField'.tr,
+                    labelText: 'Email',
                     validator: Validator().email,
                     keyboardType: TextInputType.emailAddress,
                     onChanged: (value) => null,
@@ -49,7 +49,7 @@ class SignInUI extends StatelessWidget {
                   FormInputFieldWithIcon(
                     controller: authController.passwordController,
                     iconPrefix: Icons.lock,
-                    labelText: 'auth.passwordFormField'.tr,
+                    labelText: 'Password',
                     validator: Validator().password,
                     obscureText: true,
                     onChanged: (value) => null,
@@ -59,7 +59,7 @@ class SignInUI extends StatelessWidget {
                   ),
                   FormVerticalSpace(),
                   PrimaryButton(
-                      labelText: 'auth.signInButton'.tr,
+                      labelText: 'Sign in',
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           await authController
@@ -68,11 +68,11 @@ class SignInUI extends StatelessWidget {
                       }),
                   FormVerticalSpace(),
                   LabelButton(
-                    labelText: 'auth.resetPasswordLabelButton'.tr,
+                    labelText: 'Reset password ?',
                     onPressed: () => Get.to<ResetPasswordUI>(ResetPasswordUI()),
                   ),
                   LabelButton(
-                    labelText: 'auth.signUpLabelButton'.tr,
+                    labelText: 'Sign up',
                     onPressed: () => Get.to<SignUpUI>(SignUpUI()),
                   ),
                 ],
