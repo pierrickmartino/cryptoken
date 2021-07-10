@@ -75,6 +75,9 @@ class RecentFiles extends StatelessWidget {
                       label: Text('Price'),
                     ),
                     DataColumn(
+                      label: Text('Unrealiz.'),
+                    ),
+                    DataColumn(
                       label: Text('Total'),
                     ),
                     DataColumn(
@@ -107,6 +110,7 @@ DataRow recentFileDataRow(TransactionModel transactionInfo) {
           Text('${transactionInfo.amountMain} ${transactionInfo.tokenMain}')),
       DataCell(Text(
           '${_priceFormat.format(transactionInfo.price)} ${transactionInfo.tokenPrice}')),
+      DataCell(Text('0')),
       DataCell(Text(
           '${transactionInfo.amountReference} ${transactionInfo.tokenReference}')),
       DataCell(

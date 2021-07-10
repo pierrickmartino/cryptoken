@@ -23,23 +23,45 @@ class MyFiles extends StatelessWidget {
               'My Files',
               style: Theme.of(context).textTheme.subtitle1,
             ),
-            ElevatedButton.icon(
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(
-                  horizontal: defaultPadding * 1.5,
-                  vertical:
-                      defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
+            Wrap(
+              spacing: 5,
+              children: [
+                ElevatedButton.icon(
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: defaultPadding * 1.5,
+                      vertical: defaultPadding /
+                          (Responsive.isMobile(context) ? 2 : 1),
+                    ),
+                  ),
+                  onPressed: () {
+                    showDialog<NewWalletDialog>(
+                      context: context,
+                      builder: (context) => const NewWalletDialog(),
+                    );
+                  },
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add New'),
                 ),
-              ),
-              onPressed: () {
-                showDialog<NewWalletDialog>(
-                  context: context,
-                  builder: (context) => const NewWalletDialog(),
-                );
-              },
-              icon: const Icon(Icons.add),
-              label: const Text('Add New'),
-            ),
+                ElevatedButton.icon(
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: defaultPadding * 1.5,
+                      vertical: defaultPadding /
+                          (Responsive.isMobile(context) ? 2 : 1),
+                    ),
+                  ),
+                  onPressed: () {
+                    showDialog<NewWalletDialog>(
+                      context: context,
+                      builder: (context) => const NewWalletDialog(),
+                    );
+                  },
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Refresh'),
+                ),
+              ],
+            )
           ],
         ),
         const SizedBox(height: defaultPadding),
