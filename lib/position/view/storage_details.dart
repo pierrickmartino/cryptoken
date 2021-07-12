@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:web_dashboard/position/controller/position_controller.dart';
 import 'package:web_dashboard/position/model/position_model.dart';
+import 'package:web_dashboard/token/controller/token_controller.dart';
 
 import '../../constant.dart';
 import 'chart.dart';
 import 'storage_info_card.dart';
+
+final _numberFormat =
+    NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 2);
 
 class StorageDetails extends StatelessWidget {
   const StorageDetails({
@@ -55,10 +61,23 @@ class StorageDetails extends StatelessWidget {
 }
 
 StorageInfoCard storageInfoCard(PositionModel positionModel) {
+  final tokenController = Get.put(TokenController());
+
+  final double valuation =
+      tokenController.tokenPrice(positionModel.token) * positionModel.amount;
+  final String updatedDate =
+      tokenController.tokenUpdatedDate(positionModel.token);
+  final double var24 = tokenController.tokenVar24(positionModel.token);
+  final double var24Percent =
+      tokenController.tokenVar24Percent(positionModel.token);
+
   return StorageInfoCard(
     svgSrc: 'icons/Documents.svg',
     title: positionModel.token,
-    amountOfFiles: '0 USD',
-    numOfFiles: positionModel.amount,
+    positionValuation: '${_numberFormat.format(valuation)} USD',
+    positionAmount: _numberFormat.format(positionModel.amount),
+    updatedDate: updatedDate,
+    tokenVariation:
+        '${_numberFormat.format(var24)}   ${_numberFormat.format(var24Percent)}%',
   );
 }

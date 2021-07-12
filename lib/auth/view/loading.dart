@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 //loading indicator code is a modified and simplified version of this code
 //https://github.com/fayaz07/ots
@@ -16,11 +16,11 @@ bool isDarkTheme = false;
 bool _loaderShown = false;
 
 class Loading extends StatelessWidget {
-  final Widget? child;
-  final bool darkTheme;
-
   const Loading({Key? key, this.child, this.darkTheme = false})
       : super(key: key);
+
+  final Widget? child;
+  final bool darkTheme;
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +81,7 @@ Future<void> showLoadingIndicator(
     );
   } catch (err) {
     debugPrint('Exception showing loading overlay\n${err.toString()}');
-    throw err;
+    rethrow;
   }
 }
 
@@ -91,7 +91,7 @@ Future<void> hideLoadingIndicator() async {
     await _hideOverlay();
   } catch (err) {
     debugPrint('Exception hiding loading overlay');
-    throw err;
+    rethrow;
   }
 }
 
@@ -115,7 +115,7 @@ Future<void> _showOverlay({required Widget child}) async {
     _loaderShown = true;
   } catch (err) {
     debugPrint('Exception inserting loading overlay\n${err.toString()}');
-    throw err;
+    rethrow;
   }
 }
 
@@ -125,6 +125,6 @@ Future<void> _hideOverlay() async {
     _loaderShown = false;
   } catch (err) {
     debugPrint('Exception removing loading overlay\n${err.toString()}');
-    throw err;
+    rethrow;
   }
 }

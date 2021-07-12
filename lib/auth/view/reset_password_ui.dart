@@ -15,6 +15,7 @@ class ResetPasswordUI extends StatelessWidget {
   final AuthController authController = AuthController.to;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(context),
@@ -40,7 +41,7 @@ class ResetPasswordUI extends StatelessWidget {
                     onSaved: (value) =>
                         authController.emailController.text = value as String,
                   ),
-                  FormVerticalSpace(),
+                  const FormVerticalSpace(),
                   PrimaryButton(
                       labelText: 'auth.resetPasswordButton'.tr,
                       onPressed: () async {
@@ -48,7 +49,7 @@ class ResetPasswordUI extends StatelessWidget {
                           await authController.sendPasswordResetEmail(context);
                         }
                       }),
-                  FormVerticalSpace(),
+                  const FormVerticalSpace(),
                   signInLink(context),
                 ],
               ),
@@ -59,14 +60,14 @@ class ResetPasswordUI extends StatelessWidget {
     );
   }
 
-  appBar(BuildContext context) {
+  AppBar? appBar(BuildContext context) {
     if (authController.emailController.text == '') {
       return null;
     }
     return AppBar(title: Text('auth.resetPasswordTitle'.tr));
   }
 
-  signInLink(BuildContext context) {
+  StatelessWidget signInLink(BuildContext context) {
     if (authController.emailController.text == '') {
       return LabelButton(
         labelText: 'auth.signInonResetPasswordLabelButton'.tr,

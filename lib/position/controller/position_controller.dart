@@ -19,12 +19,6 @@ class PositionController extends GetxController {
     super.onReady();
   }
 
-  @override
-  void onClose() {
-    //nameController.dispose();
-    super.onClose();
-  }
-
   // Firebase user a realtime stream
   Stream<User?> get user => _auth.authStateChanges();
 
@@ -83,6 +77,18 @@ class PositionController extends GetxController {
         .collection('/users/${firebaseUser.value!.uid}/positions/')
         .orderBy('purchaseAmount')
         .limit(3)
+        .get();
+
+    final positions = snapshot.docs
+        .map((doc) => PositionModel.fromJson(doc.data())..id = doc.id)
+        .toList();
+
+    return positions;
+  }
+
+  Future<List<PositionModel>> getFirestorePositionList() async {
+    final snapshot = await _db
+        .collection('/users/${firebaseUser.value!.uid}/positions/')
         .get();
 
     final positions = snapshot.docs

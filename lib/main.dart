@@ -9,7 +9,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:web_dashboard/src/hive/crypto_hive.dart';
-import 'package:web_dashboard/src/hive/portfolio_hive.dart';
+import 'package:web_dashboard/token/controller/token_controller.dart';
+//import 'package:web_dashboard/src/hive/portfolio_hive.dart';
 import 'package:web_dashboard/transaction/controller/transaction_controller.dart';
 import 'package:web_dashboard/wallet/controller/wallet_controller.dart';
 
@@ -20,7 +21,7 @@ import 'route.dart';
 import 'src/class/cryptos_list.dart';
 
 const cryptoListBox = 'cryptoList';
-const portfolioListBox = 'portfolioList';
+//const portfolioListBox = 'portfolioList';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,17 +30,18 @@ Future<void> main() async {
     ..put<AuthController>(AuthController())
     ..put<PositionController>(PositionController())
     ..put<WalletController>(WalletController())
+    ..put<TokenController>(TokenController())
     ..put<TransactionController>(TransactionController());
 
   // initialization
   await Hive.initFlutter();
 
   // register the adapter to insert Portfolio in box
-  Hive.registerAdapter(
-    PortfolioHiveAdapter(),
-  );
+  // Hive.registerAdapter(
+  //   PortfolioHiveAdapter(),
+  // );
   // open the box dedicated to Portfolios
-  await Hive.openBox<PortfolioHive>(portfolioListBox);
+  //await Hive.openBox<PortfolioHive>(portfolioListBox);
 
   // register the adapter to insert Crypto in box
   Hive.registerAdapter(
@@ -66,7 +68,7 @@ Future<void> main() async {
   }
 
   // to debug : flutter run -d chrome --web-port=5000
-  runApp(const CryptokenApp());
+  runApp(CryptokenApp());
 }
 
 class CryptokenApp extends StatelessWidget {

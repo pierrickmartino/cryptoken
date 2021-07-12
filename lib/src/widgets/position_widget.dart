@@ -1,13 +1,9 @@
-import 'dart:async' show Future;
-
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import 'package:web_dashboard/src/class/price.dart';
-import 'package:web_dashboard/src/class/variation24.dart';
-import 'package:web_dashboard/src/hive/crypto_hive.dart';
+import 'package:web_dashboard/token/model/price.dart';
+import 'package:web_dashboard/token/model/variation24.dart';
 import 'package:web_dashboard/wallet/model/wallet_model.dart';
 
 import '../api/api.dart';
@@ -86,12 +82,12 @@ class PositionWidget extends StatelessWidget {
     );
   }
 
-  Future<String> _getIconFromCryptoHive(String symbol) async {
-    final boxCrypto = await Hive.openBox<CryptoHive>(cryptoListBox);
-    final CryptoHive cryptos = boxCrypto.get(symbol)!;
+  // Future<String> _getIconFromCryptoHive(String symbol) async {
+  //   final boxCrypto = await Hive.openBox<CryptoHive>(cryptoListBox);
+  //   final CryptoHive cryptos = boxCrypto.get(symbol)!;
 
-    return cryptos.logo;
-  }
+  //   return cryptos.logo;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -104,19 +100,19 @@ class PositionWidget extends StatelessWidget {
         child: Column(
           children: [
             ListTile(
-              leading: FutureBuilder(
-                future: _getIconFromCryptoHive(position.token),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Image.network(
-                      snapshot.data.toString(),
-                      height: 28,
-                    );
-                  } else {
-                    return const Icon(Icons.all_inclusive);
-                  }
-                },
-              ),
+              // leading: FutureBuilder(
+              //   future: _getIconFromCryptoHive(position.token),
+              //   builder: (context, snapshot) {
+              //     if (snapshot.hasData) {
+              //       return Image.network(
+              //         snapshot.data.toString(),
+              //         height: 28,
+              //       );
+              //     } else {
+              //       return const Icon(Icons.all_inclusive);
+              //     }
+              //   },
+              // ),
               title: Text(position.token),
               trailing: _getPositionValuation(),
             ),

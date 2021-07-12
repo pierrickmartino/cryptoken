@@ -103,16 +103,24 @@ class RecentFiles extends StatelessWidget {
 DataRow recentFileDataRow(TransactionModel transactionInfo) {
   return DataRow(
     cells: [
+      // Wallet
       DataCell(Text('${transactionInfo.walletId.substring(0, 5)}...')),
+      // Type
       DataCell(_getTransactionTypeLabel(transactionInfo.transactionType)),
+      // Date
       DataCell(Text(_dateFormat.format(transactionInfo.time))),
+      // Amount
       DataCell(
           Text('${transactionInfo.amountMain} ${transactionInfo.tokenMain}')),
+      // Price
       DataCell(Text(
           '${_priceFormat.format(transactionInfo.price)} ${transactionInfo.tokenPrice}')),
+      // Unrealized PnL
       DataCell(Text('0')),
+      // Total
       DataCell(Text(
           '${transactionInfo.amountReference} ${transactionInfo.tokenReference}')),
+      // Fees (incl.)
       DataCell(
           Text('${transactionInfo.amountFee} ${transactionInfo.tokenFee}')),
     ],

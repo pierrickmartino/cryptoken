@@ -43,17 +43,17 @@ class MockDashboardApi implements DashboardApi {
       Portfolio('Benchmark'),
     );
 
-    final boxPortfolio = await Hive.openBox<PortfolioHive>(portfolioListBox);
+    // final boxPortfolio = await Hive.openBox<PortfolioHive>(portfolioListBox);
 
-    final _portfolio = PortfolioHive()
-      ..id = portfolio0.id
-      ..name = portfolio0.name
-      ..valuation = 0
-      ..variation24 = 0
-      ..realizedGain = 10
-      ..unrealizedGain = 0;
+    // final _portfolio = PortfolioHive()
+    //   ..id = portfolio0.id
+    //   ..name = portfolio0.name
+    //   ..valuation = 0
+    //   ..variation24 = 0
+    //   ..realizedGain = 10
+    //   ..unrealizedGain = 0;
 
-    await boxPortfolio.put(_portfolio.id, _portfolio);
+    // await boxPortfolio.put(_portfolio.id, _portfolio);
 
     // POSITION BTC
     final dateBTC = DateTime.utc(2021, 4);

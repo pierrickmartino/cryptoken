@@ -17,12 +17,6 @@ class WalletController extends GetxController {
     super.onReady();
   }
 
-  @override
-  void onClose() {
-    //nameController.dispose();
-    super.onClose();
-  }
-
   // Firebase user a realtime stream
   Stream<User?> get user => _auth.authStateChanges();
 

@@ -82,7 +82,6 @@ class NewWalletForm extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      debugPrint('_portfolioName : $_portfolioName');
                       final WalletModel _newWallet =
                           WalletModel(name: _portfolioName);
                       walletController.insertFirestoreWallet(_newWallet).then(

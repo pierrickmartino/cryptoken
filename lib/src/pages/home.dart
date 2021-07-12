@@ -11,7 +11,6 @@ class HomeUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('Enter HomeUI');
     return GetBuilder<AuthController>(
       init: AuthController(),
       builder: (controller) => Scaffold(
