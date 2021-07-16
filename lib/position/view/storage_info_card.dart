@@ -13,6 +13,8 @@ class StorageInfoCard extends StatelessWidget {
     required this.svgSrc,
     required this.positionValuation,
     required this.positionAmount,
+    required this.positionPrice,
+    required this.positionAveragePurchasePrice,
     required this.updatedDate,
     required this.tokenVariation,
   }) : super(key: key);
@@ -22,6 +24,8 @@ class StorageInfoCard extends StatelessWidget {
       positionValuation,
       updatedDate,
       positionAmount,
+      positionPrice,
+      positionAveragePurchasePrice,
       tokenVariation;
 
   @override
@@ -70,6 +74,13 @@ class StorageInfoCard extends StatelessWidget {
                         .copyWith(color: Colors.white70),
                   ),
                   Text(
+                    positionAveragePurchasePrice,
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption!
+                        .copyWith(color: Colors.white70),
+                  ),
+                  Text(
                     updatedDate,
                     style: Theme.of(context)
                         .textTheme
@@ -87,6 +98,16 @@ class StorageInfoCard extends StatelessWidget {
                     .textTheme
                     .caption!
                     .copyWith(color: _isNegativeVariation(tokenVariation))),
+            Text(positionPrice,
+                style: Theme.of(context)
+                    .textTheme
+                    .caption!
+                    .copyWith(color: Colors.white70)),
+            Text('-',
+                style: Theme.of(context)
+                    .textTheme
+                    .caption!
+                    .copyWith(color: Colors.white70)),
           ])
         ],
       ),

@@ -12,6 +12,9 @@ import 'storage_info_card.dart';
 final _numberFormat =
     NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 2);
 
+final _priceFormat =
+    NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 5);
+
 class StorageDetails extends StatelessWidget {
   const StorageDetails({
     Key? key,
@@ -65,8 +68,8 @@ class StorageDetails extends StatelessWidget {
 StorageInfoCard storageInfoCard(PositionModel positionModel) {
   final tokenController = Get.put(TokenController());
 
-  final double valuation =
-      tokenController.tokenPrice(positionModel.token) * positionModel.amount;
+  final double tokenPrice = tokenController.tokenPrice(positionModel.token);
+  final double valuation = tokenPrice * positionModel.amount;
   final String updatedDate =
       tokenController.tokenUpdatedDate(positionModel.token);
   final double var24 = tokenController.tokenVar24(positionModel.token);
@@ -77,8 +80,11 @@ StorageInfoCard storageInfoCard(PositionModel positionModel) {
     svgSrc: 'icons/Documents.svg',
     title: positionModel.token,
     positionValuation: '${_numberFormat.format(valuation)} USD',
-    positionAmount: _numberFormat.format(positionModel.amount),
-    updatedDate: updatedDate,
+    positionAmount: 'Amount: ${_numberFormat.format(positionModel.amount)}',
+    positionPrice: 'Price: ${_priceFormat.format(tokenPrice)} USD',
+    positionAveragePurchasePrice:
+        'AvgPurchPrice: ${_priceFormat.format(positionModel.averagePurchasePrice)} USD',
+    updatedDate: 'Last update: $updatedDate',
     tokenVariation:
         '${_numberFormat.format(var24)}   ${_numberFormat.format(var24Percent)}%',
   );
