@@ -93,10 +93,6 @@ class MyFiles extends StatelessWidget {
     final PositionController positionController = PositionController.to;
     final TokenController tokenController = TokenController.to;
 
-    // priceList.add(Price(symbol: 'BTCUSDT', price: 0));
-    // variation24List.add(
-    //     Variation24(symbol: 'BTCUSDT', priceChange: 0, priceChangePercent: 0));
-
     await synchronized(() async {
       await positionController.getFirestorePositionList().then((value) {
         _positionList = value;
@@ -110,11 +106,6 @@ class MyFiles extends StatelessWidget {
               ..setTokenPrice(
                   value.symbol.replaceFirst('USDT', ''), value.price)
               ..setTokenUpdatedDate(value.symbol.replaceFirst('USDT', ''));
-            //priceList.add(value);
-            //valuation = valuation + (value.price * _positionList[i].amount);
-            // unrealizedGain = unrealizedGain +
-            //     ((value.price - _positionList[i].averagePurchasePrice) *
-            //         _positionList[i].amount);
           }).whenComplete(() {
             _positionPriceCounter = _positionPriceCounter - 1;
           });
@@ -126,7 +117,6 @@ class MyFiles extends StatelessWidget {
                   value.symbol.replaceFirst('USDT', ''), value.priceChange)
               ..setTokenVar24Percent(value.symbol.replaceFirst('USDT', ''),
                   value.priceChangePercent);
-            //variation24List.add(value);
           }).whenComplete(
                   () => _positionVar24Counter = _positionVar24Counter - 1);
 
@@ -141,9 +131,6 @@ class MyFiles extends StatelessWidget {
                   duration: const Duration(seconds: 5),
                   backgroundColor: Get.theme.snackBarTheme.backgroundColor,
                   colorText: Get.theme.snackBarTheme.actionTextColor);
-              // setState(() {
-              //   _loading = false;
-              // });
             }
           });
         }

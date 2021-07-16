@@ -1,5 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:web_dashboard/token/controller/token_controller.dart';
 import 'package:web_dashboard/transaction/controller/transaction_controller.dart';
 import 'package:web_dashboard/transaction/model/transaction_model.dart';
 
@@ -7,6 +10,9 @@ import '../../constant.dart';
 
 final _priceFormat =
     intl.NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 6);
+
+final _numberFormat =
+    intl.NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 2);
 
 final _dateFormat = intl.DateFormat('dd/MM/yy HH:mm');
 
@@ -86,7 +92,8 @@ class RecentFiles extends StatelessWidget {
                   ],
                   rows: List.generate(
                     snapshot.data!.length,
-                    (index) => recentFileDataRow(snapshot.data![index]),
+                    (index) =>
+                        recentFileDataRow(snapshot.data![index], context),
                   ),
                 );
               },
@@ -100,7 +107,8 @@ class RecentFiles extends StatelessWidget {
   }
 }
 
-DataRow recentFileDataRow(TransactionModel transactionInfo) {
+DataRow recentFileDataRow(
+    TransactionModel transactionInfo, BuildContext context) {
   return DataRow(
     cells: [
       // Wallet
@@ -113,10 +121,9 @@ DataRow recentFileDataRow(TransactionModel transactionInfo) {
       DataCell(
           Text('${transactionInfo.amountMain} ${transactionInfo.tokenMain}')),
       // Price
-      DataCell(Text(
-          '${_priceFormat.format(transactionInfo.price)} ${transactionInfo.tokenPrice}')),
+      DataCell(Text('${transactionInfo.price} ${transactionInfo.tokenPrice}')),
       // Unrealized PnL
-      DataCell(Text('0')),
+      DataCell(_getTransactionPnL(transactionInfo, context)),
       // Total
       DataCell(Text(
           '${transactionInfo.amountReference} ${transactionInfo.tokenReference}')),
@@ -125,6 +132,39 @@ DataRow recentFileDataRow(TransactionModel transactionInfo) {
           Text('${transactionInfo.amountFee} ${transactionInfo.tokenFee}')),
     ],
   );
+}
+
+Color _getPnLColor(double transactionPnL) {
+  if (transactionPnL < 0) {
+    return Colors.red;
+  } else {
+    return Colors.green;
+  }
+}
+
+Widget _getTransactionPnL(
+    TransactionModel transactionInfo, BuildContext context) {
+  final tokenController = Get.put(TokenController());
+
+  final double transactionPnL =
+      (tokenController.tokenPrice(transactionInfo.tokenMain) -
+              transactionInfo.price) *
+          transactionInfo.amountMain; // TODO : Intégrer les frais
+
+  final double transactionPnLPercentage =
+      (tokenController.tokenPrice(transactionInfo.tokenMain) -
+              transactionInfo.price) /
+          transactionInfo.price *
+          100;
+
+  final Color color = _getPnLColor(transactionPnL);
+
+  return Text(
+      '${_numberFormat.format(transactionPnLPercentage)}%  ${_numberFormat.format(transactionPnL)}',
+      style: Theme.of(context).textTheme.bodyText1!.copyWith(
+            color: color,
+            fontWeight: FontWeight.bold,
+          ));
 }
 
 Widget _getTransactionTypeLabel(int index) {

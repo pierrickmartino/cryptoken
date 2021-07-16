@@ -75,8 +75,8 @@ class PositionController extends GetxController {
   Future<List<PositionModel>> getFirestoreTopPosition() async {
     final snapshot = await _db
         .collection('/users/${firebaseUser.value!.uid}/positions/')
-        .orderBy('purchaseAmount')
-        .limit(3)
+        .orderBy('purchaseAmount', descending: true)
+        .limit(4)
         .get();
 
     final positions = snapshot.docs

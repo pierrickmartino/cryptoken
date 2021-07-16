@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
@@ -7,6 +9,7 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:synchronized/extension.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:web_dashboard/constant.dart';
 import 'package:web_dashboard/position/controller/position_controller.dart';
 import 'package:web_dashboard/position/model/position_model.dart';
 import 'package:web_dashboard/src/class/crypto.dart';
@@ -136,20 +139,21 @@ class NewTransactionForm extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(0),
                 child: Center(
-                    child: ToggleSwitch(
-                  // 0 Buy | 1 Sell | 2 Deposit (todo) | 3 Withrawal (todo)
-                  labels: const [
-                    'Buy',
-                    'Sell' /*, 'Deposit', 'Withdrawal'*/
-                  ],
-                  minHeight: 30,
-                  initialLabelIndex: _transaction.transactionType,
-                  onToggle: (index) {
-                    // setState(() {
-                    //   _transaction.transactionType = index;
-                    // });
-                  },
-                )),
+                  child: ToggleSwitch(
+                    // 0 Buy | 1 Sell | 2 Deposit (todo) | 3 Withrawal (todo)
+                    labels: const [
+                      'Buy',
+                      'Sell' /*, 'Deposit', 'Withdrawal'*/
+                    ],
+                    minHeight: 30,
+                    activeBgColor: primaryColor,
+                    activeFgColor: Colors.white,
+                    initialLabelIndex: _transaction.transactionType,
+                    onToggle: (index) {
+                      _transaction.transactionType = index;
+                    },
+                  ),
+                ),
               ),
               const SizedBox(height: 14),
               ListTile(
@@ -644,14 +648,23 @@ class NewTransactionForm extends StatelessWidget {
                       width: 10,
                     ),
                     SizedBox(
-                      width: 60,
-                      child: Checkbox(
-                        value: _transaction.withImpactOnSecondPosition,
-                        onChanged: (newValue) {
-                          // setState(() {
-                          //   widget.transaction.withImpactOnSecondPosition =
-                          //       newValue!;
-                          // });
+                      width: 90,
+                      child: ToggleSwitch(
+                        // 0 Yes | 1 No
+                        labels: const ['Y', 'N'],
+                        minHeight: 30,
+                        minWidth: 44,
+                        fontSize: 12,
+                        activeBgColor: primaryColor,
+                        activeFgColor: Colors.white,
+                        initialLabelIndex:
+                            _transaction.withImpactOnSecondPosition ? 0 : 1,
+                        onToggle: (index) {
+                          if (index == 0) {
+                            _transaction.withImpactOnSecondPosition = true;
+                          } else {
+                            _transaction.withImpactOnSecondPosition = false;
+                          }
                         },
                       ),
                     ),
@@ -731,18 +744,29 @@ class NewTransactionForm extends StatelessWidget {
                             purchaseAmount: 0,
                             realizedPnL: 0,
                             time: DateTime.now(),
+                            color: Color.fromARGB(
+                                    Random().nextInt(256),
+                                    Random().nextInt(256),
+                                    Random().nextInt(256),
+                                    Random().nextInt(256))
+                                .value,
                           );
 
                           final PositionModel _positionReference =
                               PositionModel(
-                            walletId: '',
-                            token: 'USDT',
-                            amount: 0,
-                            averagePurchasePrice: 0,
-                            purchaseAmount: 0,
-                            realizedPnL: 0,
-                            time: DateTime.now(),
-                          );
+                                  walletId: '',
+                                  token: 'USDT',
+                                  amount: 0,
+                                  averagePurchasePrice: 0,
+                                  purchaseAmount: 0,
+                                  realizedPnL: 0,
+                                  time: DateTime.now(),
+                                  color: Color.fromARGB(
+                                          Random().nextInt(256),
+                                          Random().nextInt(256),
+                                          Random().nextInt(256),
+                                          Random().nextInt(256))
+                                      .value);
 
                           final TransactionModel _newTransaction =
                               TransactionModel(
@@ -785,14 +809,19 @@ class NewTransactionForm extends StatelessWidget {
                               final PositionModel _position =
                                   await positionController
                                       .insertFirestorePosition(PositionModel(
-                                walletId: selectedWallet!.id,
-                                token: _newTransaction.tokenMain,
-                                amount: 0,
-                                averagePurchasePrice: 0,
-                                purchaseAmount: 0,
-                                realizedPnL: 0,
-                                time: DateTime.now(),
-                              ));
+                                          walletId: selectedWallet!.id,
+                                          token: _newTransaction.tokenMain,
+                                          amount: 0,
+                                          averagePurchasePrice: 0,
+                                          purchaseAmount: 0,
+                                          realizedPnL: 0,
+                                          time: DateTime.now(),
+                                          color: Color.fromARGB(
+                                                  Random().nextInt(256),
+                                                  Random().nextInt(256),
+                                                  Random().nextInt(256),
+                                                  Random().nextInt(256))
+                                              .value));
 
                               _positionMain
                                 ..walletId = _position.walletId
@@ -831,14 +860,19 @@ class NewTransactionForm extends StatelessWidget {
                               final PositionModel _position =
                                   await positionController
                                       .insertFirestorePosition(PositionModel(
-                                walletId: selectedWallet!.id,
-                                token: _newTransaction.tokenReference,
-                                amount: 0,
-                                averagePurchasePrice: 0,
-                                purchaseAmount: 0,
-                                realizedPnL: 0,
-                                time: DateTime.now(),
-                              ));
+                                          walletId: selectedWallet!.id,
+                                          token: _newTransaction.tokenReference,
+                                          amount: 0,
+                                          averagePurchasePrice: 0,
+                                          purchaseAmount: 0,
+                                          realizedPnL: 0,
+                                          time: DateTime.now(),
+                                          color: Color.fromARGB(
+                                                  Random().nextInt(256),
+                                                  Random().nextInt(256),
+                                                  Random().nextInt(256),
+                                                  Random().nextInt(256))
+                                              .value));
 
                               _positionReference
                                 ..walletId = _position.walletId
@@ -871,40 +905,51 @@ class NewTransactionForm extends StatelessWidget {
                             debugPrint('---');
 
                             newPositionMain = PositionModel(
-                              walletId: _positionMain.walletId,
-                              token: _positionMain.token,
-                              amount: _positionMain.amount +
-                                  _transaction.amountMain,
-                              averagePurchasePrice: ((_positionMain
-                                              .purchaseAmount *
-                                          _positionMain.averagePurchasePrice) +
-                                      (_transaction.amountMain *
-                                          _transaction.price)) /
-                                  (_positionMain.purchaseAmount +
-                                      _transaction.amountMain),
-                              purchaseAmount: _positionMain.purchaseAmount +
-                                  _transaction.amountMain,
-                              realizedPnL:
-                                  _positionMain.realizedPnL, // Not used for Buy
-                              time: _positionMain.time,
-                            );
+                                walletId: _positionMain.walletId,
+                                token: _positionMain.token,
+                                amount: _positionMain.amount +
+                                    _transaction.amountMain,
+                                averagePurchasePrice:
+                                    ((_positionMain.purchaseAmount *
+                                                _positionMain
+                                                    .averagePurchasePrice) +
+                                            (_transaction.amountMain *
+                                                _transaction.price)) /
+                                        (_positionMain.purchaseAmount +
+                                            _transaction.amountMain),
+                                purchaseAmount: _positionMain.purchaseAmount +
+                                    _transaction.amountMain,
+                                realizedPnL: _positionMain
+                                    .realizedPnL, // Not used for Buy
+                                time: _positionMain.time,
+                                color: Color.fromARGB(
+                                        Random().nextInt(256),
+                                        Random().nextInt(256),
+                                        Random().nextInt(256),
+                                        Random().nextInt(256))
+                                    .value);
                           }
 
                           // Sell
                           else {
                             newPositionMain = PositionModel(
-                              walletId: _positionMain.walletId,
-                              token: _positionMain.token,
-                              amount: _positionMain.amount -
-                                  _transaction.amountMain,
-                              averagePurchasePrice: _positionMain
-                                  .averagePurchasePrice, // Not used for Sell
-                              purchaseAmount: _positionMain
-                                  .purchaseAmount, // Not used for Sell
-                              realizedPnL: _positionMain
-                                  .realizedPnL, //TODO - realizedGain
-                              time: _positionMain.time,
-                            );
+                                walletId: _positionMain.walletId,
+                                token: _positionMain.token,
+                                amount: _positionMain.amount -
+                                    _transaction.amountMain,
+                                averagePurchasePrice: _positionMain
+                                    .averagePurchasePrice, // Not used for Sell
+                                purchaseAmount: _positionMain
+                                    .purchaseAmount, // Not used for Sell
+                                realizedPnL: _positionMain
+                                    .realizedPnL, //TODO - realizedGain
+                                time: _positionMain.time,
+                                color: Color.fromARGB(
+                                        Random().nextInt(256),
+                                        Random().nextInt(256),
+                                        Random().nextInt(256),
+                                        Random().nextInt(256))
+                                    .value);
                           }
 
                           // If we are able to find the position, we need to update it
@@ -921,35 +966,45 @@ class NewTransactionForm extends StatelessWidget {
                             // Buy
                             if (_transaction.transactionType == 0) {
                               newPositionReference = PositionModel(
-                                walletId: _positionReference.walletId,
-                                token: _positionReference.token,
-                                amount: _positionReference.amount -
-                                    _transaction.amountReference,
-                                averagePurchasePrice: _positionReference
-                                    .averagePurchasePrice, //TODO - averagePurchasePrice
-                                purchaseAmount:
-                                    _positionReference.purchaseAmount,
-                                realizedPnL: _positionReference
-                                    .realizedPnL, //TODO - realizedGain
-                                time: _positionReference.time,
-                              );
+                                  walletId: _positionReference.walletId,
+                                  token: _positionReference.token,
+                                  amount: _positionReference.amount -
+                                      _transaction.amountReference,
+                                  averagePurchasePrice: _positionReference
+                                      .averagePurchasePrice, //TODO - averagePurchasePrice
+                                  purchaseAmount:
+                                      _positionReference.purchaseAmount,
+                                  realizedPnL: _positionReference
+                                      .realizedPnL, //TODO - realizedGain
+                                  time: _positionReference.time,
+                                  color: Color.fromARGB(
+                                          Random().nextInt(256),
+                                          Random().nextInt(256),
+                                          Random().nextInt(256),
+                                          Random().nextInt(256))
+                                      .value);
                             }
 
                             // Sell
                             else {
                               newPositionReference = PositionModel(
-                                walletId: _positionReference.walletId,
-                                token: _positionReference.token,
-                                amount: _positionReference.amount +
-                                    _transaction.amountReference,
-                                averagePurchasePrice: _positionReference
-                                    .averagePurchasePrice, //TODO - averagePurchasePrice
-                                purchaseAmount:
-                                    _positionReference.purchaseAmount,
-                                realizedPnL: _positionReference
-                                    .realizedPnL, //TODO - realizedGain
-                                time: _positionReference.time,
-                              );
+                                  walletId: _positionReference.walletId,
+                                  token: _positionReference.token,
+                                  amount: _positionReference.amount +
+                                      _transaction.amountReference,
+                                  averagePurchasePrice: _positionReference
+                                      .averagePurchasePrice, //TODO - averagePurchasePrice
+                                  purchaseAmount:
+                                      _positionReference.purchaseAmount,
+                                  realizedPnL: _positionReference
+                                      .realizedPnL, //TODO - realizedGain
+                                  time: _positionReference.time,
+                                  color: Color.fromARGB(
+                                          Random().nextInt(256),
+                                          Random().nextInt(256),
+                                          Random().nextInt(256),
+                                          Random().nextInt(256))
+                                      .value);
                             }
 
                             // if we are able to find the position, we need to update it
@@ -984,21 +1039,6 @@ class NewTransactionForm extends StatelessWidget {
             ],
           ),
         ),
-
-        // Padding(
-        //   padding: const EdgeInsets.all(0),
-        //   child:
-        // walletDropdown(
-        //   initwallet: widget.selectedWallet,
-        //   api: api.wallets,
-        //   onSelected: (wallet) {
-        //     setState(() {
-        //       _selected = wallet;
-        //     });
-        //   },
-        // ),
-        //),
-        //const SizedBox(height: 14),
       ],
     );
   }
@@ -1053,8 +1093,6 @@ class NewTransactionForm extends StatelessWidget {
                 symbol: e.value.symbol),
           ),
         );
-
-    //cryptos.sort();
 
     return cryptos;
   }

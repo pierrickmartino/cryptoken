@@ -46,7 +46,9 @@ class StorageDetails extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: defaultPadding),
-                const Chart(),
+                Chart(
+                  positionsList: snapshot.data!,
+                ),
                 Column(
                   children: List.generate(
                     snapshot.data!.length,

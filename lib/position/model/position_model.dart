@@ -10,6 +10,7 @@ class PositionModel {
     required this.purchaseAmount,
     required this.realizedPnL,
     required this.time,
+    required this.color,
   });
 
   factory PositionModel.fromMap(Map<dynamic, dynamic> data) {
@@ -21,6 +22,7 @@ class PositionModel {
       purchaseAmount: data['purchaseAmount'] ?? 0,
       realizedPnL: data['realizedPnL'] ?? 0,
       time: data['time'] ?? DateTime.now(),
+      color: data['color'] ?? 0xFF2697FF,
     );
   }
 
@@ -33,11 +35,13 @@ class PositionModel {
       purchaseAmount: (json['purchaseAmount'] as num).toDouble(),
       realizedPnL: (json['realizedPnL'] as num).toDouble(),
       time: _timestampToDateTime(json['time'] as Timestamp),
+      color: (json['color'] as num).toInt(),
     );
   }
 
   String walletId, token;
   double amount, averagePurchasePrice, purchaseAmount, realizedPnL;
+  int color;
 
   @JsonKey(fromJson: _timestampToDateTime, toJson: _dateTimeToTimestamp)
   DateTime time;
@@ -63,5 +67,6 @@ class PositionModel {
         'purchaseAmount': purchaseAmount,
         'realizedPnL': realizedPnL,
         'time': _dateTimeToTimestamp(time),
+        'color': color,
       };
 }
