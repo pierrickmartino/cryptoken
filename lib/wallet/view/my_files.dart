@@ -57,9 +57,11 @@ class MyFiles extends StatelessWidget {
                   onPressed: _processRefreshData,
                   icon: const Icon(Icons.refresh),
                 ),
-                const IconButton(
-                  onPressed: null,
-                  icon: Icon(Icons.settings),
+                IconButton(
+                  onPressed: () {
+                    Get.toNamed('/settings');
+                  },
+                  icon: const Icon(Icons.settings),
                 ),
               ],
             )
