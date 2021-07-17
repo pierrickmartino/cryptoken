@@ -36,33 +36,77 @@ class MyFiles extends StatelessWidget {
             Wrap(
               spacing: 5,
               children: [
-                ElevatedButton.icon(
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: defaultPadding * 1.5,
-                      vertical: defaultPadding /
-                          (Responsive.isMobile(context) ? 2 : 1),
-                    ),
+                // if we are on Mobile we only want to show icon to keep space on screen
+                if (Responsive.isMobile(context))
+                  IconButton(
+                    onPressed: () {
+                      showDialog<NewWalletDialog>(
+                        context: context,
+                        builder: (context) => const NewWalletDialog(),
+                      );
+                    },
+                    icon: const Icon(Icons.add),
                   ),
-                  onPressed: () {
-                    showDialog<NewWalletDialog>(
-                      context: context,
-                      builder: (context) => const NewWalletDialog(),
-                    );
-                  },
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add New'),
-                ),
-                IconButton(
-                  onPressed: _processRefreshData,
-                  icon: const Icon(Icons.refresh),
-                ),
-                IconButton(
-                  onPressed: () {
-                    Get.toNamed('/settings');
-                  },
-                  icon: const Icon(Icons.settings),
-                ),
+                if (Responsive.isMobile(context))
+                  IconButton(
+                    onPressed: _processRefreshData,
+                    icon: const Icon(Icons.refresh),
+                  ),
+                if (Responsive.isMobile(context))
+                  IconButton(
+                    onPressed: () {
+                      Get.toNamed('/settings');
+                    },
+                    icon: const Icon(Icons.settings),
+                  ),
+
+                // otherwise we can show a lable with the button icon
+                if (!Responsive.isMobile(context))
+                  ElevatedButton.icon(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: defaultPadding * 1.5,
+                        vertical: defaultPadding /
+                            (Responsive.isMobile(context) ? 2 : 1),
+                      ),
+                    ),
+                    onPressed: () {
+                      showDialog<NewWalletDialog>(
+                        context: context,
+                        builder: (context) => const NewWalletDialog(),
+                      );
+                    },
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add New'),
+                  ),
+                if (!Responsive.isMobile(context))
+                  ElevatedButton.icon(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: defaultPadding * 1.5,
+                        vertical: defaultPadding /
+                            (Responsive.isMobile(context) ? 2 : 1),
+                      ),
+                    ),
+                    onPressed: _processRefreshData,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Refresh'),
+                  ),
+                if (!Responsive.isMobile(context))
+                  ElevatedButton.icon(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: defaultPadding * 1.5,
+                        vertical: defaultPadding /
+                            (Responsive.isMobile(context) ? 2 : 1),
+                      ),
+                    ),
+                    onPressed: () {
+                      Get.toNamed('/settings');
+                    },
+                    icon: const Icon(Icons.settings),
+                    label: const Text('Settings'),
+                  ),
               ],
             )
           ],
