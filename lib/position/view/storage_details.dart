@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:web_dashboard/position/controller/position_controller.dart';
 import 'package:web_dashboard/position/model/position_model.dart';
+import 'package:web_dashboard/src/responsive.dart';
 import 'package:web_dashboard/token/controller/token_controller.dart';
 
 import '../../constant.dart';
@@ -55,7 +56,7 @@ class StorageDetails extends StatelessWidget {
                 Column(
                   children: List.generate(
                     snapshot.data!.length,
-                    (index) => storageInfoCard(snapshot.data![index]),
+                    (index) => storageInfoCard(snapshot.data![index], context),
                   ),
                 ),
               ],
@@ -65,7 +66,8 @@ class StorageDetails extends StatelessWidget {
   }
 }
 
-StorageInfoCard storageInfoCard(PositionModel positionModel) {
+StorageInfoCard storageInfoCard(
+    PositionModel positionModel, BuildContext context) {
   final tokenController = Get.put(TokenController());
 
   final double tokenPrice = tokenController.tokenPrice(positionModel.token);
@@ -76,16 +78,31 @@ StorageInfoCard storageInfoCard(PositionModel positionModel) {
   final double var24Percent =
       tokenController.tokenVar24Percent(positionModel.token);
 
-  return StorageInfoCard(
-    svgSrc: 'icons/Documents.svg',
-    title: positionModel.token,
-    positionValuation: '${_numberFormat.format(valuation)} USD',
-    positionAmount: 'Amount: ${_numberFormat.format(positionModel.amount)}',
-    positionPrice: 'Price: ${_priceFormat.format(tokenPrice)} USD',
-    positionAveragePurchasePrice:
-        'AvgPurchPrice: ${_priceFormat.format(positionModel.averagePurchasePrice)} USD',
-    updatedDate: 'Last update: $updatedDate',
-    tokenVariation:
-        '${_numberFormat.format(var24)}   ${_numberFormat.format(var24Percent)}%',
-  );
+  if (Responsive.isMobile(context)) {
+    return StorageInfoCard(
+      svgSrc: 'icons/Documents.svg',
+      title: positionModel.token,
+      positionValuation: '${_numberFormat.format(valuation)} USD',
+      positionAmount: 'Amount: ${_numberFormat.format(positionModel.amount)}',
+      positionPrice: 'Price: ${_priceFormat.format(tokenPrice)} USD',
+      positionAveragePurchasePrice:
+          'APP: ${_priceFormat.format(positionModel.averagePurchasePrice)} USD',
+      updatedDate: updatedDate,
+      tokenVariation:
+          '${_numberFormat.format(var24)}   ${_numberFormat.format(var24Percent)}%',
+    );
+  } else {
+    return StorageInfoCard(
+      svgSrc: 'icons/Documents.svg',
+      title: positionModel.token,
+      positionValuation: '${_numberFormat.format(valuation)} USD',
+      positionAmount: 'Amount: ${_numberFormat.format(positionModel.amount)}',
+      positionPrice: 'Price: ${_priceFormat.format(tokenPrice)} USD',
+      positionAveragePurchasePrice:
+          'AvgPurchPrice: ${_priceFormat.format(positionModel.averagePurchasePrice)} USD',
+      updatedDate: 'Last update: $updatedDate',
+      tokenVariation:
+          '${_numberFormat.format(var24)}   ${_numberFormat.format(var24Percent)}%',
+    );
+  }
 }
