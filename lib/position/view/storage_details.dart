@@ -78,31 +78,31 @@ StorageInfoCard storageInfoCard(
   final double var24Percent =
       tokenController.tokenVar24Percent(positionModel.token);
 
-  if (Responsive.isMobile(context)) {
-    return StorageInfoCard(
-      svgSrc: 'icons/Documents.svg',
-      title: positionModel.token,
-      positionValuation: '${_numberFormat.format(valuation)} USD',
-      positionAmount: 'Amount: ${_numberFormat.format(positionModel.amount)}',
-      positionPrice: 'Price: ${_priceFormat.format(tokenPrice)} USD',
-      positionAveragePurchasePrice:
-          'APP: ${_priceFormat.format(positionModel.averagePurchasePrice)} USD',
-      updatedDate: updatedDate,
-      tokenVariation:
-          '${_numberFormat.format(var24)}   ${_numberFormat.format(var24Percent)}%',
-    );
-  } else {
-    return StorageInfoCard(
-      svgSrc: 'icons/Documents.svg',
-      title: positionModel.token,
-      positionValuation: '${_numberFormat.format(valuation)} USD',
-      positionAmount: 'Amount: ${_numberFormat.format(positionModel.amount)}',
-      positionPrice: 'Price: ${_priceFormat.format(tokenPrice)} USD',
-      positionAveragePurchasePrice:
-          'AvgPurchPrice: ${_priceFormat.format(positionModel.averagePurchasePrice)} USD',
-      updatedDate: 'Last update: $updatedDate',
-      tokenVariation:
-          '${_numberFormat.format(var24)}   ${_numberFormat.format(var24Percent)}%',
-    );
-  }
+  final double unrealizedPercent =
+      (tokenPrice - positionModel.averagePurchasePrice) /
+          positionModel.averagePurchasePrice *
+          100.0;
+  final double unrealized =
+      (tokenPrice - positionModel.averagePurchasePrice) * positionModel.amount;
+
+  return StorageInfoCard(
+    svgSrc: 'icons/Documents.svg',
+    title: positionModel.token,
+    positionValuation: '${_numberFormat.format(valuation)} USD',
+    positionAmount: 'Amount: ${_numberFormat.format(positionModel.amount)}',
+    positionPrice: 'Price: ${_priceFormat.format(tokenPrice)} USD',
+    positionAveragePurchasePriceTitle: 'Avg. Purchase Price: ',
+    positionAveragePurchasePrice:
+        '${_priceFormat.format(positionModel.averagePurchasePrice)} USD',
+    positionUnrealizedTitle: 'Unrealized: ',
+    positionUnrealized:
+        '${_numberFormat.format(unrealized)} USD / ${_numberFormat.format(unrealizedPercent)}%',
+    unrealizedColor: unrealized.isNegative ? Colors.green : Colors.red,
+    positionRealizedTitle: 'Realized: ',
+    positionRealized: '0 USD',
+    updatedDateTitle: 'Last update: ',
+    updatedDate: updatedDate,
+    tokenVariation:
+        '${_numberFormat.format(var24)} USD / ${_numberFormat.format(var24Percent)}%',
+  );
 }
