@@ -1,4 +1,4 @@
-import 'package:fl_chart/fl_chart.dart';
+//import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart' as intl;
@@ -20,83 +20,89 @@ class Chart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 200,
-      child: Stack(
-        children: [
-          PieChart(
-            PieChartData(
-              sectionsSpace: 0,
-              centerSpaceRadius: 70,
-              startDegreeOffset: -90,
-              sections: _getPieCharSectionData(positionsList),
-            ),
-          ),
-          Positioned.fill(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+    return GetBuilder<TokenController>(
+        init: TokenController(),
+        builder: (_tokenController) {
+          return SizedBox(
+            height: 200,
+            child: Stack(
               children: [
-                const SizedBox(height: defaultPadding),
-                Text(
-                  _getTotalValuation(positionsList),
-                  style: Theme.of(context).textTheme.headline4!.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        height: 0.5,
+                // PieChart(
+                //   PieChartData(
+                //     sectionsSpace: 0,
+                //     centerSpaceRadius: 70,
+                //     startDegreeOffset: -90,
+                //     sections:
+                //         _getPieCharSectionData(positionsList, _tokenController),
+                //   ),
+                // ),
+                Positioned.fill(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: defaultPadding),
+                      Text(
+                        _getTotalValuation(positionsList, _tokenController),
+                        style: Theme.of(context).textTheme.headline4!.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              height: 0.5,
+                            ),
                       ),
+                      const Text('USD')
+                    ],
+                  ),
                 ),
-                const Text('USD')
               ],
             ),
-          ),
-        ],
-      ),
-    );
+          );
+        });
   }
 }
 
-double _getTotalValuationInDouble(List<PositionModel> positionsList) {
-  final tokenController = Get.put(TokenController());
+double _getTotalValuationInDouble(
+    List<PositionModel> positionsList, TokenController _tokenController) {
   double totalValuation = 0;
 
   for (final element in positionsList) {
     totalValuation = totalValuation +
-        (element.amount * tokenController.tokenPrice(element.token));
+        (element.amount * _tokenController.tokenPriceGetX(element.token));
   }
   return totalValuation;
 }
 
-String _getTotalValuation(List<PositionModel> positionsList) {
-  final tokenController = Get.put(TokenController());
+String _getTotalValuation(
+    List<PositionModel> positionsList, TokenController _tokenController) {
   double totalValuation = 0;
 
   for (final element in positionsList) {
     totalValuation = totalValuation +
-        (element.amount * tokenController.tokenPrice(element.token));
+        (element.amount * _tokenController.tokenPriceGetX(element.token));
   }
   return _numberFormat.format(totalValuation);
 }
 
-List<PieChartSectionData> _getPieCharSectionData(
-    List<PositionModel> positionsList) {
-  List<PieChartSectionData> pieChartSelectionDatas = [];
-  final tokenController = Get.put(TokenController());
-  final double total = _getTotalValuationInDouble(positionsList);
+// List<PieChartSectionData> _getPieCharSectionData(
+//     List<PositionModel> positionsList, TokenController _tokenController) {
+//   List<PieChartSectionData> pieChartSelectionDatas = [];
 
-  for (final element in positionsList) {
-    final PieChartSectionData data = PieChartSectionData(
-      color: Color(element.color),
-      value: (element.amount * tokenController.tokenPrice(element.token)) /
-          total *
-          100.0,
-      showTitle: false,
-      radius: 25,
-    );
-    pieChartSelectionDatas.add(data);
-  }
+//   final double total =
+//       _getTotalValuationInDouble(positionsList, _tokenController);
 
-  return pieChartSelectionDatas;
-}
+//   for (final element in positionsList) {
+//     final PieChartSectionData data = PieChartSectionData(
+//       color: Color(element.color),
+//       value: (element.amount * _tokenController.tokenPriceGetX(element.token)) /
+//           total *
+//           100.0,
+//       showTitle: false,
+//       radius: 25,
+//     );
+//     pieChartSelectionDatas.add(data);
+//   }
+
+//   return pieChartSelectionDatas;
+// }
 
 
 

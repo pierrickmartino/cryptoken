@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:web_dashboard/settings/view/settings_details.dart';
 import 'package:web_dashboard/wallet/view/my_files.dart';
 
 import '../../constant.dart';

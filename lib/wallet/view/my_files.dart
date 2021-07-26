@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:web_dashboard/settings/view/settings.dart';
 
 import 'package:web_dashboard/wallet/controller/wallet_controller.dart';
 import 'package:web_dashboard/wallet/model/wallet_model.dart';
@@ -41,8 +42,11 @@ class MyFiles extends StatelessWidget {
                   ),
                 if (Responsive.isMobile(context))
                   IconButton(
-                    onPressed: () {
-                      Get.toNamed('/settings');
+                    onPressed: () async {
+                      final data = await Get.to(SettingsUI());
+                      if (data == 'success') {
+                        debugPrint('refresh');
+                      } //refreshDashboard();
                     },
                     icon: const Icon(Icons.settings),
                   ),
@@ -76,8 +80,11 @@ class MyFiles extends StatelessWidget {
                             (Responsive.isMobile(context) ? 2 : 1),
                       ),
                     ),
-                    onPressed: () {
-                      Get.toNamed('/settings');
+                    onPressed: () async {
+                      final data = await Get.to(SettingsUI());
+                      if (data == 'success') {
+                        debugPrint('refresh');
+                      } //refreshDashboard();
                     },
                     icon: const Icon(Icons.settings),
                     label: const Text('Settings'),

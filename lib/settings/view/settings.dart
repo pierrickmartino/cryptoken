@@ -12,6 +12,10 @@ import 'package:web_dashboard/token/model/price.dart';
 import 'package:web_dashboard/token/model/variation24.dart';
 
 class SettingsUI extends StatefulWidget {
+  const SettingsUI({
+    Key? key,
+  }) : super(key: key);
+
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
@@ -141,10 +145,6 @@ class _SettingsScreenState extends State<SettingsUI> {
   /// Storage of the position/price and position/var
   Future<void> _processRefreshData(BuildContext context) async {
     late List<PositionModel> _positionList;
-    // List<Price> priceList = <Price>[];
-    // List<Variation24> variation24List = <Variation24>[];
-    // double valuation = 0;
-    // double unrealizedGain = 0;
     final PositionController positionController = PositionController.to;
     final TokenController tokenController = TokenController.to;
 
@@ -158,9 +158,9 @@ class _SettingsScreenState extends State<SettingsUI> {
         for (var i = 0; i < _positionList.length; i++) {
           final futurePrice = _fetchPrice(_positionList[i].token).then((value) {
             tokenController
-              ..setTokenPrice(
+              ..setTokenPriceGetX(
                   value.symbol.replaceFirst('USDT', ''), value.price)
-              ..setTokenUpdatedDate(value.symbol.replaceFirst('USDT', ''));
+              ..setTokenUpdatedDateGetX(value.symbol.replaceFirst('USDT', ''));
           }).whenComplete(() {
             _positionPriceCounter = _positionPriceCounter - 1;
           });
@@ -168,9 +168,9 @@ class _SettingsScreenState extends State<SettingsUI> {
           final futureVariation24 = _fetchVariation24(_positionList[i].token)
               .then((value) {
             tokenController
-              ..setTokenVar24(
+              ..setTokenVar24GetX(
                   value.symbol.replaceFirst('USDT', ''), value.priceChange)
-              ..setTokenVar24Percent(value.symbol.replaceFirst('USDT', ''),
+              ..setTokenVar24PercentGetX(value.symbol.replaceFirst('USDT', ''),
                   value.priceChangePercent);
           }).whenComplete(
                   () => _positionVar24Counter = _positionVar24Counter - 1);
@@ -188,6 +188,8 @@ class _SettingsScreenState extends State<SettingsUI> {
                   colorText: Get.theme.snackBarTheme.actionTextColor);
             }
           });
+
+          Get.back(result: 'success');
         }
       });
     });

@@ -25,6 +25,7 @@ class StorageInfoCard extends StatelessWidget {
     required this.updatedDateTitle,
     required this.updatedDate,
     required this.tokenVariation,
+    required this.positionPercentage,
   }) : super(key: key);
 
   final String title,
@@ -40,7 +41,8 @@ class StorageInfoCard extends StatelessWidget {
       positionUnrealized,
       positionRealizedTitle,
       positionRealized,
-      tokenVariation;
+      tokenVariation,
+      positionPercentage;
 
   final Color unrealizedColor;
 
@@ -186,7 +188,7 @@ class StorageInfoCard extends StatelessWidget {
                       .copyWith(color: Colors.white70)),
             ],
           ),
-          Text('',
+          Text(positionPercentage,
               style: Theme.of(context)
                   .textTheme
                   .caption!
@@ -268,16 +270,16 @@ class StorageInfoCard extends StatelessWidget {
         ),
         Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
           Text(positionValuation),
+          Text(positionPercentage,
+              style: Theme.of(context)
+                  .textTheme
+                  .caption!
+                  .copyWith(color: Colors.white70)),
           Text(tokenVariation,
               style: Theme.of(context)
                   .textTheme
                   .caption!
                   .copyWith(color: _isNegativeVariation(tokenVariation))),
-          Text('',
-              style: Theme.of(context)
-                  .textTheme
-                  .caption!
-                  .copyWith(color: Colors.white70)),
           Text(positionRealized,
               style: Theme.of(context)
                   .textTheme

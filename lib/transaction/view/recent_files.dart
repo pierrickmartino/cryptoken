@@ -42,63 +42,63 @@ class RecentFiles extends StatelessWidget {
             width: double.infinity,
             child:
                 //Text(''),
-                //   FutureBuilder<List<TransactionModel>>(
-                // future: transactionController.futureFirestoreTransactionList(),
-                // builder: (context, futureSnapshot) {
-                //   if (!futureSnapshot.hasData) {
-                //     return const Center(
-                //       child: CircularProgressIndicator(),
-                //     );
-                //   }
-                //   return
-                StreamBuilder<List<TransactionModel>>(
-              //initialData: futureSnapshot.data,
-              stream: transactionController.streamFirestoreTransactionList(),
-              builder: (context, snapshot) {
-                if (snapshot.data == null) {
+                FutureBuilder<List<TransactionModel>>(
+              future: transactionController.futureFirestoreTransactionList(),
+              builder: (context, futureSnapshot) {
+                if (!futureSnapshot.hasData) {
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
+                return StreamBuilder<List<TransactionModel>>(
+                  initialData: futureSnapshot.data,
+                  stream:
+                      transactionController.streamFirestoreTransactionList(),
+                  builder: (context, snapshot) {
+                    if (snapshot.data == null) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
 
-                return DataTable(
-                  horizontalMargin: 0,
-                  columnSpacing: defaultPadding,
-                  columns: const [
-                    DataColumn(
-                      label: Text('Wallet'),
-                    ),
-                    DataColumn(
-                      label: Text('Type'),
-                    ),
-                    DataColumn(
-                      label: Text('Date'),
-                    ),
-                    DataColumn(
-                      label: Text('Amount'),
-                    ),
-                    DataColumn(
-                      label: Text('Price'),
-                    ),
-                    DataColumn(
-                      label: Text('Unrealiz.'),
-                    ),
-                    DataColumn(
-                      label: Text('Total'),
-                    ),
-                    DataColumn(
-                      label: Text('Fees (incl.)'),
-                    ),
-                  ],
-                  rows: List.generate(
-                    snapshot.data!.length,
-                    (index) =>
-                        recentFileDataRow(snapshot.data![index], context),
-                  ),
+                    return DataTable(
+                      horizontalMargin: 0,
+                      columnSpacing: defaultPadding,
+                      columns: const [
+                        DataColumn(
+                          label: Text('Wallet'),
+                        ),
+                        DataColumn(
+                          label: Text('Type'),
+                        ),
+                        DataColumn(
+                          label: Text('Date'),
+                        ),
+                        DataColumn(
+                          label: Text('Amount'),
+                        ),
+                        DataColumn(
+                          label: Text('Price'),
+                        ),
+                        DataColumn(
+                          label: Text('Unrealiz.'),
+                        ),
+                        DataColumn(
+                          label: Text('Total'),
+                        ),
+                        DataColumn(
+                          label: Text('Fees (incl.)'),
+                        ),
+                      ],
+                      rows: List.generate(
+                        snapshot.data!.length,
+                        (index) =>
+                            recentFileDataRow(snapshot.data![index], context),
+                      ),
+                    );
+                  },
                 );
               },
-              //);
-              //},
             ),
           ),
         ],
@@ -144,27 +144,29 @@ Color _getPnLColor(double transactionPnL) {
 
 Widget _getTransactionPnL(
     TransactionModel transactionInfo, BuildContext context) {
-  final tokenController = Get.put(TokenController());
+  return GetBuilder<TokenController>(
+      init: TokenController(),
+      builder: (_) {
+        final double transactionPnL =
+            (_.tokenPriceGetX(transactionInfo.tokenMain) -
+                    transactionInfo.price) *
+                transactionInfo.amountMain; // TODO : Intégrer les frais
 
-  final double transactionPnL =
-      (tokenController.tokenPrice(transactionInfo.tokenMain) -
-              transactionInfo.price) *
-          transactionInfo.amountMain; // TODO : Intégrer les frais
+        final double transactionPnLPercentage =
+            (_.tokenPriceGetX(transactionInfo.tokenMain) -
+                    transactionInfo.price) /
+                transactionInfo.price *
+                100;
 
-  final double transactionPnLPercentage =
-      (tokenController.tokenPrice(transactionInfo.tokenMain) -
-              transactionInfo.price) /
-          transactionInfo.price *
-          100;
+        final Color color = _getPnLColor(transactionPnL);
 
-  final Color color = _getPnLColor(transactionPnL);
-
-  return Text(
-      '${_numberFormat.format(transactionPnLPercentage)}%  ${_numberFormat.format(transactionPnL)}',
-      style: Theme.of(context).textTheme.bodyText1!.copyWith(
-            color: color,
-            fontWeight: FontWeight.bold,
-          ));
+        return Text(
+            '${_numberFormat.format(transactionPnLPercentage)}%  ${_numberFormat.format(transactionPnL)}',
+            style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ));
+      });
 }
 
 Widget _getTransactionTypeLabel(int index) {

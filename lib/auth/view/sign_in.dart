@@ -20,8 +20,6 @@ class SignInUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('Enter SignInUI');
-
     return Scaffold(
       body: Form(
         key: _formKey,
@@ -45,7 +43,7 @@ class SignInUI extends StatelessWidget {
                     onSaved: (value) =>
                         authController.emailController.text = value!,
                   ),
-                  FormVerticalSpace(),
+                  const FormVerticalSpace(),
                   FormInputFieldWithIcon(
                     controller: authController.passwordController,
                     iconPrefix: Icons.lock,
@@ -57,7 +55,7 @@ class SignInUI extends StatelessWidget {
                         authController.passwordController.text = value!,
                     maxLines: 1,
                   ),
-                  FormVerticalSpace(),
+                  const FormVerticalSpace(),
                   PrimaryButton(
                       labelText: 'Sign in',
                       onPressed: () async {
@@ -66,7 +64,7 @@ class SignInUI extends StatelessWidget {
                               .signInWithEmailAndPassword(context);
                         }
                       }),
-                  FormVerticalSpace(),
+                  const FormVerticalSpace(),
                   LabelButton(
                     labelText: 'Reset password ?',
                     onPressed: () => Get.to<ResetPasswordUI>(ResetPasswordUI()),
