@@ -62,7 +62,7 @@ Future<void> main() async {
   }
 
   // to debug : flutter run -d chrome --web-port=5000
-  runApp(CryptokenApp());
+  runApp(const CryptokenApp());
 }
 
 class CryptokenApp extends StatelessWidget {
