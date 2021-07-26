@@ -50,10 +50,14 @@ abstract class TransactionApi {
 
   Future<List<Transaction>> list(String positionId);
 
+  Future<List<Transaction>> listAll();
+
   Future<Transaction> update(
       String positionId, String id, Transaction transaction);
 
   Stream<List<Transaction>> subscribe(String positionId);
+
+  Stream<List<Transaction>> subscribeAll();
 }
 
 /// A portfolio aggregated positions for example Binance
