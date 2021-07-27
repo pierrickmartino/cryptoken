@@ -70,23 +70,24 @@ Widget storageInfoCard(PositionModel positionModel, BuildContext context) {
   return GetBuilder<TokenController>(
       init: TokenController(),
       builder: (_tokenController) {
-        final double tokenPrice =
+        double tokenPrice =
             _tokenController.tokenPriceGetX(positionModel.token);
-        final double valuation = tokenPrice * positionModel.amount;
-        final String updatedDate =
+        double valuation = tokenPrice * positionModel.amount;
+        String updatedDate =
             _tokenController.tokenUpdatedDateGetX(positionModel.token);
-        final double var24 =
-            _tokenController.tokenVar24GetX(positionModel.token);
-        final double var24Percent =
+        double var24 = _tokenController.tokenVar24GetX(positionModel.token);
+        double var24Percent =
             _tokenController.tokenVar24PercentGetX(positionModel.token);
 
-        final double unrealizedPercent =
+        double unrealizedPercent =
             (tokenPrice - positionModel.averagePurchasePrice) /
                 positionModel.averagePurchasePrice *
                 100.0;
-        final double unrealized =
-            (tokenPrice - positionModel.averagePurchasePrice) *
-                positionModel.amount;
+        double unrealized = (tokenPrice - positionModel.averagePurchasePrice) *
+            positionModel.amount;
+
+        debugPrint('Var24Get : ${positionModel.token} -> $var24');
+        debugPrint('PriceGetX : ${positionModel.token} -> $tokenPrice');
 
         return StorageInfoCard(
           svgSrc: 'icons/Documents.svg',

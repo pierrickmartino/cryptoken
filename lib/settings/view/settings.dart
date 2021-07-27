@@ -181,7 +181,7 @@ class _SettingsScreenState extends State<SettingsUI> {
           ]).whenComplete(() {
             if (_positionPriceCounter == 0 && _positionVar24Counter == 0) {
               Get.snackbar<void>(
-                  'Refresh', 'Token market date successfully udpdated !',
+                  'Refresh', 'Token market data successfully udpdated !',
                   snackPosition: SnackPosition.BOTTOM,
                   duration: const Duration(seconds: 5),
                   backgroundColor: Get.theme.snackBarTheme.backgroundColor,

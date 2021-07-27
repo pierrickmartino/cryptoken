@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart' as intl;
@@ -34,9 +35,11 @@ class TokenController extends GetxController {
   void setTokenPriceGetX(String token, double price) {
     tokenPriceMap
       ..putIfAbsent('price_$token', () {
+        debugPrint('insert : price_$token');
         return price;
       })
       ..update('price_$token', (value) {
+        debugPrint('update : price_$token -> $value');
         return price;
       });
 
@@ -44,51 +47,57 @@ class TokenController extends GetxController {
   }
 
   Map<String, String> tokenUpdatedDateMap = <String, String>{};
-  Map<String, double> tokenVar24Map = <String, double>{};
-  Map<String, double> tokenVar24PercentMap = <String, double>{};
-
   String tokenUpdatedDateGetX(String token) {
     return tokenUpdatedDateMap['date_$token'] ?? '';
-  }
-
-  double tokenVar24GetX(String token) {
-    return tokenVar24Map['var24_$token'] ?? 0;
-  }
-
-  double tokenVar24PercentGetX(String token) {
-    return tokenVar24PercentMap['var24%_$token'] ?? 0;
   }
 
   void setTokenUpdatedDateGetX(String token) {
     tokenUpdatedDateMap
       ..putIfAbsent('date_$token', () {
+        debugPrint('insert : date_$token');
         return intl.DateFormat('dd.MM.yyyy HH:mm').format(DateTime.now());
       })
       ..update('date_$token', (value) {
+        debugPrint(
+            'update : date_$token -> ${intl.DateFormat('dd.MM.yyyy HH:mm').format(DateTime.now())}');
         return intl.DateFormat('dd.MM.yyyy HH:mm').format(DateTime.now());
       });
 
     update();
   }
 
+  Map<String, double> tokenVar24Map = <String, double>{};
+  double tokenVar24GetX(String token) {
+    return tokenVar24Map['var24_$token'] ?? 0;
+  }
+
   void setTokenVar24GetX(String token, double priceChange) {
-    tokenPriceMap
+    tokenVar24Map
       ..putIfAbsent('var24_$token', () {
+        debugPrint('insert : var24_$token');
         return priceChange;
       })
       ..update('var24_$token', (value) {
+        debugPrint('update : var24_$token -> $value');
         return priceChange;
       });
 
     update();
   }
 
+  Map<String, double> tokenVar24PercentMap = <String, double>{};
+  double tokenVar24PercentGetX(String token) {
+    return tokenVar24PercentMap['var24%_$token'] ?? 0;
+  }
+
   void setTokenVar24PercentGetX(String token, double priceChangePercent) {
-    tokenPriceMap
+    tokenVar24PercentMap
       ..putIfAbsent('var24%_$token', () {
+        debugPrint('insert : var24%_$token');
         return priceChangePercent;
       })
       ..update('var24%_$token', (value) {
+        debugPrint('update : var24%_$token -> $value');
         return priceChangePercent;
       });
 
@@ -134,7 +143,16 @@ class TokenController extends GetxController {
           Future.wait([
             futurePrice,
             futureVariation24,
-          ]);
+          ]).whenComplete(() {
+            if (_positionPriceCounter == 0 && _positionVar24Counter == 0) {
+              Get.snackbar<void>(
+                  'Refresh', 'Token market data successfully udpdated !',
+                  snackPosition: SnackPosition.BOTTOM,
+                  duration: const Duration(seconds: 5),
+                  backgroundColor: Get.theme.snackBarTheme.backgroundColor,
+                  colorText: Get.theme.snackBarTheme.actionTextColor);
+            }
+          });
         }
       });
     });
