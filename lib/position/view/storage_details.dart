@@ -11,8 +11,7 @@ import 'storage_info_card.dart';
 final _numberFormat =
     NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 2);
 
-final _priceFormat =
-    NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 5);
+final _priceFormat = NumberFormat('#,##0.######', 'de_CH');
 
 class StorageDetails extends StatelessWidget {
   const StorageDetails({
@@ -70,21 +69,23 @@ Widget storageInfoCard(PositionModel positionModel, BuildContext context) {
   return GetBuilder<TokenController>(
       init: TokenController(),
       builder: (_tokenController) {
-        double tokenPrice =
+        final double tokenPrice =
             _tokenController.tokenPriceGetX(positionModel.token);
-        double valuation = tokenPrice * positionModel.amount;
-        String updatedDate =
+        final double valuation = tokenPrice * positionModel.amount;
+        final String updatedDate =
             _tokenController.tokenUpdatedDateGetX(positionModel.token);
-        double var24 = _tokenController.tokenVar24GetX(positionModel.token);
-        double var24Percent =
+        final double var24 =
+            _tokenController.tokenVar24GetX(positionModel.token);
+        final double var24Percent =
             _tokenController.tokenVar24PercentGetX(positionModel.token);
 
-        double unrealizedPercent =
+        final double unrealizedPercent =
             (tokenPrice - positionModel.averagePurchasePrice) /
                 positionModel.averagePurchasePrice *
                 100.0;
-        double unrealized = (tokenPrice - positionModel.averagePurchasePrice) *
-            positionModel.amount;
+        final double unrealized =
+            (tokenPrice - positionModel.averagePurchasePrice) *
+                positionModel.amount;
 
         debugPrint('Var24Get : ${positionModel.token} -> $var24');
         debugPrint('PriceGetX : ${positionModel.token} -> $tokenPrice');

@@ -8,8 +8,7 @@ import 'package:web_dashboard/transaction/model/transaction_model.dart';
 
 import '../../constant.dart';
 
-final _priceFormat =
-    intl.NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 6);
+final _priceFormat = intl.NumberFormat('#,##0.######', 'de_CH');
 
 final _numberFormat =
     intl.NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 2);
@@ -121,15 +120,16 @@ DataRow recentFileDataRow(
       DataCell(
           Text('${transactionInfo.amountMain} ${transactionInfo.tokenMain}')),
       // Price
-      DataCell(Text('${transactionInfo.price} ${transactionInfo.tokenPrice}')),
+      DataCell(Text(
+          '${_priceFormat.format(transactionInfo.price)} ${transactionInfo.tokenPrice}')),
       // Unrealized PnL
       DataCell(_getTransactionPnL(transactionInfo, context)),
       // Total
       DataCell(Text(
-          '${transactionInfo.amountReference} ${transactionInfo.tokenReference}')),
+          '${_numberFormat.format(transactionInfo.amountReference)} ${transactionInfo.tokenReference}')),
       // Fees (incl.)
-      DataCell(
-          Text('${transactionInfo.amountFee} ${transactionInfo.tokenFee}')),
+      DataCell(Text(
+          '${_numberFormat.format(transactionInfo.amountFee)} ${transactionInfo.tokenFee}')),
     ],
   );
 }
