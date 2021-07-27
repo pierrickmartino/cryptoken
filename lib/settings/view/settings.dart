@@ -121,7 +121,7 @@ class _SettingsScreenState extends State<SettingsUI> {
                 Padding(
                   padding: const EdgeInsets.only(top: 22, bottom: 8),
                   child: Image.asset(
-                    '/images/settings.png',
+                    'images/settings.png',
                     height: 50,
                     width: 50,
                     color: const Color(0xFF777777),

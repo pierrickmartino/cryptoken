@@ -53,5 +53,5 @@ flutter:
   assets:
     - data/info200.json
     - data/crypto.json
-    - assets/images/
-    - assets/icons/
+    - images/
+    - icons/
