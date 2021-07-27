@@ -13,6 +13,8 @@ final _numberFormat =
 
 final _priceFormat = NumberFormat('#,##0.######', 'de_CH');
 
+final _percentageFormat = NumberFormat('#,##0.##', 'de_CH');
+
 class StorageDetails extends StatelessWidget {
   const StorageDetails({
     Key? key,
@@ -102,14 +104,14 @@ Widget storageInfoCard(PositionModel positionModel, BuildContext context) {
               '${_priceFormat.format(positionModel.averagePurchasePrice)} USD',
           positionUnrealizedTitle: 'Unrealized: ',
           positionUnrealized:
-              '${_numberFormat.format(unrealized)} USD / ${_numberFormat.format(unrealizedPercent)}%',
+              '${_numberFormat.format(unrealized)} USD / ${_percentageFormat.format(unrealizedPercent)}%',
           unrealizedColor: unrealized.isNegative ? Colors.red : Colors.green,
           positionRealizedTitle: 'Realized: ',
           positionRealized: '0 USD',
           updatedDateTitle: 'Last update: ',
           updatedDate: updatedDate,
           tokenVariation:
-              '${_numberFormat.format(var24)} USD / ${_numberFormat.format(var24Percent)}%',
+              '${_numberFormat.format(var24)} USD / ${_percentageFormat.format(var24Percent)}%',
           positionPercentage: '0%',
         );
       });

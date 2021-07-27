@@ -43,7 +43,7 @@ class MyFiles extends StatelessWidget {
                 if (Responsive.isMobile(context))
                   IconButton(
                     onPressed: () async {
-                      final data = await Get.to(SettingsUI());
+                      final data = await Get.to(const SettingsUI());
                       if (data == 'success') {
                         debugPrint('refresh');
                       } //refreshDashboard();
@@ -81,7 +81,7 @@ class MyFiles extends StatelessWidget {
                       ),
                     ),
                     onPressed: () async {
-                      final data = await Get.to(SettingsUI());
+                      final data = await Get.to(const SettingsUI());
                       if (data == 'success') {
                         debugPrint('refresh');
                       } //refreshDashboard();

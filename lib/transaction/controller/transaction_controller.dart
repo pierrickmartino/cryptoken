@@ -61,7 +61,7 @@ class TransactionController extends GetxController {
     update();
   }
 
-  Future insertFirestoreTransaction(TransactionModel transaction) async {
+  Future<void> insertFirestoreTransaction(TransactionModel transaction) async {
     debugPrint('insertFirestoreTransaction');
     await _db
         .collection('/users/${firebaseUser.value!.uid}/transactions')

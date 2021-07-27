@@ -163,7 +163,7 @@ class TokenController extends GetxController {
       return Price(price: 0, symbol: '');
     }
     if (symbol == 'USDT') {
-      return Price(price: 1, symbol: 'USDT');
+      return Price(price: 1, symbol: 'USDTUSDT');
     }
 
     symbol = '${symbol}USDT';
@@ -196,7 +196,7 @@ class TokenController extends GetxController {
     if (symbol == 'USDT') {
       return Variation24(
         priceChange: 0,
-        symbol: 'USDT',
+        symbol: 'USDTUSDT',
         priceChangePercent: 0,
       );
     }

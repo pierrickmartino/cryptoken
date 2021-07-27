@@ -10,7 +10,6 @@ import 'package:web_dashboard/auth/model/user_model.dart';
 import 'package:web_dashboard/auth/view/loading.dart';
 import 'package:web_dashboard/auth/view/sign_in.dart';
 import 'package:web_dashboard/src/pages/home.dart';
-import 'package:web_dashboard/utils/gravatar.dart';
 
 class AuthController extends GetxController {
   static AuthController to = Get.find();
@@ -108,20 +107,12 @@ class AuthController extends GetxController {
           .then((result) async {
         debugPrint('uID: ${result.user!.uid}');
         debugPrint('email: ${result.user!.email}');
-        //get photo url from gravatar if user has one
-        final Gravatar gravatar = Gravatar(emailController.text);
-        final String gravatarUrl = gravatar.imageUrl(
-          size: 200,
-          defaultImage: GravatarImage.retro,
-          rating: GravatarRating.pg,
-          fileExtension: true,
-        );
         //create the new user object
         final UserModel _newUser = UserModel(
             uid: result.user!.uid,
             email: result.user!.email!,
             name: nameController.text,
-            photoUrl: gravatarUrl);
+            photoUrl: '');
         //create the user in firestore
         _createUserFirestore(_newUser, result.user!);
         emailController.clear();

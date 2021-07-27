@@ -52,10 +52,6 @@ class ProfileCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Image.asset(
-            'images/profile_pic.png',
-            height: 38,
-          ),
           if (!Responsive.isMobile(context))
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: defaultPadding / 2),
