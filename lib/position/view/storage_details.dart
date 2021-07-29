@@ -112,6 +112,8 @@ Widget storageInfoCard(
                 positionModel.amount;
         final double positionPercentage = valuation / totalValuation * 100.0;
 
+        final double realized = positionModel.realizedPnL;
+
         debugPrint('Var24Get : ${positionModel.token} -> $var24');
         debugPrint('PriceGetX : ${positionModel.token} -> $tokenPrice');
 
@@ -130,7 +132,7 @@ Widget storageInfoCard(
               '${_numberFormat.format(unrealized)} USD / ${_percentageFormat.format(unrealizedPercent)}%',
           unrealizedColor: unrealized.isNegative ? Colors.red : Colors.green,
           positionRealizedTitle: 'Realized: ',
-          positionRealized: '0 USD',
+          positionRealized: '${_numberFormat.format(realized)} USD',
           updatedDateTitle: 'Last update: ',
           updatedDate: updatedDate,
           tokenVariation:

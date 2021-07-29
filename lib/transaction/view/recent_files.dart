@@ -7,6 +7,7 @@ import 'package:web_dashboard/transaction/controller/transaction_controller.dart
 import 'package:web_dashboard/transaction/model/transaction_model.dart';
 
 import '../../constant.dart';
+import 'sell_transaction.dart';
 
 final _priceFormat = intl.NumberFormat('#,##0.######', 'de_CH');
 
@@ -74,6 +75,9 @@ class RecentFiles extends StatelessWidget {
                           label: Text('Date'),
                         ),
                         DataColumn(
+                          label: Text('Token'),
+                        ),
+                        DataColumn(
                           label: Text('Amount'),
                         ),
                         DataColumn(
@@ -87,6 +91,9 @@ class RecentFiles extends StatelessWidget {
                         ),
                         DataColumn(
                           label: Text('Fees (incl.)'),
+                        ),
+                        DataColumn(
+                          label: Text(''),
                         ),
                       ],
                       rows: List.generate(
@@ -116,9 +123,10 @@ DataRow recentFileDataRow(
       DataCell(_getTransactionTypeLabel(transactionInfo.transactionType)),
       // Date
       DataCell(Text(_dateFormat.format(transactionInfo.time))),
+      // Token
+      DataCell(Text(transactionInfo.tokenMain)),
       // Amount
-      DataCell(
-          Text('${transactionInfo.amountMain} ${transactionInfo.tokenMain}')),
+      DataCell(Text('${transactionInfo.amountMain}')),
       // Price
       DataCell(Text(
           '${_priceFormat.format(transactionInfo.price)} ${transactionInfo.tokenPrice}')),
@@ -130,6 +138,31 @@ DataRow recentFileDataRow(
       // Fees (incl.)
       DataCell(Text(
           '${_numberFormat.format(transactionInfo.amountFee)} ${transactionInfo.tokenFee}')),
+      // Action
+      DataCell(Wrap(
+        children: [
+          IconButton(
+            padding: const EdgeInsets.all(0),
+            icon: const Icon(Icons.money_off),
+            onPressed: () {
+              showGeneralDialog<SellTransactionDialog>(
+                context: context,
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    SellTransactionDialog(
+                  selectedTransaction: transactionInfo,
+                ),
+              );
+            },
+          ),
+          IconButton(
+            padding: const EdgeInsets.all(0),
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              debugPrint('Button pressed');
+            },
+          ),
+        ],
+      )),
     ],
   );
 }
