@@ -40,16 +40,6 @@ class MyFiles extends StatelessWidget {
                     },
                     icon: const Icon(Icons.add),
                   ),
-                if (Responsive.isMobile(context))
-                  IconButton(
-                    onPressed: () async {
-                      final data = await Get.to(const SettingsUI());
-                      if (data == 'success') {
-                        debugPrint('refresh');
-                      } //refreshDashboard();
-                    },
-                    icon: const Icon(Icons.settings),
-                  ),
 
                 // otherwise we can show a lable with the button icon
                 if (!Responsive.isMobile(context))
@@ -69,25 +59,6 @@ class MyFiles extends StatelessWidget {
                     },
                     icon: const Icon(Icons.add),
                     label: const Text('Add New'),
-                  ),
-
-                if (!Responsive.isMobile(context))
-                  ElevatedButton.icon(
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: defaultPadding * 1.5,
-                        vertical: defaultPadding /
-                            (Responsive.isMobile(context) ? 2 : 1),
-                      ),
-                    ),
-                    onPressed: () async {
-                      final data = await Get.to(const SettingsUI());
-                      if (data == 'success') {
-                        debugPrint('refresh');
-                      } //refreshDashboard();
-                    },
-                    icon: const Icon(Icons.settings),
-                    label: const Text('Settings'),
                   ),
               ],
             )
