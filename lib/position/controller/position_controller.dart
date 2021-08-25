@@ -46,11 +46,11 @@ class PositionController extends GetxController {
   Future<PositionModel> insertFirestorePosition(PositionModel position) async {
     await _db
         .collection('/users/${firebaseUser.value!.uid}/positions')
-        .doc('${position.token}_${position.walletId}')
+        .doc(position.token)
         .set(position.toJson());
     update();
 
-    return getFirestorePosition('${position.token}_${position.walletId}');
+    return getFirestorePosition(position.token);
   }
 
   Future<void> updateFirestorePosition(
@@ -103,7 +103,6 @@ class PositionController extends GetxController {
     final snapshot = await _db
         .collection('/users/${firebaseUser.value!.uid}/positions/')
         .where('walletId', isEqualTo: walletId)
-        //.orderBy('purchaseAmount', descending: true)
         .get();
 
     final positions = snapshot.docs

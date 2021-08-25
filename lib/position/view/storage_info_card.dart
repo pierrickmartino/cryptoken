@@ -15,8 +15,8 @@ class StorageInfoCard extends StatelessWidget {
     required this.positionValuation,
     required this.positionAmount,
     required this.positionPrice,
-    required this.positionAveragePurchasePriceTitle,
-    required this.positionAveragePurchasePrice,
+    required this.positionAverageCostTitle,
+    required this.positionAverageCost,
     required this.positionUnrealizedTitle,
     required this.positionUnrealized,
     required this.unrealizedColor,
@@ -35,8 +35,8 @@ class StorageInfoCard extends StatelessWidget {
       updatedDate,
       positionAmount,
       positionPrice,
-      positionAveragePurchasePriceTitle,
-      positionAveragePurchasePrice,
+      positionAverageCostTitle,
+      positionAverageCost,
       positionUnrealizedTitle,
       positionUnrealized,
       positionRealizedTitle,
@@ -109,14 +109,14 @@ class StorageInfoCard extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    positionAveragePurchasePriceTitle,
+                    positionAverageCostTitle,
                     style: Theme.of(context)
                         .textTheme
                         .caption!
                         .copyWith(color: Colors.white70),
                   ),
                   Text(
-                    positionAveragePurchasePrice,
+                    positionAverageCost,
                     style: Theme.of(context)
                         .textTheme
                         .caption!
@@ -248,7 +248,7 @@ class StorageInfoCard extends StatelessWidget {
                       .caption!
                       .copyWith(color: Colors.white70)),
               Text(
-                positionAveragePurchasePriceTitle,
+                positionAverageCostTitle,
                 style: Theme.of(context)
                     .textTheme
                     .caption!
@@ -290,7 +290,7 @@ class StorageInfoCard extends StatelessWidget {
                   .caption!
                   .copyWith(color: Colors.white70)),
           Text(
-            positionAveragePurchasePrice,
+            positionAverageCost,
             style: Theme.of(context)
                 .textTheme
                 .caption!

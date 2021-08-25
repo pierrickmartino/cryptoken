@@ -7,6 +7,7 @@ import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:logger/logger.dart';
 import 'package:synchronized/extension.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:web_dashboard/constant.dart';
@@ -21,6 +22,14 @@ import 'package:web_dashboard/wallet/model/wallet_model.dart';
 bool _isLargeScreen(BuildContext context) {
   return MediaQuery.of(context).size.width > 960.0;
 }
+
+var logger = Logger(
+  printer: PrettyPrinter(),
+);
+
+var loggerNoStack = Logger(
+  printer: PrettyPrinter(methodCount: 0),
+);
 
 const cryptoListBox = 'cryptoList';
 
@@ -723,9 +732,11 @@ class NewTransactionForm extends StatelessWidget {
                             walletId: '',
                             token: 'BTC',
                             amount: 0,
-                            averagePurchasePrice: 0,
+                            averageCost: 0,
                             purchaseAmount: 0,
+                            sellAmount: 0,
                             realizedPnL: 0,
+                            cost: 0,
                             time: DateTime.now(),
                             color: Color.fromARGB(
                                     Random().nextInt(256),
@@ -740,9 +751,11 @@ class NewTransactionForm extends StatelessWidget {
                                   walletId: '',
                                   token: 'USDT',
                                   amount: 0,
-                                  averagePurchasePrice: 0,
+                                  averageCost: 0,
                                   purchaseAmount: 0,
+                                  sellAmount: 0,
                                   realizedPnL: 0,
+                                  cost: 0,
                                   time: DateTime.now(),
                                   color: Color.fromARGB(
                                           Random().nextInt(256),
@@ -775,15 +788,16 @@ class NewTransactionForm extends StatelessWidget {
                             await synchronized(() async {
                               final PositionModel _position =
                                   await positionController.getFirestorePosition(
-                                      '${_newTransaction.tokenMain}_${_newTransaction.walletId}');
+                                      _newTransaction.tokenMain);
                               _positionMain
                                 ..walletId = _position.walletId
                                 ..token = _position.token
                                 ..amount = _position.amount
-                                ..averagePurchasePrice =
-                                    _position.averagePurchasePrice
+                                ..averageCost = _position.averageCost
                                 ..purchaseAmount = _position.purchaseAmount
+                                ..sellAmount = _position.sellAmount
                                 ..realizedPnL = _position.realizedPnL
+                                ..cost = _position.cost
                                 ..time = _position.time;
                             });
                           } catch (e) {
@@ -796,9 +810,11 @@ class NewTransactionForm extends StatelessWidget {
                                           walletId: selectedWallet!.id,
                                           token: _newTransaction.tokenMain,
                                           amount: 0,
-                                          averagePurchasePrice: 0,
+                                          averageCost: 0,
                                           purchaseAmount: 0,
+                                          sellAmount: 0,
                                           realizedPnL: 0,
+                                          cost: 0,
                                           time: DateTime.now(),
                                           color: Color.fromARGB(
                                                   Random().nextInt(256),
@@ -811,10 +827,11 @@ class NewTransactionForm extends StatelessWidget {
                                 ..walletId = _position.walletId
                                 ..token = _position.token
                                 ..amount = _position.amount
-                                ..averagePurchasePrice =
-                                    _position.averagePurchasePrice
+                                ..averageCost = _position.averageCost
                                 ..purchaseAmount = _position.purchaseAmount
+                                ..sellAmount = _position.sellAmount
                                 ..realizedPnL = _position.realizedPnL
+                                ..cost = _position.cost
                                 ..time = _position.time;
                             });
                           }
@@ -825,16 +842,17 @@ class NewTransactionForm extends StatelessWidget {
                             await synchronized(() async {
                               final PositionModel _position =
                                   await positionController.getFirestorePosition(
-                                      '${_newTransaction.tokenReference}_${_newTransaction.walletId}');
+                                      _newTransaction.tokenReference);
 
                               _positionReference
                                 ..walletId = _position.walletId
                                 ..token = _position.token
                                 ..amount = _position.amount
-                                ..averagePurchasePrice =
-                                    _position.averagePurchasePrice
+                                ..averageCost = _position.averageCost
                                 ..purchaseAmount = _position.purchaseAmount
+                                ..sellAmount = _position.sellAmount
                                 ..realizedPnL = _position.realizedPnL
+                                ..cost = _position.cost
                                 ..time = _position.time;
                             });
                           } catch (e) {
@@ -847,9 +865,11 @@ class NewTransactionForm extends StatelessWidget {
                                           walletId: selectedWallet!.id,
                                           token: _newTransaction.tokenReference,
                                           amount: 0,
-                                          averagePurchasePrice: 0,
+                                          averageCost: 0,
                                           purchaseAmount: 0,
+                                          sellAmount: 0,
                                           realizedPnL: 0,
+                                          cost: 0,
                                           time: DateTime.now(),
                                           color: Color.fromARGB(
                                                   Random().nextInt(256),
@@ -862,10 +882,11 @@ class NewTransactionForm extends StatelessWidget {
                                 ..walletId = _position.walletId
                                 ..token = _position.token
                                 ..amount = _position.amount
-                                ..averagePurchasePrice =
-                                    _position.averagePurchasePrice
+                                ..averageCost = _position.averageCost
                                 ..purchaseAmount = _position.purchaseAmount
+                                ..sellAmount = _position.sellAmount
                                 ..realizedPnL = _position.realizedPnL
+                                ..cost = _position.cost
                                 ..time = _position.time;
                             });
                           }
@@ -873,74 +894,90 @@ class NewTransactionForm extends StatelessWidget {
                           // Main axis of the transaction (Buy or Sell Main against Reference)
                           PositionModel newPositionMain;
 
-                          // Buy
-                          if (_transaction.transactionType == 0) {
-                            debugPrint('---');
-                            debugPrint(
-                                'Buy transaction - averagePurchasePrice calculation');
-                            debugPrint(
-                                '_positionMain.purchaseAmount : ${_positionMain.purchaseAmount} | _positionMain.averagePurchasePrice : ${_positionMain.averagePurchasePrice} | _transaction.price : ${_transaction.price} | _transaction.amountMain : ${_transaction.amountMain}');
-                            debugPrint(
-                                '(${_positionMain.purchaseAmount} x ${_positionMain.averagePurchasePrice}) + (${_transaction.amountMain} x ${_transaction.price})');
-                            debugPrint(
-                                '/ (${_positionMain.purchaseAmount} + ${_transaction.amountMain}');
-                            debugPrint(
-                                '= ${((_positionMain.purchaseAmount * _positionMain.averagePurchasePrice) + (_transaction.amountMain * _transaction.price)) / (_positionMain.purchaseAmount + _transaction.amountMain)}');
-                            debugPrint('---');
+                          /**
+                           * ------------------------------------------------------------------------
+                           * WARNING
+                           * ------------------------------------------------------------------------
+                           * Pour l'instant les Fees peuvent être modifié au niveau de leur devise
+                           * mais dans l'idéal on devrait toujours être en devise de référence (USD)
+                           */
 
-                            newPositionMain = PositionModel(
-                                walletId: _positionMain.walletId,
-                                token: _positionMain.token,
-                                amount: _positionMain.amount +
-                                    _transaction.amountMain,
-                                averagePurchasePrice:
-                                    ((_positionMain.purchaseAmount *
-                                                _positionMain
-                                                    .averagePurchasePrice) +
-                                            (_transaction.amountMain *
-                                                _transaction.price)) /
-                                        (_positionMain.purchaseAmount +
-                                            _transaction.amountMain),
-                                purchaseAmount: _positionMain.purchaseAmount +
-                                    _transaction.amountMain,
-                                realizedPnL: _positionMain
-                                    .realizedPnL, // Not used for Buy
-                                time: _positionMain.time,
-                                color: Color.fromARGB(
-                                        Random().nextInt(256),
-                                        Random().nextInt(256),
-                                        Random().nextInt(256),
-                                        Random().nextInt(256))
-                                    .value);
-                          }
+                          loggerNoStack.i(
+                              'Buy transaction - ${_positionMain.token} - averageCost calculation');
 
-                          // Sell
-                          else {
-                            newPositionMain = PositionModel(
-                                walletId: _positionMain.walletId,
-                                token: _positionMain.token,
-                                amount: _positionMain.amount -
-                                    _transaction.amountMain,
-                                averagePurchasePrice: _positionMain
-                                    .averagePurchasePrice, // Not used for Sell
-                                purchaseAmount: _positionMain
-                                    .purchaseAmount, // Not used for Sell
-                                realizedPnL: _positionMain
-                                    .realizedPnL, //TODO - realizedGain
-                                time: _positionMain.time,
-                                color: Color.fromARGB(
-                                        Random().nextInt(256),
-                                        Random().nextInt(256),
-                                        Random().nextInt(256),
-                                        Random().nextInt(256))
-                                    .value);
-                          }
+                          Logger(printer: SimplePrinter()).v(
+                              '_positionMain.purchaseAmount : ${_positionMain.purchaseAmount}');
+                          Logger(printer: SimplePrinter()).v(
+                              '_positionMain.averageCost : ${_positionMain.averageCost}');
+                          Logger(printer: SimplePrinter())
+                              .v('_positionMain.cost : ${_positionMain.cost}');
+
+                          Logger(printer: SimplePrinter())
+                              .v('_transaction.price : ${_transaction.price}');
+                          Logger(printer: SimplePrinter()).v(
+                              '_transaction.amountMain : ${_transaction.amountMain}');
+                          Logger(printer: SimplePrinter()).v(
+                              '_transaction.amountFee : ${_transaction.amountFee}');
+
+                          /* = Coût réel de la transaction en incluant les frais */
+                          Logger(printer: SimplePrinter()).v(
+                              'transactionCost : ${_transaction.amountMain} * ${_transaction.price} + ${_transaction.amountFee}');
+
+                          final double transactionCost =
+                              _transaction.amountMain * _transaction.price +
+                                  _transaction.amountFee;
+
+                          /* = Coùt courant de la position en y ajoutant la transaction en cours */
+                          Logger(printer: SimplePrinter()).v(
+                              'runningCost : ${_positionMain.cost} + $transactionCost');
+
+                          final double runningCost =
+                              _positionMain.cost + transactionCost;
+
+                          /* = Position courante du token en ajoutant la transaction en cours */
+                          Logger(printer: SimplePrinter()).v(
+                              'runningPosition : ${_positionMain.amount} + ${_transaction.amountMain}');
+
+                          final double runningPosition =
+                              _positionMain.amount + _transaction.amountMain;
+
+                          /* = Somme des quantités totales achetées en ajoutant la transaction en cours */
+                          Logger(printer: SimplePrinter()).v(
+                              'totalPurchaseQty : ${_positionMain.purchaseAmount} + ${_transaction.amountMain}');
+
+                          final double totalPurchaseQty =
+                              _positionMain.purchaseAmount +
+                                  _transaction.amountMain;
+
+                          /* = Coùt moyen de la position */
+                          Logger(printer: SimplePrinter()).v(
+                              'averageCost : $runningCost / $totalPurchaseQty');
+
+                          final double averageCost =
+                              runningCost / totalPurchaseQty;
+
+                          newPositionMain = PositionModel(
+                              walletId: _positionMain.walletId,
+                              token: _positionMain.token,
+                              amount: runningPosition,
+                              averageCost: averageCost,
+                              purchaseAmount: totalPurchaseQty,
+                              sellAmount: _positionMain.sellAmount,
+                              realizedPnL:
+                                  _positionMain.realizedPnL, // Not used for Buy
+                              cost: runningCost,
+                              time: _positionMain.time,
+                              color: Color.fromARGB(
+                                      Random().nextInt(256),
+                                      Random().nextInt(256),
+                                      Random().nextInt(256),
+                                      Random().nextInt(256))
+                                  .value);
 
                           // If we are able to find the position, we need to update it
                           await synchronized(() async {
                             await positionController.updateFirestorePosition(
-                                '${_transaction.tokenMain}_${selectedWallet!.id}',
-                                newPositionMain);
+                                _transaction.tokenMain, newPositionMain);
                           });
 
                           if (_transaction.withImpactOnSecondPosition)
@@ -948,54 +985,31 @@ class NewTransactionForm extends StatelessWidget {
                           {
                             PositionModel newPositionReference;
 
-                            // Buy
-                            if (_transaction.transactionType == 0) {
-                              newPositionReference = PositionModel(
-                                  walletId: _positionReference.walletId,
-                                  token: _positionReference.token,
-                                  amount: _positionReference.amount -
-                                      _transaction.amountReference,
-                                  averagePurchasePrice: _positionReference
-                                      .averagePurchasePrice, //TODO - averagePurchasePrice
-                                  purchaseAmount:
-                                      _positionReference.purchaseAmount,
-                                  realizedPnL: _positionReference
-                                      .realizedPnL, //TODO - realizedGain
-                                  time: _positionReference.time,
-                                  color: Color.fromARGB(
-                                          Random().nextInt(256),
-                                          Random().nextInt(256),
-                                          Random().nextInt(256),
-                                          Random().nextInt(256))
-                                      .value);
-                            }
-
-                            // Sell
-                            else {
-                              newPositionReference = PositionModel(
-                                  walletId: _positionReference.walletId,
-                                  token: _positionReference.token,
-                                  amount: _positionReference.amount +
-                                      _transaction.amountReference,
-                                  averagePurchasePrice: _positionReference
-                                      .averagePurchasePrice, //TODO - averagePurchasePrice
-                                  purchaseAmount:
-                                      _positionReference.purchaseAmount,
-                                  realizedPnL: _positionReference
-                                      .realizedPnL, //TODO - realizedGain
-                                  time: _positionReference.time,
-                                  color: Color.fromARGB(
-                                          Random().nextInt(256),
-                                          Random().nextInt(256),
-                                          Random().nextInt(256),
-                                          Random().nextInt(256))
-                                      .value);
-                            }
+                            newPositionReference = PositionModel(
+                                walletId: _positionReference.walletId,
+                                token: _positionReference.token,
+                                amount: _positionReference.amount -
+                                    _transaction.amountReference,
+                                averageCost: _positionReference
+                                    .averageCost, //TODO - averageCost
+                                purchaseAmount:
+                                    _positionReference.purchaseAmount,
+                                sellAmount: _positionReference.sellAmount,
+                                realizedPnL: _positionReference
+                                    .realizedPnL, //TODO - realizedGain
+                                cost: _positionReference.cost,
+                                time: _positionReference.time,
+                                color: Color.fromARGB(
+                                        Random().nextInt(256),
+                                        Random().nextInt(256),
+                                        Random().nextInt(256),
+                                        Random().nextInt(256))
+                                    .value);
 
                             // if we are able to find the position, we need to update it
                             await synchronized(() async {
                               await positionController.updateFirestorePosition(
-                                  '${_transaction.tokenReference}_${selectedWallet!.id}',
+                                  _transaction.tokenReference,
                                   newPositionReference);
                             });
                           }

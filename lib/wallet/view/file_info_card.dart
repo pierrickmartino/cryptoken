@@ -185,8 +185,7 @@ String _getTotalUnrealized(
     final double tokenPrice =
         _tokenController.tokenPriceGetX(positionModel.token);
     final double unrealized =
-        (tokenPrice - positionModel.averagePurchasePrice) *
-            positionModel.amount;
+        (tokenPrice - positionModel.averageCost) * positionModel.amount;
     totalUnrealized = totalUnrealized + unrealized;
   }
 

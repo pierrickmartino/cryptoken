@@ -83,9 +83,9 @@ class RecentFiles extends StatelessWidget {
                         DataColumn(
                           label: Text('Price'),
                         ),
-                        DataColumn(
-                          label: Text('Unrealiz.'),
-                        ),
+                        // DataColumn(
+                        //   label: Text('Unrealiz.'),
+                        // ),
                         DataColumn(
                           label: Text('Total'),
                         ),
@@ -115,6 +115,10 @@ class RecentFiles extends StatelessWidget {
 
 DataRow recentFileDataRow(
     TransactionModel transactionInfo, BuildContext context) {
+  final double transactionCost =
+      (transactionInfo.amountMain * transactionInfo.price) +
+          transactionInfo.amountFee;
+
   return DataRow(
     cells: [
       // Wallet
@@ -131,10 +135,10 @@ DataRow recentFileDataRow(
       DataCell(Text(
           '${_priceFormat.format(transactionInfo.price)} ${transactionInfo.tokenPrice}')),
       // Unrealized PnL
-      DataCell(_getTransactionPnL(transactionInfo, context)),
+      //DataCell(_getTransactionPnL(transactionInfo, context)),
       // Total
       DataCell(Text(
-          '${_numberFormat.format(transactionInfo.amountReference)} ${transactionInfo.tokenReference}')),
+          '${_numberFormat.format(transactionCost)} ${transactionInfo.tokenReference}')),
       // Fees (incl.)
       DataCell(Text(
           '${_numberFormat.format(transactionInfo.amountFee)} ${transactionInfo.tokenFee}')),

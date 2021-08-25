@@ -29,6 +29,7 @@ dependencies:
   http: ^0.13.3                     #https://pub.dev/packages/http
   json_annotation: ^4.0.0
   json_serializable: ^4.0.0
+  logger: ^1.0.0                    #https://pub.dev/packages/logger
   provider: ^5.0.0
 
   settings_ui: ^1.0.0               #https://pub.dev/packages/settings_ui

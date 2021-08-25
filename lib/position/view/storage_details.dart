@@ -104,12 +104,11 @@ Widget storageInfoCard(
             _tokenController.tokenVar24PercentGetX(positionModel.token);
 
         final double unrealizedPercent =
-            (tokenPrice - positionModel.averagePurchasePrice) /
-                positionModel.averagePurchasePrice *
+            (tokenPrice - positionModel.averageCost) /
+                positionModel.averageCost *
                 100.0;
         final double unrealized =
-            (tokenPrice - positionModel.averagePurchasePrice) *
-                positionModel.amount;
+            (tokenPrice - positionModel.averageCost) * positionModel.amount;
         final double positionPercentage = valuation / totalValuation * 100.0;
 
         final double realized = positionModel.realizedPnL;
@@ -124,9 +123,9 @@ Widget storageInfoCard(
           positionAmount:
               'Amount: ${_numberFormat.format(positionModel.amount)}',
           positionPrice: 'Price: ${_priceFormat.format(tokenPrice)} USD',
-          positionAveragePurchasePriceTitle: 'Avg. Purchase Price: ',
-          positionAveragePurchasePrice:
-              '${_priceFormat.format(positionModel.averagePurchasePrice)} USD',
+          positionAverageCostTitle: 'Avg. Cost: ',
+          positionAverageCost:
+              '${_priceFormat.format(positionModel.averageCost)} USD',
           positionUnrealizedTitle: 'Unrealized: ',
           positionUnrealized:
               '${_numberFormat.format(unrealized)} USD / ${_percentageFormat.format(unrealizedPercent)}%',
