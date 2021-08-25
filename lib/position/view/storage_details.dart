@@ -6,7 +6,7 @@ import 'package:web_dashboard/position/model/position_model.dart';
 import 'package:web_dashboard/token/controller/token_controller.dart';
 
 import '../../constant.dart';
-import 'chart.dart';
+//import 'chart.dart';
 import 'storage_info_card.dart';
 
 final _numberFormat =
@@ -29,7 +29,7 @@ class StorageDetails extends StatelessWidget {
         init: TokenController(),
         builder: (_tokenController) {
           return FutureBuilder<List<PositionModel>>(
-              future: positionController.getFirestoreTopPosition(),
+              future: positionController.getFirestorePositionList(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final double total = _getTotalValuationInDouble(
@@ -47,16 +47,16 @@ class StorageDetails extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Storage Details',
+                          'Position Details',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         const SizedBox(height: defaultPadding),
-                        Chart(
-                          positionsList: snapshot.data!,
-                        ),
+                        // Chart(
+                        //   positionsList: snapshot.data!,
+                        // ),
                         Column(
                           children: List.generate(
                             snapshot.data!.length,

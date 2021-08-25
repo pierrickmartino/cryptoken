@@ -43,7 +43,7 @@ class RecentFiles extends StatelessWidget {
             child:
                 //Text(''),
                 FutureBuilder<List<TransactionModel>>(
-              future: transactionController.futureFirestoreTransactionList(),
+              future: transactionController.getFirestoreTopTransactionList(),
               builder: (context, futureSnapshot) {
                 if (!futureSnapshot.hasData) {
                   return const Center(

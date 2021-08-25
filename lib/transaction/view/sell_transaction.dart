@@ -795,7 +795,7 @@ class SellTransactionForm extends StatelessWidget {
                             await synchronized(() async {
                               final PositionModel _position =
                                   await positionController.getFirestorePosition(
-                                      _newTransaction.tokenMain);
+                                      '${_newTransaction.tokenMain}_${_newTransaction.walletId}');
                               _positionMain
                                 ..walletId = _position.walletId
                                 ..token = _position.token
@@ -816,7 +816,7 @@ class SellTransactionForm extends StatelessWidget {
                             await synchronized(() async {
                               final PositionModel _position =
                                   await positionController.getFirestorePosition(
-                                      _newTransaction.tokenReference);
+                                      '${_newTransaction.tokenReference}_${_newTransaction.walletId}');
 
                               _positionReference
                                 ..walletId = _position.walletId
@@ -861,7 +861,8 @@ class SellTransactionForm extends StatelessWidget {
                           // If we are able to find the position, we need to update it
                           await synchronized(() async {
                             await positionController.updateFirestorePosition(
-                                _transaction.tokenMain, newPositionMain);
+                                '${_transaction.tokenMain}_${_transaction.walletId}',
+                                newPositionMain);
                           });
 
                           if (_transaction.withImpactOnSecondPosition)
@@ -892,7 +893,7 @@ class SellTransactionForm extends StatelessWidget {
                             // if we are able to find the position, we need to update it
                             await synchronized(() async {
                               await positionController.updateFirestorePosition(
-                                  _transaction.tokenReference,
+                                  '${_transaction.tokenReference}_${_transaction.walletId}',
                                   newPositionReference);
                             });
                           }

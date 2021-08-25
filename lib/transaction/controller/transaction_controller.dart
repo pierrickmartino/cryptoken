@@ -39,7 +39,7 @@ class TransactionController extends GetxController {
     return result;
   }
 
-  Future<List<TransactionModel>> futureFirestoreTransactionList() async {
+  Future<List<TransactionModel>> getFirestoreTransactionList() async {
     debugPrint('futureFirestoreTransactionList');
 
     final querySnapshot = await _db
@@ -61,6 +61,20 @@ class TransactionController extends GetxController {
         .get();
 
     return TransactionModel.fromJson(snapshot.data()!)..id = snapshot.id;
+  }
+
+  Future<List<TransactionModel>> getFirestoreTopTransactionList() async {
+    final querySnapshot = await _db
+        .collection('/users/${firebaseUser.value!.uid}/transactions/')
+        .orderBy('time', descending: true)
+        .limit(10)
+        .get();
+
+    final transactions = querySnapshot.docs
+        .map((doc) => TransactionModel.fromJson(doc.data())..id = doc.id)
+        .toList();
+
+    return transactions;
   }
 
   Future<void> deleteFirestoreTransaction(String id) async {

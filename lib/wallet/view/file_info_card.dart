@@ -32,7 +32,7 @@ class FileInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<PositionModel>>(
-        future: positionController.getFirestoreTopPosition(),
+        future: positionController.getFirestorePositionListByWallet(wallet.id),
         builder: (context, snapshot) {
           if (snapshot.data == null) {
             return const Center(
