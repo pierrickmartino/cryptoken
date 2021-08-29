@@ -6,9 +6,11 @@ class PositionModel {
     required this.walletId,
     required this.token,
     required this.amount,
-    required this.averagePurchasePrice,
+    required this.averageCost,
     required this.purchaseAmount,
+    required this.sellAmount,
     required this.realizedPnL,
+    required this.cost,
     required this.time,
     required this.color,
   });
@@ -18,9 +20,11 @@ class PositionModel {
       walletId: data['walletId'] ?? '',
       token: data['token'] ?? '',
       amount: data['amount'] ?? 0,
-      averagePurchasePrice: data['averagePurchasePrice'] ?? 0,
+      averageCost: data['averageCost'] ?? 0,
       purchaseAmount: data['purchaseAmount'] ?? 0,
+      sellAmount: data['sellAmount'] ?? 0,
       realizedPnL: data['realizedPnL'] ?? 0,
+      cost: data['cost'] ?? 0,
       time: data['time'] ?? DateTime.now(),
       color: data['color'] ?? 0xFF2697FF,
     );
@@ -31,16 +35,18 @@ class PositionModel {
       walletId: json['walletId'] as String,
       token: json['token'] as String,
       amount: (json['amount'] as num).toDouble(),
-      averagePurchasePrice: (json['averagePurchasePrice'] as num).toDouble(),
+      averageCost: (json['averageCost'] as num).toDouble(),
       purchaseAmount: (json['purchaseAmount'] as num).toDouble(),
+      sellAmount: (json['sellAmount'] as num).toDouble(),
       realizedPnL: (json['realizedPnL'] as num).toDouble(),
+      cost: (json['cost'] as num).toDouble(),
       time: _timestampToDateTime(json['time'] as Timestamp),
       color: (json['color'] as num).toInt(),
     );
   }
 
   String walletId, token;
-  double amount, averagePurchasePrice, purchaseAmount, realizedPnL;
+  double amount, averageCost, purchaseAmount, sellAmount, realizedPnL, cost;
   int color;
 
   @JsonKey(fromJson: _timestampToDateTime, toJson: _dateTimeToTimestamp)
@@ -63,9 +69,11 @@ class PositionModel {
         'walletId': walletId,
         'token': token,
         'amount': amount,
-        'averagePurchasePrice': averagePurchasePrice,
+        'averageCost': averageCost,
         'purchaseAmount': purchaseAmount,
+        'sellAmount': sellAmount,
         'realizedPnL': realizedPnL,
+        'cost': cost,
         'time': _dateTimeToTimestamp(time),
         'color': color,
       };

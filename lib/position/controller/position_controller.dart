@@ -71,11 +71,11 @@ class PositionController extends GetxController {
     return PositionModel.fromJson(snapshot.data()!)..id = snapshot.id;
   }
 
-  Future<List<PositionModel>> getFirestoreTopPosition() async {
+  Future<List<PositionModel>> getFirestoreTopPositionList() async {
     final snapshot = await _db
         .collection('/users/${firebaseUser.value!.uid}/positions/')
         .orderBy('purchaseAmount', descending: true)
-        .limit(4)
+        .limit(5)
         .get();
 
     final positions = snapshot.docs
@@ -88,6 +88,21 @@ class PositionController extends GetxController {
   Future<List<PositionModel>> getFirestorePositionList() async {
     final snapshot = await _db
         .collection('/users/${firebaseUser.value!.uid}/positions/')
+        .orderBy('purchaseAmount', descending: true)
+        .get();
+
+    final positions = snapshot.docs
+        .map((doc) => PositionModel.fromJson(doc.data())..id = doc.id)
+        .toList();
+
+    return positions;
+  }
+
+  Future<List<PositionModel>> getFirestorePositionListByWallet(
+      String walletId) async {
+    final snapshot = await _db
+        .collection('/users/${firebaseUser.value!.uid}/positions/')
+        .where('walletId', isEqualTo: walletId)
         .get();
 
     final positions = snapshot.docs

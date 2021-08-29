@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:web_dashboard/settings/view/settings.dart';
 
 import '../../../constant.dart';
 import '../../responsive.dart';
@@ -52,16 +54,33 @@ class ProfileCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Image.asset(
-            'images/profile_pic.png',
-            height: 38,
-          ),
           if (!Responsive.isMobile(context))
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: defaultPadding / 2),
               child: Text('Angelina Joli'),
             ),
-          const Icon(Icons.keyboard_arrow_down),
+          PopupMenuButton(
+            color: secondaryColor,
+            icon: const Icon(Icons.keyboard_arrow_down),
+            onSelected: (value) async {
+              switch (value) {
+                case 1:
+                  final data = await Get.to(const SettingsUI());
+                  if (data == 'success') {
+                    debugPrint('refresh');
+                  }
+                  break;
+
+                default:
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 1,
+                child: Text('Settings'),
+              ),
+            ],
+          ),
         ],
       ),
     );

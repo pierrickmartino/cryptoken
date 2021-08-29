@@ -121,7 +121,7 @@ class _SettingsScreenState extends State<SettingsUI> {
                 Padding(
                   padding: const EdgeInsets.only(top: 22, bottom: 8),
                   child: Image.asset(
-                    '/images/settings.png',
+                    'images/settings.png',
                     height: 50,
                     width: 50,
                     color: const Color(0xFF777777),
@@ -181,7 +181,7 @@ class _SettingsScreenState extends State<SettingsUI> {
           ]).whenComplete(() {
             if (_positionPriceCounter == 0 && _positionVar24Counter == 0) {
               Get.snackbar<void>(
-                  'Refresh', 'Token market date successfully udpdated !',
+                  'Refresh', 'Token market data successfully udpdated !',
                   snackPosition: SnackPosition.BOTTOM,
                   duration: const Duration(seconds: 5),
                   backgroundColor: Get.theme.snackBarTheme.backgroundColor,
@@ -202,7 +202,7 @@ class _SettingsScreenState extends State<SettingsUI> {
       return Price(price: 0, symbol: '');
     }
     if (symbol == 'USDT') {
-      return Price(price: 1, symbol: 'USDT');
+      return Price(price: 1, symbol: 'USDTUSDT');
     }
 
     symbol = '${symbol}USDT';
@@ -235,7 +235,7 @@ class _SettingsScreenState extends State<SettingsUI> {
     if (symbol == 'USDT') {
       return Variation24(
         priceChange: 0,
-        symbol: 'USDT',
+        symbol: 'USDTUSDT',
         priceChangePercent: 0,
       );
     }

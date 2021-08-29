@@ -7,9 +7,9 @@ import 'package:web_dashboard/transaction/controller/transaction_controller.dart
 import 'package:web_dashboard/transaction/model/transaction_model.dart';
 
 import '../../constant.dart';
+import 'sell_transaction.dart';
 
-final _priceFormat =
-    intl.NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 6);
+final _priceFormat = intl.NumberFormat('#,##0.######', 'de_CH');
 
 final _numberFormat =
     intl.NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 2);
@@ -43,7 +43,7 @@ class RecentFiles extends StatelessWidget {
             child:
                 //Text(''),
                 FutureBuilder<List<TransactionModel>>(
-              future: transactionController.futureFirestoreTransactionList(),
+              future: transactionController.getFirestoreTopTransactionList(),
               builder: (context, futureSnapshot) {
                 if (!futureSnapshot.hasData) {
                   return const Center(
@@ -75,19 +75,25 @@ class RecentFiles extends StatelessWidget {
                           label: Text('Date'),
                         ),
                         DataColumn(
+                          label: Text('Token'),
+                        ),
+                        DataColumn(
                           label: Text('Amount'),
                         ),
                         DataColumn(
                           label: Text('Price'),
                         ),
-                        DataColumn(
-                          label: Text('Unrealiz.'),
-                        ),
+                        // DataColumn(
+                        //   label: Text('Unrealiz.'),
+                        // ),
                         DataColumn(
                           label: Text('Total'),
                         ),
                         DataColumn(
                           label: Text('Fees (incl.)'),
+                        ),
+                        DataColumn(
+                          label: Text(''),
                         ),
                       ],
                       rows: List.generate(
@@ -109,6 +115,10 @@ class RecentFiles extends StatelessWidget {
 
 DataRow recentFileDataRow(
     TransactionModel transactionInfo, BuildContext context) {
+  final double transactionCost =
+      (transactionInfo.amountMain * transactionInfo.price) +
+          transactionInfo.amountFee;
+
   return DataRow(
     cells: [
       // Wallet
@@ -117,19 +127,46 @@ DataRow recentFileDataRow(
       DataCell(_getTransactionTypeLabel(transactionInfo.transactionType)),
       // Date
       DataCell(Text(_dateFormat.format(transactionInfo.time))),
+      // Token
+      DataCell(Text(transactionInfo.tokenMain)),
       // Amount
-      DataCell(
-          Text('${transactionInfo.amountMain} ${transactionInfo.tokenMain}')),
+      DataCell(Text('${transactionInfo.amountMain}')),
       // Price
-      DataCell(Text('${transactionInfo.price} ${transactionInfo.tokenPrice}')),
+      DataCell(Text(
+          '${_priceFormat.format(transactionInfo.price)} ${transactionInfo.tokenPrice}')),
       // Unrealized PnL
-      DataCell(_getTransactionPnL(transactionInfo, context)),
+      //DataCell(_getTransactionPnL(transactionInfo, context)),
       // Total
       DataCell(Text(
-          '${transactionInfo.amountReference} ${transactionInfo.tokenReference}')),
+          '${_numberFormat.format(transactionCost)} ${transactionInfo.tokenReference}')),
       // Fees (incl.)
-      DataCell(
-          Text('${transactionInfo.amountFee} ${transactionInfo.tokenFee}')),
+      DataCell(Text(
+          '${_numberFormat.format(transactionInfo.amountFee)} ${transactionInfo.tokenFee}')),
+      // Action
+      DataCell(Wrap(
+        children: [
+          IconButton(
+            padding: const EdgeInsets.all(0),
+            icon: const Icon(Icons.money_off),
+            onPressed: () {
+              showGeneralDialog<SellTransactionDialog>(
+                context: context,
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    SellTransactionDialog(
+                  selectedTransaction: transactionInfo,
+                ),
+              );
+            },
+          ),
+          IconButton(
+            padding: const EdgeInsets.all(0),
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              debugPrint('Button pressed');
+            },
+          ),
+        ],
+      )),
     ],
   );
 }

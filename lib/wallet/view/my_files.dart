@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:web_dashboard/settings/view/settings.dart';
 
 import 'package:web_dashboard/wallet/controller/wallet_controller.dart';
 import 'package:web_dashboard/wallet/model/wallet_model.dart';
@@ -23,7 +21,7 @@ class MyFiles extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'My Files',
+              'My Wallets',
               style: Theme.of(context).textTheme.subtitle1,
             ),
             Wrap(
@@ -39,16 +37,6 @@ class MyFiles extends StatelessWidget {
                       );
                     },
                     icon: const Icon(Icons.add),
-                  ),
-                if (Responsive.isMobile(context))
-                  IconButton(
-                    onPressed: () async {
-                      final data = await Get.to(SettingsUI());
-                      if (data == 'success') {
-                        debugPrint('refresh');
-                      } //refreshDashboard();
-                    },
-                    icon: const Icon(Icons.settings),
                   ),
 
                 // otherwise we can show a lable with the button icon
@@ -69,25 +57,6 @@ class MyFiles extends StatelessWidget {
                     },
                     icon: const Icon(Icons.add),
                     label: const Text('Add New'),
-                  ),
-
-                if (!Responsive.isMobile(context))
-                  ElevatedButton.icon(
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: defaultPadding * 1.5,
-                        vertical: defaultPadding /
-                            (Responsive.isMobile(context) ? 2 : 1),
-                      ),
-                    ),
-                    onPressed: () async {
-                      final data = await Get.to(SettingsUI());
-                      if (data == 'success') {
-                        debugPrint('refresh');
-                      } //refreshDashboard();
-                    },
-                    icon: const Icon(Icons.settings),
-                    label: const Text('Settings'),
                   ),
               ],
             )

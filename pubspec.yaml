@@ -29,10 +29,10 @@ dependencies:
   http: ^0.13.3                     #https://pub.dev/packages/http
   json_annotation: ^4.0.0
   json_serializable: ^4.0.0
+  logger: ^1.0.0                    #https://pub.dev/packages/logger
   provider: ^5.0.0
 
   settings_ui: ^1.0.0               #https://pub.dev/packages/settings_ui
-  shared_preferences: ^2.0.5
   synchronized: ^3.0.0              #https://pub.dev/packages/synchronized
   test_api: ^0.4.0
   toggle_switch: ^0.1.9             #https://pub.dev/packages/toggle_switch
@@ -53,5 +53,5 @@ flutter:
   assets:
     - data/info200.json
     - data/crypto.json
-    - assets/images/
-    - assets/icons/
+    - images/
+    - icons/

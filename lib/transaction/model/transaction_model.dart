@@ -15,6 +15,7 @@ class TransactionModel {
     required this.price,
     required this.time,
     required this.withImpactOnSecondPosition,
+    required this.transactionRefId,
   });
 
   factory TransactionModel.fromMap(Map<dynamic, dynamic> data) {
@@ -31,6 +32,7 @@ class TransactionModel {
       price: data['price'] ?? 0,
       time: data['time'] ?? DateTime.now(),
       withImpactOnSecondPosition: data['withImpactOnSecondPosition'] ?? true,
+      transactionRefId: data['transactionRefId'] ?? '',
     );
   }
 
@@ -48,11 +50,17 @@ class TransactionModel {
       price: (json['price'] as num).toDouble(),
       time: _timestampToDateTime(json['time'] as Timestamp),
       withImpactOnSecondPosition: json['withImpactOnSecondPosition'] as bool,
+      transactionRefId: json['transactionRefId'] as String,
     );
   }
 
   int transactionType;
-  String walletId, tokenMain, tokenReference, tokenFee, tokenPrice;
+  String walletId,
+      tokenMain,
+      tokenReference,
+      tokenFee,
+      tokenPrice,
+      transactionRefId;
   double amountMain, amountReference, amountFee, price;
   bool withImpactOnSecondPosition;
 
@@ -85,5 +93,6 @@ class TransactionModel {
         'price': price,
         'time': _dateTimeToTimestamp(time),
         'withImpactOnSecondPosition': withImpactOnSecondPosition,
+        'transactionRefId': transactionRefId,
       };
 }

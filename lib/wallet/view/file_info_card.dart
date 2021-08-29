@@ -32,7 +32,7 @@ class FileInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<PositionModel>>(
-        future: positionController.getFirestoreTopPosition(),
+        future: positionController.getFirestorePositionListByWallet(wallet.id),
         builder: (context, snapshot) {
           if (snapshot.data == null) {
             return const Center(
@@ -185,8 +185,7 @@ String _getTotalUnrealized(
     final double tokenPrice =
         _tokenController.tokenPriceGetX(positionModel.token);
     final double unrealized =
-        (tokenPrice - positionModel.averagePurchasePrice) *
-            positionModel.amount;
+        (tokenPrice - positionModel.averageCost) * positionModel.amount;
     totalUnrealized = totalUnrealized + unrealized;
   }
 

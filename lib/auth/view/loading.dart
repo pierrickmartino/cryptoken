@@ -34,12 +34,16 @@ class Loading extends StatelessWidget {
 
 OverlayState? get _overlayState {
   final context = _tKey.currentContext;
-  if (context == null) return null;
+  if (context == null) {
+    return null;
+  }
 
   NavigatorState? navigator;
 
   void visitor(Element element) {
-    if (navigator != null) return;
+    if (navigator != null) {
+      return;
+    }
 
     if (element.widget is Navigator) {
       navigator = (element as StatefulElement).state as NavigatorState;

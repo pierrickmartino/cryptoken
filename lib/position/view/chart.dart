@@ -1,11 +1,12 @@
 //import 'package:fl_chart/fl_chart.dart';
+//import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart' as intl;
-import 'package:web_dashboard/position/model/position_model.dart';
-import 'package:web_dashboard/token/controller/token_controller.dart';
 
 import '../../constant.dart';
+import '../../position/model/position_model.dart';
+import '../../token/controller/token_controller.dart';
 
 final _numberFormat =
     intl.NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 0);
@@ -24,9 +25,14 @@ class Chart extends StatelessWidget {
         init: TokenController(),
         builder: (_tokenController) {
           return SizedBox(
-            height: 200,
+            height: 100, // initial value : 200
             child: Stack(
               children: [
+                // DonutPieChart(
+                //   _createSampleData(),
+                //   // Disable animations for image tests.
+                //   animate: false,
+                // ),
                 // PieChart(
                 //   PieChartData(
                 //     sectionsSpace: 0,
@@ -58,6 +64,50 @@ class Chart extends StatelessWidget {
           );
         });
   }
+
+  /// Create one series with sample hard coded data.
+  // static List<charts.Series<LinearSales, int>> _createSampleData() {
+  //   final data = [
+  //     LinearSales(0, 100),
+  //     LinearSales(1, 75),
+  //     LinearSales(2, 25),
+  //     LinearSales(3, 5),
+  //   ];
+
+  //   return [
+  //     charts.Series<LinearSales, int>(
+  //       id: 'Sales',
+  //       domainFn: (LinearSales sales, _) => sales.year,
+  //       measureFn: (LinearSales sales, _) => sales.sales,
+  //       data: data,
+  //     )
+  //   ];
+  // }
+}
+
+// class DonutPieChart extends StatelessWidget {
+//   const DonutPieChart(this.seriesList, {this.animate, Key? key})
+//       : super(key: key);
+
+//   final List<charts.Series> seriesList;
+//   final bool? animate;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return charts.PieChart(
+//       seriesList, animate: animate,
+//       // Configure the width of the pie slices to 60px. The remaining space in
+//       // the chart will be left as a hole in the center.
+//       //defaultRenderer: charts.ArcRendererConfig(arcWidth: 60)
+//     );
+//   }
+// }
+
+/// Sample linear data type.
+class LinearSales {
+  LinearSales(this.year, this.sales);
+  final int year;
+  final int sales;
 }
 
 double _getTotalValuationInDouble(

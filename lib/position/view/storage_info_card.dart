@@ -15,8 +15,8 @@ class StorageInfoCard extends StatelessWidget {
     required this.positionValuation,
     required this.positionAmount,
     required this.positionPrice,
-    required this.positionAveragePurchasePriceTitle,
-    required this.positionAveragePurchasePrice,
+    required this.positionAverageCostTitle,
+    required this.positionAverageCost,
     required this.positionUnrealizedTitle,
     required this.positionUnrealized,
     required this.unrealizedColor,
@@ -35,8 +35,8 @@ class StorageInfoCard extends StatelessWidget {
       updatedDate,
       positionAmount,
       positionPrice,
-      positionAveragePurchasePriceTitle,
-      positionAveragePurchasePrice,
+      positionAverageCostTitle,
+      positionAverageCost,
       positionUnrealizedTitle,
       positionUnrealized,
       positionRealizedTitle,
@@ -72,95 +72,97 @@ class StorageInfoCard extends StatelessWidget {
   Widget displayPositionForLargeScreen(BuildContext context) {
     return Row(
       children: [
-        SizedBox(
-          height: 26,
-          width: 26,
-          child: FutureBuilder(
-            future: _getIconFromCryptoHive(title),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Image.network(snapshot.data.toString());
-              } else {
-                return const Icon(Icons.all_inclusive);
-              }
-            },
-          ),
-        ),
+        // SizedBox(
+        //   height: 26,
+        //   width: 26,
+        //   child: FutureBuilder(
+        //     future: _getIconFromCryptoHive(title),
+        //     builder: (context, snapshot) {
+        //       if (snapshot.hasData) {
+        //         return Image.network(snapshot.data.toString());
+        //       } else {
+        //         return const Icon(Icons.all_inclusive);
+        //       }
+        //     },
+        //   ),
+        // ),
         Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  positionAmount,
-                  style: Theme.of(context)
-                      .textTheme
-                      .caption!
-                      .copyWith(color: Colors.white70),
-                ),
-                Row(
-                  children: [
-                    Text(
-                      positionAveragePurchasePriceTitle,
-                      style: Theme.of(context)
-                          .textTheme
-                          .caption!
-                          .copyWith(color: Colors.white70),
-                    ),
-                    Text(
-                      positionAveragePurchasePrice,
-                      style: Theme.of(context)
-                          .textTheme
-                          .caption!
-                          .copyWith(color: Colors.white70),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(
-                      positionUnrealizedTitle,
-                      style: Theme.of(context)
-                          .textTheme
-                          .caption!
-                          .copyWith(color: Colors.white70),
-                    ),
-                    Text(
-                      positionUnrealized,
-                      style: Theme.of(context)
-                          .textTheme
-                          .caption!
-                          .copyWith(color: unrealizedColor),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Text(
-                      updatedDateTitle,
-                      style: Theme.of(context)
-                          .textTheme
-                          .caption!
-                          .copyWith(color: Colors.white70),
-                    ),
-                    Text(
-                      updatedDate,
-                      style: Theme.of(context)
-                          .textTheme
-                          .caption!
-                          .copyWith(color: Colors.white70),
-                    ),
-                  ],
-                )
-              ],
-            ),
+          child:
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
+              //   child:
+              Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                positionAmount,
+                style: Theme.of(context)
+                    .textTheme
+                    .caption!
+                    .copyWith(color: Colors.white70),
+              ),
+              Row(
+                children: [
+                  Text(
+                    positionAverageCostTitle,
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption!
+                        .copyWith(color: Colors.white70),
+                  ),
+                  Text(
+                    positionAverageCost,
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption!
+                        .copyWith(color: Colors.white70),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(
+                    positionUnrealizedTitle,
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption!
+                        .copyWith(color: Colors.white70),
+                  ),
+                  Text(
+                    positionUnrealized,
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption!
+                        .copyWith(color: unrealizedColor),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(
+                    updatedDateTitle,
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption!
+                        .copyWith(color: Colors.white70),
+                  ),
+                  Text(
+                    updatedDate,
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption!
+                        .copyWith(color: Colors.white70),
+                  ),
+                ],
+              )
+            ],
           ),
+          //),
         ),
         Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
           Text(positionValuation),
@@ -201,71 +203,73 @@ class StorageInfoCard extends StatelessWidget {
   Widget displayPositionForMobileScreen(BuildContext context) {
     return Row(
       children: [
-        SizedBox(
-          height: 26,
-          width: 26,
-          child: FutureBuilder(
-            future: _getIconFromCryptoHive(title),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Image.network(snapshot.data.toString());
-              } else {
-                return const Icon(Icons.all_inclusive);
-              }
-            },
-          ),
-        ),
+        // SizedBox(
+        //   height: 26,
+        //   width: 26,
+        //   child: FutureBuilder(
+        //     future: _getIconFromCryptoHive(title),
+        //     builder: (context, snapshot) {
+        //       if (snapshot.hasData) {
+        //         return Image.network(snapshot.data.toString());
+        //       } else {
+        //         return const Icon(Icons.all_inclusive);
+        //       }
+        //     },
+        //   ),
+        // ),
         Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  positionAmount,
+          child:
+              //Padding(
+              // padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
+              // child:
+              Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                positionAmount,
+                style: Theme.of(context)
+                    .textTheme
+                    .caption!
+                    .copyWith(color: Colors.white70),
+              ),
+              Text(positionPrice,
                   style: Theme.of(context)
                       .textTheme
                       .caption!
-                      .copyWith(color: Colors.white70),
-                ),
-                Text(positionPrice,
-                    style: Theme.of(context)
-                        .textTheme
-                        .caption!
-                        .copyWith(color: Colors.white70)),
-                Text(positionRealizedTitle,
-                    style: Theme.of(context)
-                        .textTheme
-                        .caption!
-                        .copyWith(color: Colors.white70)),
-                Text(
-                  positionAveragePurchasePriceTitle,
+                      .copyWith(color: Colors.white70)),
+              Text(positionRealizedTitle,
                   style: Theme.of(context)
                       .textTheme
                       .caption!
-                      .copyWith(color: Colors.white70),
-                ),
-                Text(
-                  positionUnrealizedTitle,
-                  style: Theme.of(context)
-                      .textTheme
-                      .caption!
-                      .copyWith(color: Colors.white70),
-                ),
-                Text(
-                  updatedDateTitle,
-                  style: Theme.of(context)
-                      .textTheme
-                      .caption!
-                      .copyWith(color: Colors.white70),
-                ),
-              ],
-            ),
+                      .copyWith(color: Colors.white70)),
+              Text(
+                positionAverageCostTitle,
+                style: Theme.of(context)
+                    .textTheme
+                    .caption!
+                    .copyWith(color: Colors.white70),
+              ),
+              Text(
+                positionUnrealizedTitle,
+                style: Theme.of(context)
+                    .textTheme
+                    .caption!
+                    .copyWith(color: Colors.white70),
+              ),
+              Text(
+                updatedDateTitle,
+                style: Theme.of(context)
+                    .textTheme
+                    .caption!
+                    .copyWith(color: Colors.white70),
+              ),
+            ],
+            //),
           ),
         ),
         Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
@@ -286,7 +290,7 @@ class StorageInfoCard extends StatelessWidget {
                   .caption!
                   .copyWith(color: Colors.white70)),
           Text(
-            positionAveragePurchasePrice,
+            positionAverageCost,
             style: Theme.of(context)
                 .textTheme
                 .caption!

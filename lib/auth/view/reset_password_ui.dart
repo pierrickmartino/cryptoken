@@ -12,6 +12,8 @@ import 'primary_button.dart';
 import 'sign_in.dart';
 
 class ResetPasswordUI extends StatelessWidget {
+  ResetPasswordUI({Key? key}) : super(key: key);
+
   final AuthController authController = AuthController.to;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -29,7 +31,7 @@ class ResetPasswordUI extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  LogoGraphicHeader(),
+                  const LogoGraphicHeader(),
                   const SizedBox(height: 48),
                   FormInputFieldWithIcon(
                     controller: authController.emailController,
