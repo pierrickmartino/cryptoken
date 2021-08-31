@@ -7,8 +7,8 @@ import '../../constant.dart';
 
 const cryptoListBox = 'cryptoList';
 
-class StorageInfoCard extends StatelessWidget {
-  const StorageInfoCard({
+class PositionInfoCard extends StatelessWidget {
+  const PositionInfoCard({
     Key? key,
     required this.title,
     required this.svgSrc,

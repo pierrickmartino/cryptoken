@@ -7,7 +7,7 @@ import 'package:web_dashboard/token/controller/token_controller.dart';
 
 import '../../constant.dart';
 //import 'chart.dart';
-import 'storage_info_card.dart';
+import 'position_info_card.dart';
 
 final _numberFormat =
     NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 2);
@@ -16,8 +16,8 @@ final _priceFormat = NumberFormat('#,##0.######', 'de_CH');
 
 final _percentageFormat = NumberFormat('#,##0.##', 'de_CH');
 
-class StorageDetails extends StatelessWidget {
-  const StorageDetails({
+class PositionDetails extends StatelessWidget {
+  const PositionDetails({
     Key? key,
   }) : super(key: key);
 
@@ -60,7 +60,7 @@ class StorageDetails extends StatelessWidget {
                         Column(
                           children: List.generate(
                             snapshot.data!.length,
-                            (index) => storageInfoCard(
+                            (index) => positionInfoCard(
                                 snapshot.data![index], context, total),
                           ),
                         ),
@@ -88,7 +88,7 @@ class StorageDetails extends StatelessWidget {
   }
 }
 
-Widget storageInfoCard(
+Widget positionInfoCard(
     PositionModel positionModel, BuildContext context, double totalValuation) {
   return GetBuilder<TokenController>(
       init: TokenController(),
@@ -116,7 +116,7 @@ Widget storageInfoCard(
         debugPrint('Var24Get : ${positionModel.token} -> $var24');
         debugPrint('PriceGetX : ${positionModel.token} -> $tokenPrice');
 
-        return StorageInfoCard(
+        return PositionInfoCard(
           svgSrc: 'icons/Documents.svg',
           title: positionModel.token,
           positionValuation: '${_numberFormat.format(valuation)} USD',
