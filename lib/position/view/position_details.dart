@@ -9,7 +9,7 @@ import 'package:web_dashboard/position/model/position_model.dart';
 import 'package:web_dashboard/token/controller/token_controller.dart';
 
 import '../../constant.dart';
-//import 'chart.dart';
+import 'chart.dart';
 import 'position_info_card.dart';
 
 final _numberFormat =
@@ -64,6 +64,14 @@ class PositionDetails extends StatelessWidget {
                     positionsList =
                         _aggregatePositions(positionsList, _tokenController, 4);
 
+                    /* Mise à jour de la couleur pour chaque position */
+                    positionsList[0].color = primaryColor.value;
+                    positionsList[1].color = const Color(0xFF26E5FF).value;
+                    positionsList[2].color = const Color(0xFFFFCF26).value;
+                    positionsList[3].color = const Color(0xFFEE2727).value;
+                    positionsList[4].color =
+                        primaryColor.withOpacity(0.1).value;
+
                     return Container(
                       padding: const EdgeInsets.all(defaultPadding),
                       decoration: const BoxDecoration(
@@ -81,9 +89,10 @@ class PositionDetails extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: defaultPadding),
-                          // Chart(
-                          //   positionsList: snapshot.data!,
-                          // ),
+                          Chart(
+                            positionsList: positionsList,
+                            totalAmount: total,
+                          ),
                           Column(
                             children: List.generate(
                               snapshot.data!.length,
@@ -134,9 +143,7 @@ class PositionDetails extends StatelessWidget {
       realizedPnL: 0,
       cost: 0,
       time: DateTime.now(),
-      color: Color.fromARGB(Random().nextInt(256), Random().nextInt(256),
-              Random().nextInt(256), Random().nextInt(256))
-          .value,
+      color: primaryColor.withOpacity(0.1).value,
     );
 
     positionsList
@@ -202,8 +209,8 @@ Widget positionInfoCard(
         final double realized = positionModel.realizedPnL;
 
         loggerNoStack.i('PositionInfoCard - ${positionModel.token}');
-        Logger(printer: SimplePrinter())
-            .v('Var24Get : $var24 / PriceGetX : $tokenPrice');
+        Logger(printer: SimplePrinter()).v('Variation sur 24h : $var24');
+        Logger(printer: SimplePrinter()).v('Prix : $tokenPrice');
 
         return PositionInfoCard(
           svgSrc: 'icons/Documents.svg',
