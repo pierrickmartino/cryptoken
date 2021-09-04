@@ -11,6 +11,10 @@ import '../../token/controller/token_controller.dart';
 final _numberFormat =
     intl.NumberFormat.currency(locale: 'de_CH', symbol: '', decimalDigits: 0);
 
+bool _isLargeScreen(BuildContext context) {
+  return MediaQuery.of(context).size.width > 960.0;
+}
+
 class Chart extends StatelessWidget {
   const Chart({
     Key? key,
@@ -27,7 +31,9 @@ class Chart extends StatelessWidget {
         init: TokenController(),
         builder: (_tokenController) {
           return SizedBox(
-            height: 200,
+            height: _isLargeScreen(context)
+                ? MediaQuery.of(context).size.height - 850
+                : 200,
             child: Stack(
               children: [
                 PieChart(
