@@ -53,7 +53,7 @@ class RecentFiles extends StatelessWidget {
                 return StreamBuilder<List<TransactionModel>>(
                   initialData: futureSnapshot.data,
                   stream:
-                      transactionController.streamFirestoreTransactionList(),
+                      transactionController.streamFirestoreTopTransactionList(),
                   builder: (context, snapshot) {
                     if (snapshot.data == null) {
                       return const Center(

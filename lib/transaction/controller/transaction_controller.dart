@@ -27,7 +27,25 @@ class TransactionController extends GetxController {
 
     final snapshots = _db
         .collection('/users/${firebaseUser.value!.uid}/transactions')
-        .orderBy('tokenMain', descending: false)
+        .orderBy('time', descending: true)
+        .snapshots();
+
+    final result = snapshots.map((querySnapshot) {
+      return querySnapshot.docs.map((snapshot) {
+        return TransactionModel.fromJson(snapshot.data())..id = snapshot.id;
+      }).toList();
+    });
+
+    return result;
+  }
+
+  Stream<List<TransactionModel>> streamFirestoreTopTransactionList() {
+    debugPrint('streamFirestoreTransactionList');
+
+    final snapshots = _db
+        .collection('/users/${firebaseUser.value!.uid}/transactions')
+        .orderBy('time', descending: true)
+        .limit(10)
         .snapshots();
 
     final result = snapshots.map((querySnapshot) {
