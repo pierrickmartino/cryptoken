@@ -23,13 +23,8 @@ bool _isLargeScreen(BuildContext context) {
   return MediaQuery.of(context).size.width > 960.0;
 }
 
-var logger = Logger(
-  printer: PrettyPrinter(),
-);
-
-var loggerNoStack = Logger(
-  printer: PrettyPrinter(methodCount: 0),
-);
+var logger = Logger(printer: PrettyPrinter());
+var loggerNoStack = Logger(printer: PrettyPrinter(methodCount: 0));
 
 const cryptoListBox = 'cryptoList';
 

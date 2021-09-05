@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:web_dashboard/wallet/view/my_files.dart';
 
 import '../../constant.dart';
-import '../../position/view/storage_details.dart';
+import '../../position/view/position_details.dart';
 import '../../transaction/view/recent_files.dart';
 import '../responsive.dart';
 import '../widgets/dashboard/header.dart';
@@ -31,7 +31,7 @@ class DashboardScreen extends StatelessWidget {
                       if (!Responsive.isMobile(context)) const RecentFiles(),
                       if (Responsive.isMobile(context))
                         const SizedBox(height: defaultPadding),
-                      if (Responsive.isMobile(context)) const StorageDetails(),
+                      if (Responsive.isMobile(context)) const PositionDetails(),
                       const SizedBox(height: defaultPadding),
                     ],
                   ),
@@ -44,7 +44,7 @@ class DashboardScreen extends StatelessWidget {
                     flex: 2,
                     child: Column(
                       children: const [
-                        StorageDetails(),
+                        PositionDetails(),
                         SizedBox(height: defaultPadding),
                       ],
                     ),

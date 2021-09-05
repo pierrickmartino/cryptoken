@@ -104,6 +104,14 @@
         "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/3794.png"
     },
     {
+        "id": 7455,
+        "name": "Audius",
+        "symbol": "AUDIO",
+        "category": "coin",
+        "slug": "audius",
+        "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/7455.png"
+    },
+    {
         "id": 2776,
         "name": "Travala.com",
         "symbol": "AVA",
@@ -1591,7 +1599,7 @@
         "slug": "zkswap",
         "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/8202.png"
     },
-   {
+    {
         "id": 1896,
         "name": "0x",
         "symbol": "ZRX",
@@ -1599,5 +1607,4 @@
         "slug": "0x",
         "logo": "https://s2.coinmarketcap.com/static/img/coins/64x64/1896.png"
     }
-
 ]
