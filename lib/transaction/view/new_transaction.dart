@@ -35,6 +35,14 @@ class NewTransactionDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /**
+   * Dans le cas d'un écran mobile, on favorisera le fullscreen pour la saisie.
+   * En revanche, si l'on est sur LargeScreen, on essaiera de trouver un 
+   * ratio adequat.
+   * 
+   * https://medium.com/flutter-community/a-visual-guide-to-input-decorations-for-flutter-textfield-706cf1877e25
+   */
+
     if (_isLargeScreen(context)) {
       return SimpleDialog(
         title: const Text('New Transaction'),
@@ -42,7 +50,7 @@ class NewTransactionDialog extends StatelessWidget {
         contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
         children: [
           Container(
-            width: 600,
+            width: MediaQuery.of(context).size.width * 1 / 4,
             child: Column(
               children: [
                 NewTransactionForm(
@@ -142,7 +150,30 @@ class NewTransactionForm extends StatelessWidget {
               //     ),
               //   ),
               // ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.star),
+                        //prefixText: 'USD ',
+                        helperText: 'Amount',
+                      ),
+                      textAlign: TextAlign.end,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  SizedBox(
+                    width: 100,
+                    child: TextFormField(
+                      decoration: const InputDecoration(
+                        helperText: 'Token',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 6),
                 leading: SizedBox(
