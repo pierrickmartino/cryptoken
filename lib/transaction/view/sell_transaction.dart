@@ -101,9 +101,13 @@ class SellTransactionForm extends StatelessWidget {
     walletId: '',
     transactionType: 1,
     tokenMain: 'BTC',
+    tokenMainName: 'Bitcoin',
     tokenReference: 'USDT',
+    tokenReferenceName: 'Tether',
     tokenFee: 'USDT',
+    tokenFeeName: 'Tether',
     tokenPrice: 'USDT',
+    tokenPriceName: 'Tether',
     amountMain: 0,
     amountReference: 0,
     amountFee: 0,
@@ -119,9 +123,13 @@ class SellTransactionForm extends StatelessWidget {
       ..transactionType = 1
       ..walletId = selectedTransaction.walletId
       ..tokenMain = selectedTransaction.tokenMain
+      ..tokenMainName = selectedTransaction.tokenMainName
       ..tokenPrice = selectedTransaction.tokenPrice
+      ..tokenPriceName = selectedTransaction.tokenPriceName
       ..tokenReference = selectedTransaction.tokenReference
-      ..tokenFee = selectedTransaction.tokenFee;
+      ..tokenReferenceName = selectedTransaction.tokenReferenceName
+      ..tokenFee = selectedTransaction.tokenFee
+      ..tokenFeeName = selectedTransaction.tokenFeeName;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,7 +243,9 @@ class SellTransactionForm extends StatelessWidget {
                               selectedItem: snapshot.data,
                               onChanged: (newValue) async {
                                 //setState(() {
-                                _transaction.tokenMain = newValue!.symbol;
+                                _transaction
+                                  ..tokenMain = newValue!.symbol
+                                  ..tokenMainName = newValue.name;
                                 //widget.positionMain.token = newValue.symbol;
 
                                 //tokenMainCrypto = await _getCryptoBySymbol(
@@ -355,7 +365,9 @@ class SellTransactionForm extends StatelessWidget {
                               dropdownBuilder: _customDropDown,
                               selectedItem: snapshot.data,
                               onChanged: (newValue) async {
-                                _transaction.tokenPrice = newValue!.symbol;
+                                _transaction
+                                  ..tokenPrice = newValue!.symbol
+                                  ..tokenPriceName = newValue.name;
                               },
                             );
                           } else if (snapshot.hasError) {
@@ -479,7 +491,9 @@ class SellTransactionForm extends StatelessWidget {
                               dropdownBuilder: _customDropDown,
                               selectedItem: snapshot.data,
                               onChanged: (newValue) async {
-                                _transaction.tokenReference = newValue!.symbol;
+                                _transaction
+                                  ..tokenReference = newValue!.symbol
+                                  ..tokenReferenceName = newValue.name;
                                 // widget.positionReference.token =
                                 //     newValue.symbol;
                               },
@@ -595,7 +609,9 @@ class SellTransactionForm extends StatelessWidget {
                               dropdownBuilder: _customDropDown,
                               selectedItem: snapshot.data,
                               onChanged: (newValue) async {
-                                _transaction.tokenFee = newValue!.symbol;
+                                _transaction
+                                  ..tokenFee = newValue!.symbol
+                                  ..tokenFeeName = newValue.name;
                               },
                             );
                           } else if (snapshot.hasError) {
@@ -718,6 +734,7 @@ class SellTransactionForm extends StatelessWidget {
                           final PositionModel _positionMain = PositionModel(
                             walletId: '',
                             token: 'BTC',
+                            tokenName: 'Bitcoin',
                             amount: 0,
                             averageCost: 0,
                             purchaseAmount: 0,
@@ -737,6 +754,7 @@ class SellTransactionForm extends StatelessWidget {
                               PositionModel(
                                   walletId: '',
                                   token: 'USDT',
+                                  tokenName: 'Tether',
                                   amount: 0,
                                   averageCost: 0,
                                   purchaseAmount: 0,
@@ -755,9 +773,13 @@ class SellTransactionForm extends StatelessWidget {
                               TransactionModel(
                             walletId: selectedTransaction.walletId,
                             tokenMain: _transaction.tokenMain,
+                            tokenMainName: _transaction.tokenMainName,
                             tokenReference: _transaction.tokenReference,
+                            tokenReferenceName: _transaction.tokenReferenceName,
                             tokenFee: _transaction.tokenFee,
+                            tokenFeeName: _transaction.tokenFeeName,
                             tokenPrice: _transaction.tokenPrice,
+                            tokenPriceName: _transaction.tokenPriceName,
                             amountMain: _transaction.amountMain,
                             amountReference: _transaction.amountReference,
                             amountFee: _transaction.amountFee,
@@ -807,6 +829,7 @@ class SellTransactionForm extends StatelessWidget {
                               _positionMain
                                 ..walletId = _position.walletId
                                 ..token = _position.token
+                                ..tokenName = _position.tokenName
                                 ..amount = _position.amount
                                 ..averageCost = _position.averageCost
                                 ..purchaseAmount = _position.purchaseAmount
@@ -830,6 +853,7 @@ class SellTransactionForm extends StatelessWidget {
                               _positionReference
                                 ..walletId = _position.walletId
                                 ..token = _position.token
+                                ..tokenName = _position.tokenName
                                 ..amount = _position.amount
                                 ..averageCost = _position.averageCost
                                 ..purchaseAmount = _position.purchaseAmount
@@ -855,7 +879,7 @@ class SellTransactionForm extends StatelessWidget {
                            */
 
                           loggerNoStack.i(
-                              'Sell transaction - ${_positionMain.token} - RealizedPnL calculation');
+                              'Sell transaction - ${_positionMain.token} - ${_positionMain.tokenName} - RealizedPnL calculation');
 
                           Logger(printer: SimplePrinter()).v(
                               '_positionMain.sellAmount : ${_positionMain.sellAmount}');
@@ -917,6 +941,7 @@ class SellTransactionForm extends StatelessWidget {
                           newPositionMain = PositionModel(
                               walletId: _positionMain.walletId,
                               token: _positionMain.token,
+                              tokenName: _positionMain.tokenName,
                               amount: runningPosition,
                               averageCost: _positionMain.averageCost,
                               purchaseAmount: isCloseOrEqualToZero
@@ -949,6 +974,7 @@ class SellTransactionForm extends StatelessWidget {
                             newPositionReference = PositionModel(
                                 walletId: _positionReference.walletId,
                                 token: _positionReference.token,
+                                tokenName: _positionReference.tokenName,
                                 amount: _positionReference.amount +
                                     _transaction.amountReference,
                                 averageCost: _positionReference

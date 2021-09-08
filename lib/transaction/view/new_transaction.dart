@@ -106,9 +106,13 @@ class NewTransactionForm extends StatelessWidget {
     walletId: '',
     transactionType: 0,
     tokenMain: 'BTC',
+    tokenMainName: 'Bitcoin',
     tokenReference: 'USDT',
+    tokenReferenceName: 'Tether',
     tokenFee: 'USDT',
+    tokenFeeName: 'Tether',
     tokenPrice: 'USDT',
+    tokenPriceName: 'Tether',
     amountMain: 0,
     amountReference: 0,
     amountFee: 0,
@@ -275,7 +279,9 @@ class NewTransactionForm extends StatelessWidget {
                               selectedItem: snapshot.data,
                               onChanged: (newValue) async {
                                 //setState(() {
-                                _transaction.tokenMain = newValue!.symbol;
+                                _transaction
+                                  ..tokenMain = newValue!.symbol
+                                  ..tokenMainName = newValue.name;
                                 //widget.positionMain.token = newValue.symbol;
 
                                 //tokenMainCrypto = await _getCryptoBySymbol(
@@ -394,7 +400,9 @@ class NewTransactionForm extends StatelessWidget {
                               dropdownBuilder: _customDropDown,
                               selectedItem: snapshot.data,
                               onChanged: (newValue) async {
-                                _transaction.tokenPrice = newValue!.symbol;
+                                _transaction
+                                  ..tokenPrice = newValue!.symbol
+                                  ..tokenPriceName = newValue.name;
                               },
                             );
                           } else if (snapshot.hasError) {
@@ -517,7 +525,9 @@ class NewTransactionForm extends StatelessWidget {
                               dropdownBuilder: _customDropDown,
                               selectedItem: snapshot.data,
                               onChanged: (newValue) async {
-                                _transaction.tokenReference = newValue!.symbol;
+                                _transaction
+                                  ..tokenReference = newValue!.symbol
+                                  ..tokenReferenceName = newValue.name;
                                 // widget.positionReference.token =
                                 //     newValue.symbol;
                               },
@@ -633,7 +643,9 @@ class NewTransactionForm extends StatelessWidget {
                               dropdownBuilder: _customDropDown,
                               selectedItem: snapshot.data,
                               onChanged: (newValue) async {
-                                _transaction.tokenFee = newValue!.symbol;
+                                _transaction
+                                  ..tokenFee = newValue!.symbol
+                                  ..tokenFeeName = newValue.name;
                               },
                             );
                           } else if (snapshot.hasError) {
@@ -757,6 +769,7 @@ class NewTransactionForm extends StatelessWidget {
                           final PositionModel _positionMain = PositionModel(
                             walletId: '',
                             token: 'BTC',
+                            tokenName: 'Bitcoin',
                             amount: 0,
                             averageCost: 0,
                             purchaseAmount: 0,
@@ -776,6 +789,7 @@ class NewTransactionForm extends StatelessWidget {
                               PositionModel(
                                   walletId: '',
                                   token: 'USDT',
+                                  tokenName: 'Tether',
                                   amount: 0,
                                   averageCost: 0,
                                   purchaseAmount: 0,
@@ -794,9 +808,13 @@ class NewTransactionForm extends StatelessWidget {
                               TransactionModel(
                             walletId: selectedWallet!.id,
                             tokenMain: _transaction.tokenMain,
+                            tokenMainName: _transaction.tokenMainName,
                             tokenReference: _transaction.tokenReference,
+                            tokenReferenceName: _transaction.tokenReferenceName,
                             tokenFee: _transaction.tokenFee,
+                            tokenFeeName: _transaction.tokenFeeName,
                             tokenPrice: _transaction.tokenPrice,
+                            tokenPriceName: _transaction.tokenPriceName,
                             amountMain: _transaction.amountMain,
                             amountReference: _transaction.amountReference,
                             amountFee: _transaction.amountFee,
@@ -818,6 +836,7 @@ class NewTransactionForm extends StatelessWidget {
                               _positionMain
                                 ..walletId = _position.walletId
                                 ..token = _position.token
+                                ..tokenName = _position.tokenName
                                 ..amount = _position.amount
                                 ..averageCost = _position.averageCost
                                 ..purchaseAmount = _position.purchaseAmount
@@ -835,6 +854,8 @@ class NewTransactionForm extends StatelessWidget {
                                       .insertFirestorePosition(PositionModel(
                                           walletId: selectedWallet!.id,
                                           token: _newTransaction.tokenMain,
+                                          tokenName:
+                                              _newTransaction.tokenMainName,
                                           amount: 0,
                                           averageCost: 0,
                                           purchaseAmount: 0,
@@ -852,6 +873,7 @@ class NewTransactionForm extends StatelessWidget {
                               _positionMain
                                 ..walletId = _position.walletId
                                 ..token = _position.token
+                                ..tokenName = _position.tokenName
                                 ..amount = _position.amount
                                 ..averageCost = _position.averageCost
                                 ..purchaseAmount = _position.purchaseAmount
@@ -873,6 +895,7 @@ class NewTransactionForm extends StatelessWidget {
                               _positionReference
                                 ..walletId = _position.walletId
                                 ..token = _position.token
+                                ..tokenName = _position.tokenName
                                 ..amount = _position.amount
                                 ..averageCost = _position.averageCost
                                 ..purchaseAmount = _position.purchaseAmount
@@ -890,6 +913,8 @@ class NewTransactionForm extends StatelessWidget {
                                       .insertFirestorePosition(PositionModel(
                                           walletId: selectedWallet!.id,
                                           token: _newTransaction.tokenReference,
+                                          tokenName: _newTransaction
+                                              .tokenReferenceName,
                                           amount: 0,
                                           averageCost: 0,
                                           purchaseAmount: 0,
@@ -907,6 +932,7 @@ class NewTransactionForm extends StatelessWidget {
                               _positionReference
                                 ..walletId = _position.walletId
                                 ..token = _position.token
+                                ..tokenName = _position.tokenName
                                 ..amount = _position.amount
                                 ..averageCost = _position.averageCost
                                 ..purchaseAmount = _position.purchaseAmount
@@ -929,7 +955,7 @@ class NewTransactionForm extends StatelessWidget {
                            */
 
                           loggerNoStack.i(
-                              'Buy transaction - ${_positionMain.token} - averageCost calculation');
+                              'Buy transaction - ${_positionMain.token} - ${_positionMain.tokenName}- averageCost calculation');
 
                           Logger(printer: SimplePrinter()).v(
                               '_positionMain.purchaseAmount : ${_positionMain.purchaseAmount}');
@@ -985,6 +1011,7 @@ class NewTransactionForm extends StatelessWidget {
                           newPositionMain = PositionModel(
                               walletId: _positionMain.walletId,
                               token: _positionMain.token,
+                              tokenName: _positionMain.tokenName,
                               amount: runningPosition,
                               averageCost: averageCost,
                               purchaseAmount: totalPurchaseQty,
@@ -1014,6 +1041,7 @@ class NewTransactionForm extends StatelessWidget {
                             newPositionReference = PositionModel(
                                 walletId: _positionReference.walletId,
                                 token: _positionReference.token,
+                                tokenName: _positionReference.tokenName,
                                 amount: _positionReference.amount -
                                     _transaction.amountReference,
                                 averageCost: _positionReference

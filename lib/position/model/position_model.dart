@@ -5,6 +5,7 @@ class PositionModel {
   PositionModel({
     required this.walletId,
     required this.token,
+    required this.tokenName,
     required this.amount,
     required this.averageCost,
     required this.purchaseAmount,
@@ -19,6 +20,7 @@ class PositionModel {
     return PositionModel(
       walletId: data['walletId'] ?? '',
       token: data['token'] ?? '',
+      tokenName: data['tokenName'] ?? '',
       amount: data['amount'] ?? 0,
       averageCost: data['averageCost'] ?? 0,
       purchaseAmount: data['purchaseAmount'] ?? 0,
@@ -34,6 +36,7 @@ class PositionModel {
     return PositionModel(
       walletId: json['walletId'] as String,
       token: json['token'] as String,
+      tokenName: json['tokenName'] as String,
       amount: (json['amount'] as num).toDouble(),
       averageCost: (json['averageCost'] as num).toDouble(),
       purchaseAmount: (json['purchaseAmount'] as num).toDouble(),
@@ -45,7 +48,7 @@ class PositionModel {
     );
   }
 
-  String walletId, token;
+  String walletId, token, tokenName;
   double amount, averageCost, purchaseAmount, sellAmount, realizedPnL, cost;
   int color;
 
@@ -68,6 +71,7 @@ class PositionModel {
   Map<String, dynamic> toJson() => {
         'walletId': walletId,
         'token': token,
+        'tokenName': tokenName,
         'amount': amount,
         'averageCost': averageCost,
         'purchaseAmount': purchaseAmount,

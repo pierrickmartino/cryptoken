@@ -32,7 +32,7 @@ class Chart extends StatelessWidget {
         builder: (_tokenController) {
           return SizedBox(
             height: _isLargeScreen(context)
-                ? MediaQuery.of(context).size.height - 850
+                ? MediaQuery.of(context).size.height - 750
                 : 200,
             child: Stack(
               children: [

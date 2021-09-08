@@ -61,16 +61,18 @@ class PositionDetails extends StatelessWidget {
                     List<PositionModel> positionsList = snapshot.data!
                       ..removeWhere((element) => element.amount == 0);
 
-                    positionsList =
-                        _aggregatePositions(positionsList, _tokenController, 4);
+                    if (positionsList.length > 4) {
+                      positionsList = _aggregatePositions(
+                          positionsList, _tokenController, 4);
 
-                    /* Mise à jour de la couleur pour chaque position */
-                    positionsList[0].color = primaryColor.value;
-                    positionsList[1].color = const Color(0xFF26E5FF).value;
-                    positionsList[2].color = const Color(0xFFFFCF26).value;
-                    positionsList[3].color = const Color(0xFFEE2727).value;
-                    positionsList[4].color =
-                        primaryColor.withOpacity(0.1).value;
+                      /* Mise à jour de la couleur pour chaque position */
+                      positionsList[0].color = primaryColor.value;
+                      positionsList[1].color = const Color(0xFF26E5FF).value;
+                      positionsList[2].color = const Color(0xFFFFCF26).value;
+                      positionsList[3].color = const Color(0xFFEE2727).value;
+                      // positionsList[4].color =
+                      //     primaryColor.withOpacity(0.1).value;
+                    }
 
                     return Container(
                       padding: const EdgeInsets.all(defaultPadding),
@@ -136,6 +138,7 @@ class PositionDetails extends StatelessWidget {
     final PositionModel positionLast = PositionModel(
       walletId: '',
       token: 'OTHER',
+      tokenName: 'Other',
       amount: totalOtherValuation,
       averageCost: 0,
       purchaseAmount: 0,
@@ -215,6 +218,7 @@ Widget positionInfoCard(
         return PositionInfoCard(
           svgSrc: 'icons/Documents.svg',
           title: positionModel.token,
+          positionName: positionModel.tokenName,
           positionValuation: '${_numberFormat.format(valuation)} USD',
           positionAmount:
               'Amount: ${_numberFormat.format(positionModel.amount)}',

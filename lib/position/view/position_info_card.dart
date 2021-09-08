@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:web_dashboard/src/hive/crypto_hive.dart';
 import 'package:web_dashboard/src/responsive.dart';
@@ -7,10 +8,15 @@ import '../../constant.dart';
 
 const cryptoListBox = 'cryptoList';
 
+bool _isLargeScreen(BuildContext context) {
+  return MediaQuery.of(context).size.width > 960.0;
+}
+
 class PositionInfoCard extends StatelessWidget {
   const PositionInfoCard({
     Key? key,
     required this.title,
+    required this.positionName,
     required this.svgSrc,
     required this.positionValuation,
     required this.positionAmount,
@@ -29,6 +35,7 @@ class PositionInfoCard extends StatelessWidget {
   }) : super(key: key);
 
   final String title,
+      positionName,
       svgSrc,
       positionValuation,
       updatedDateTitle,
@@ -48,16 +55,47 @@ class PositionInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: defaultPadding),
-      padding: const EdgeInsets.all(defaultPadding),
-      decoration: BoxDecoration(
-        border: Border.all(width: 2, color: primaryColor.withOpacity(0.15)),
-        borderRadius: const BorderRadius.all(
-          Radius.circular(defaultPadding),
+    return InkWell(
+      onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) => SimpleDialog(
+                  title: const Text('Position information'),
+                  titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                  children: [
+                    Container(
+                      width: _isLargeScreen(context)
+                          ? 600
+                          : MediaQuery.of(context).size.width - 10,
+                      child: Column(
+                        children: [
+                          displayPosition(context),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 8, right: 8, top: 16),
+                            child: ElevatedButton(
+                              onPressed: Get.back,
+                              child: const Text('Cancel'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ));
+      },
+      child: Container(
+        margin: const EdgeInsets.only(top: defaultPadding),
+        padding: const EdgeInsets.all(defaultPadding),
+        decoration: BoxDecoration(
+          border: Border.all(width: 2, color: primaryColor.withOpacity(0.15)),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(defaultPadding),
+          ),
         ),
+        child: displayPositionLight(context),
       ),
-      child: displayPosition(context),
     );
   }
 
@@ -67,6 +105,55 @@ class PositionInfoCard extends StatelessWidget {
     } else {
       return displayPositionForLargeScreen(context);
     }
+  }
+
+  Widget displayPositionLight(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child:
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
+              //   child:
+              Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                spacing: 5,
+                children: [
+                  Text(
+                    positionName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+              Text(
+                positionAmount,
+                style: Theme.of(context)
+                    .textTheme
+                    .caption!
+                    .copyWith(color: Colors.white70),
+              ),
+            ],
+          ),
+          //),
+        ),
+        Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+          Text(positionValuation),
+          Text(tokenVariation,
+              style: Theme.of(context)
+                  .textTheme
+                  .caption!
+                  .copyWith(color: _isNegativeVariation(tokenVariation))),
+        ])
+      ],
+    );
   }
 
   Widget displayPositionForLargeScreen(BuildContext context) {
