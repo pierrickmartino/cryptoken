@@ -219,23 +219,23 @@ Widget positionInfoCard(
           svgSrc: 'icons/Documents.svg',
           title: positionModel.token,
           positionName: positionModel.tokenName,
-          positionValuation: '${_numberFormat.format(valuation)} USD',
+          positionValuation: '${_numberFormat.format(valuation)} \$',
           positionAmount:
               'Amount: ${_numberFormat.format(positionModel.amount)}',
-          positionPrice: 'Price: ${_priceFormat.format(tokenPrice)} USD',
+          positionPrice: 'Price: ${_priceFormat.format(tokenPrice)} \$',
           positionAverageCostTitle: 'Avg. Cost: ',
           positionAverageCost:
-              '${_priceFormat.format(positionModel.averageCost)} USD',
+              '${_priceFormat.format(positionModel.averageCost)} \$',
           positionUnrealizedTitle: 'Unrealized: ',
           positionUnrealized:
-              '${_numberFormat.format(unrealized)} USD / ${_percentageFormat.format(unrealizedPercent)}%',
+              '${_numberFormat.format(unrealized)} \$ / ${_percentageFormat.format(unrealizedPercent)}%',
           unrealizedColor: unrealized.isNegative ? Colors.red : Colors.green,
           positionRealizedTitle: 'Realized: ',
-          positionRealized: '${_numberFormat.format(realized)} USD',
+          positionRealized: '${_numberFormat.format(realized)} \$',
           updatedDateTitle: 'Last update: ',
           updatedDate: updatedDate,
           tokenVariation:
-              '${_numberFormat.format(var24)} USD / ${_percentageFormat.format(var24Percent)}%',
+              '${_numberFormat.format(var24)} \$ / ${_percentageFormat.format(var24Percent)}%',
           positionPercentage:
               '${_percentageFormat.format(positionPercentage)}%',
         );

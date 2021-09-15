@@ -126,6 +126,8 @@ class NewTransactionForm extends StatelessWidget {
   Widget build(BuildContext context) {
     _transaction.transactionType = 0;
 
+    loggerNoStack.i('Buy transaction - New');
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -159,263 +161,250 @@ class NewTransactionForm extends StatelessWidget {
                 children: [
                   Expanded(
                     child: TextFormField(
+                      initialValue: _transaction.amountMain.toCurrencyString(
+                        mantissaLength: 6,
+                        thousandSeparator:
+                            ThousandSeparator.SpaceAndPeriodMantissa,
+                      ),
+                      inputFormatters: [
+                        MoneyInputFormatter(
+                          mantissaLength: 6,
+                          thousandSeparator:
+                              ThousandSeparator.SpaceAndPeriodMantissa,
+                        ),
+                      ],
                       decoration: const InputDecoration(
-                        icon: Icon(Icons.star),
+                        icon: Icon(Icons.checklist),
                         //prefixText: 'USD ',
                         helperText: 'Amount',
                       ),
                       textAlign: TextAlign.end,
+                      validator: (value) {
+                        try {
+                          final double amount = double.parse(
+                            value!.toCurrencyString(
+                                mantissaLength: 6,
+                                thousandSeparator: ThousandSeparator.None),
+                          );
+                          Logger(printer: SimplePrinter())
+                              .i('Amount : $amount');
+                        } catch (e) {
+                          return 'Please enter a whole number';
+                        }
+                        return null;
+                      },
+                      onChanged: (newValue) {
+                        try {
+                          _transaction.amountMain = double.parse(
+                            newValue.toCurrencyString(
+                                mantissaLength: 6,
+                                thousandSeparator: ThousandSeparator.None),
+                          );
+                        } on FormatException {
+                          debugPrint(
+                              'Transaction cannot contain "$newValue". Expected a number');
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  SizedBox(
+                    width: 100,
+                    child: FutureBuilder<Crypto>(
+                      future: _getCryptoBySymbol(_transaction.tokenMain),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return DropdownSearch<Crypto>(
+                            showSearchBox: true,
+                            autoFocusSearchBox: true,
+                            dropdownSearchDecoration: const InputDecoration(
+                              helperText: '',
+                              border: InputBorder.none,
+                            ),
+                            onFind: (String filter) => _getCryptoList(),
+                            compareFn: (i, s) => i.isEqual(s!),
+                            popupItemBuilder: _customPopupItemBuilder,
+                            dropdownBuilder: _customDropDown,
+                            selectedItem: snapshot.data,
+                            onChanged: (newValue) async {
+                              _transaction
+                                ..tokenPrice = newValue!.symbol
+                                ..tokenPriceName = newValue.name;
+                            },
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text('${snapshot.error}');
+                        }
+
+                        return const Text('');
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: _transaction.price.toCurrencyString(
+                        mantissaLength: 6,
+                        thousandSeparator:
+                            ThousandSeparator.SpaceAndPeriodMantissa,
+                      ),
+                      inputFormatters: [
+                        MoneyInputFormatter(
+                          mantissaLength: 6,
+                        ),
+                      ],
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.checklist),
+                        helperText: 'Price',
+                      ),
+                      textAlign: TextAlign.end,
+                      validator: (value) {
+                        try {
+                          final double price = double.parse(
+                            value!.toCurrencyString(
+                                mantissaLength: 6,
+                                thousandSeparator: ThousandSeparator.None),
+                          );
+                          Logger(printer: SimplePrinter()).i('Price : $price');
+                        } catch (e) {
+                          return 'Please enter a whole number';
+                        }
+                        return null;
+                      },
+                      onChanged: (newValue) {
+                        try {
+                          _transaction.price = double.parse(
+                            newValue.toCurrencyString(
+                                mantissaLength: 6,
+                                thousandSeparator: ThousandSeparator.None),
+                          );
+                        } on FormatException {
+                          Logger(printer: SimplePrinter()).e(
+                              'Transaction cannot contain "$newValue". Expected a number');
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  SizedBox(
+                    width: 100,
+                    child: FutureBuilder<Crypto>(
+                      future: _getCryptoBySymbol(_transaction.tokenPrice),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return DropdownSearch<Crypto>(
+                            showSearchBox: true,
+                            autoFocusSearchBox: true,
+                            dropdownSearchDecoration: const InputDecoration(
+                              helperText: '',
+                              border: InputBorder.none,
+                            ),
+                            onFind: (String filter) => _getCryptoList(),
+                            compareFn: (i, s) => i.isEqual(s!),
+                            popupItemBuilder: _customPopupItemBuilder,
+                            dropdownBuilder: _customDropDown,
+                            selectedItem: snapshot.data,
+                            onChanged: (newValue) async {
+                              _transaction
+                                ..tokenPrice = newValue!.symbol
+                                ..tokenPriceName = newValue.name;
+                            },
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text('${snapshot.error}');
+                        }
+
+                        return const Text('');
+                      },
+                    ),
+                  ),
+                ],
+              ),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      keyboardType: TextInputType.number,
+                      initialValue: intl.DateFormat('dd-MM-yyyy')
+                          .format(_transaction.time),
+                      inputFormatters: [MaskedInputFormatter('00-00-0000')],
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.calendar_today),
+                        //prefixText: 'USD ',
+                        helperText: 'Date',
+                      ),
+                      textAlign: TextAlign.end,
+                      validator: (value) {
+                        if (!RegExp(
+                                r'^([0][1-9]|[12][0-9]|3[01])[\/\-]([0][1-9]|1[012])[\/\-]\d{4}?$')
+                            .hasMatch(value!)) {
+                          return 'Enter a correct date format';
+                        } else {
+                          return null;
+                        }
+                      },
+                      onChanged: (value) {
+                        if (value.length == 10) {
+                          value = value.substring(6, 10) +
+                              value.substring(3, 5) +
+                              value.substring(0, 2);
+                          value =
+                              '$value ${intl.DateFormat('HH:mm').format(_transaction.time)}:00';
+                          try {
+                            _transaction.time =
+                                DateTime.parse(value); // "20120227 13:27:00"
+                            Logger(printer: SimplePrinter()).i('Date : $value');
+                          } on FormatException {
+                            Logger(printer: SimplePrinter()).e('Date : $value');
+                          }
+                        }
+                      },
                     ),
                   ),
                   const SizedBox(width: 10),
                   SizedBox(
                     width: 100,
                     child: TextFormField(
+                      keyboardType: TextInputType.number,
+                      initialValue:
+                          intl.DateFormat('HH:mm').format(_transaction.time),
+                      inputFormatters: [MaskedInputFormatter('00:00')],
                       decoration: const InputDecoration(
-                        helperText: 'Token',
+                        //prefixText: 'USD ',
+                        helperText: 'Time',
                       ),
+                      textAlign: TextAlign.end,
+                      validator: (value) {
+                        if (!RegExp(
+                                r'^((0?[1-9]|[1][0-9]|[2][0-3])[:]([0-5][0-9])?)?$')
+                            .hasMatch(value!)) {
+                          return 'Enter a correct time format';
+                        } else {
+                          return null;
+                        }
+                      },
+                      onChanged: (value) {
+                        if (value.length == 5) {
+                          value =
+                              '${intl.DateFormat('yyyyMMdd').format(_transaction.time)} $value:00';
+                          try {
+                            _transaction.time =
+                                DateTime.parse(value); // "20120227 13:27:00"
+                            Logger(printer: SimplePrinter()).i('date : $value');
+                          } on FormatException {
+                            Logger(printer: SimplePrinter()).e('date : $value');
+                          }
+                        }
+                      },
                     ),
                   ),
                 ],
               ),
-              ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 6),
-                leading: SizedBox(
-                  width: 100,
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      isDense: true,
-                    ),
-                    initialValue: 'Amount',
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ),
-                title: Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        style: const TextStyle(fontSize: 14),
-                        textAlign: TextAlign.end,
-                        decoration: InputDecoration(
-                          isDense: !_isLargeScreen(context),
-                        ),
-                        initialValue: _transaction.amountMain.toCurrencyString(
-                          mantissaLength: 6,
-                          thousandSeparator:
-                              ThousandSeparator.SpaceAndPeriodMantissa,
-                        ),
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          MoneyInputFormatter(
-                            mantissaLength: 6,
-                            thousandSeparator:
-                                ThousandSeparator.SpaceAndPeriodMantissa,
-                          )
-                        ],
-                        validator: (value) {
-                          try {
-                            double.parse(
-                              value!.toCurrencyString(
-                                  mantissaLength: 6,
-                                  thousandSeparator: ThousandSeparator.None),
-                            );
-                          } catch (e) {
-                            return 'Please enter a whole number';
-                          }
-                          return null;
-                        },
-                        onChanged: (newValue) {
-                          try {
-                            _transaction.amountMain = double.parse(
-                              newValue.toCurrencyString(
-                                  mantissaLength: 6,
-                                  thousandSeparator: ThousandSeparator.None),
-                            );
-                          } on FormatException {
-                            debugPrint(
-                                'Transaction cannot contain "$newValue". Expected a number');
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    SizedBox(
-                      width: 85,
-                      child: FutureBuilder<Crypto>(
-                        future: _getCryptoBySymbol(_transaction.tokenMain),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return DropdownSearch<Crypto>(
-                              mode: Mode.BOTTOM_SHEET,
-                              showSearchBox: true,
-                              autoFocusSearchBox: true,
-                              dropdownSearchDecoration: const InputDecoration(
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                isDense: true,
-                              ),
-                              onFind: (String filter) => _getCryptoList(),
-                              compareFn: (i, s) => i.isEqual(s!),
-                              dropdownButtonBuilder: (_) => const Padding(
-                                padding: EdgeInsets.all(6),
-                                child: Icon(
-                                  Icons.arrow_drop_down,
-                                  size: 18,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              popupItemBuilder: _customPopupItemBuilder,
-                              dropdownBuilder: _customDropDown,
-                              selectedItem: snapshot.data,
-                              onChanged: (newValue) async {
-                                //setState(() {
-                                _transaction
-                                  ..tokenMain = newValue!.symbol
-                                  ..tokenMainName = newValue.name;
-                                //widget.positionMain.token = newValue.symbol;
 
-                                //tokenMainCrypto = await _getCryptoBySymbol(
-                                //    widget.transaction.tokenMain);
-                                //});
-                              },
-                            );
-                          } else if (snapshot.hasError) {
-                            return Text('${snapshot.error}');
-                          }
-
-                          return const Text('');
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 6),
-                leading: SizedBox(
-                  width: 100,
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      isDense: true,
-                    ),
-                    initialValue: 'Price',
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ),
-                title: Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        style: const TextStyle(fontSize: 14),
-                        textAlign: TextAlign.end,
-                        decoration: InputDecoration(
-                          isDense: !_isLargeScreen(context),
-                        ),
-                        initialValue: _transaction.price.toCurrencyString(
-                          mantissaLength: 6,
-                          thousandSeparator:
-                              ThousandSeparator.SpaceAndPeriodMantissa,
-                        ),
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          MoneyInputFormatter(
-                            mantissaLength: 6,
-                            thousandSeparator:
-                                ThousandSeparator.SpaceAndPeriodMantissa,
-                          )
-                        ],
-                        validator: (value) {
-                          try {
-                            double.parse(
-                              value!.toCurrencyString(
-                                  mantissaLength: 6,
-                                  thousandSeparator: ThousandSeparator.None),
-                            );
-                          } catch (e) {
-                            return 'Please enter a whole number';
-                          }
-                          return null;
-                        },
-                        onChanged: (newValue) {
-                          try {
-                            _transaction.price = double.parse(
-                              newValue.toCurrencyString(
-                                  mantissaLength: 6,
-                                  thousandSeparator: ThousandSeparator.None),
-                            );
-                          } on FormatException {
-                            debugPrint(
-                                'Transaction cannot contain "$newValue". Expected a number');
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    SizedBox(
-                      width: 85,
-                      child: FutureBuilder<Crypto>(
-                        future: _getCryptoBySymbol(_transaction.tokenPrice),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return DropdownSearch<Crypto>(
-                              mode: Mode.BOTTOM_SHEET,
-                              showSearchBox: true,
-                              autoFocusSearchBox: true,
-                              dropdownSearchDecoration: const InputDecoration(
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                isDense: true,
-                              ),
-                              onFind: (String filter) => _getCryptoList(),
-                              compareFn: (i, s) => i.isEqual(s!),
-                              dropdownButtonBuilder: (_) => const Padding(
-                                padding: EdgeInsets.all(6),
-                                child: Icon(
-                                  Icons.arrow_drop_down,
-                                  size: 18,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              popupItemBuilder: _customPopupItemBuilder,
-                              dropdownBuilder: _customDropDown,
-                              selectedItem: snapshot.data,
-                              onChanged: (newValue) async {
-                                _transaction
-                                  ..tokenPrice = newValue!.symbol
-                                  ..tokenPriceName = newValue.name;
-                              },
-                            );
-                          } else if (snapshot.hasError) {
-                            return Text('${snapshot.error}');
-                          }
-
-                          return const Text('');
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
               ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 6),
                 leading: SizedBox(
@@ -701,49 +690,7 @@ class NewTransactionForm extends StatelessWidget {
                   ],
                 ),
               ),
-              ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 6),
-                leading: const SizedBox(
-                  width: 50,
-                  child: Icon(Icons.calendar_today),
-                ),
-                title: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                          intl.DateFormat('dd/MM/yyyy HH:mm')
-                              .format(_transaction.time),
-                          style: const TextStyle(fontSize: 14),
-                          textAlign: TextAlign.end),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    SizedBox(
-                      width: 60,
-                      child: IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () async {
-                          final result =
-                              await DatePicker.showDateTimePicker(context,
-                                  //showTitleActions: true,
-                                  onChanged: (date) {}, onConfirm: (date) {
-                            _transaction.time = date;
-                          },
-                                  currentTime: _transaction.time,
-                                  locale: LocaleType.fr);
-                          if (result == null) {
-                            return;
-                          }
-                          // setState(() {
-                          //   _transaction.time = result;
-                          // });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+
               const SizedBox(
                 height: 10,
               ),
@@ -1104,10 +1051,10 @@ class NewTransactionForm extends StatelessWidget {
 
     return ListTile(
       contentPadding: const EdgeInsets.all(0),
-      dense: true,
+      dense: false,
       title: Text(
         item.symbol,
-        style: const TextStyle(fontSize: 14),
+        //style: const TextStyle(fontSize: 14),
       ),
     );
   }

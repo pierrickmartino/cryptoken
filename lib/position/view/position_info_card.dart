@@ -57,7 +57,7 @@ class PositionInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        showDialog(
+        showDialog<Widget>(
             context: context,
             builder: (context) => SimpleDialog(
                   title: const Text('Position information'),
@@ -125,11 +125,16 @@ class PositionInfoCard extends StatelessWidget {
                     positionName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.headline6,
                   ),
                   Text(
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption!
+                        .copyWith(color: Colors.white70),
                   ),
                 ],
               ),
@@ -145,7 +150,10 @@ class PositionInfoCard extends StatelessWidget {
           //),
         ),
         Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-          Text(positionValuation),
+          Text(
+            positionValuation,
+            style: Theme.of(context).textTheme.headline6,
+          ),
           Text(tokenVariation,
               style: Theme.of(context)
                   .textTheme
