@@ -62,31 +62,22 @@ class NewTransactionDialog extends StatelessWidget {
         ],
       );
     } else {
-      return Card(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                child: Text('New Transaction',
-                    style: Theme.of(context).textTheme.headline6),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-                child: Column(
-                  children: [
-                    NewTransactionForm(
-                      selectedWallet: selectedWallet,
-                    )
-                  ],
+      return SimpleDialog(
+        title: const Text('New Transaction'),
+        titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+        contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width * 9 / 10,
+            child: Column(
+              children: [
+                NewTransactionForm(
+                  selectedWallet: selectedWallet,
                 ),
-              )
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       );
     }
   }
@@ -136,6 +127,7 @@ class NewTransactionForm extends StatelessWidget {
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               // Padding(
               //   padding: const EdgeInsets.all(0),
@@ -173,16 +165,22 @@ class NewTransactionForm extends StatelessWidget {
                               ThousandSeparator.SpaceAndPeriodMantissa,
                         ),
                       ],
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.checklist),
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.checklist),
                         //prefixText: 'USD ',
-                        helperText: 'Amount',
+                        labelText: 'Amount',
+                        isDense: !_isLargeScreen(context),
+                        border: const OutlineInputBorder(),
                       ),
                       textAlign: TextAlign.end,
                       validator: (value) {
+                        if (value!.substring(0, 1) == '-') {
+                          return 'Amount must be greather than 0';
+                        }
+
                         try {
                           final double amount = double.parse(
-                            value!.toCurrencyString(
+                            value.toCurrencyString(
                                 mantissaLength: 6,
                                 thousandSeparator: ThousandSeparator.None),
                           );
@@ -209,7 +207,7 @@ class NewTransactionForm extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   SizedBox(
-                    width: 100,
+                    width: 120,
                     child: FutureBuilder<Crypto>(
                       future: _getCryptoBySymbol(_transaction.tokenMain),
                       builder: (context, snapshot) {
@@ -217,14 +215,22 @@ class NewTransactionForm extends StatelessWidget {
                           return DropdownSearch<Crypto>(
                             showSearchBox: true,
                             autoFocusSearchBox: true,
-                            dropdownSearchDecoration: const InputDecoration(
-                              helperText: '',
+                            dropdownSearchDecoration: InputDecoration(
+                              labelText: '',
                               border: InputBorder.none,
+                              isDense: !_isLargeScreen(context),
                             ),
                             onFind: (String filter) => _getCryptoList(),
                             compareFn: (i, s) => i.isEqual(s!),
                             popupItemBuilder: _customPopupItemBuilder,
                             dropdownBuilder: _customDropDown,
+                            dropdownButtonBuilder: (_) => const Padding(
+                              padding: EdgeInsets.only(bottom: 16),
+                              child: Icon(
+                                Icons.arrow_drop_down,
+                                size: 18,
+                              ),
+                            ),
                             selectedItem: snapshot.data,
                             onChanged: (newValue) async {
                               _transaction
@@ -256,15 +262,21 @@ class NewTransactionForm extends StatelessWidget {
                           mantissaLength: 6,
                         ),
                       ],
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.checklist),
-                        helperText: 'Price',
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.checklist),
+                        //prefixText: 'USD ',
+                        labelText: 'Price',
+                        isDense: !_isLargeScreen(context),
+                        border: const OutlineInputBorder(),
                       ),
                       textAlign: TextAlign.end,
                       validator: (value) {
+                        if (value!.substring(0, 1) == '-') {
+                          return 'Amount must be greather than 0';
+                        }
                         try {
                           final double price = double.parse(
-                            value!.toCurrencyString(
+                            value.toCurrencyString(
                                 mantissaLength: 6,
                                 thousandSeparator: ThousandSeparator.None),
                           );
@@ -290,7 +302,7 @@ class NewTransactionForm extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   SizedBox(
-                    width: 100,
+                    width: 120,
                     child: FutureBuilder<Crypto>(
                       future: _getCryptoBySymbol(_transaction.tokenPrice),
                       builder: (context, snapshot) {
@@ -298,14 +310,22 @@ class NewTransactionForm extends StatelessWidget {
                           return DropdownSearch<Crypto>(
                             showSearchBox: true,
                             autoFocusSearchBox: true,
-                            dropdownSearchDecoration: const InputDecoration(
-                              helperText: '',
+                            dropdownSearchDecoration: InputDecoration(
+                              labelText: '',
+                              isDense: !_isLargeScreen(context),
                               border: InputBorder.none,
                             ),
                             onFind: (String filter) => _getCryptoList(),
                             compareFn: (i, s) => i.isEqual(s!),
                             popupItemBuilder: _customPopupItemBuilder,
                             dropdownBuilder: _customDropDown,
+                            dropdownButtonBuilder: (_) => const Padding(
+                              padding: EdgeInsets.only(bottom: 16),
+                              child: Icon(
+                                Icons.arrow_drop_down,
+                                size: 18,
+                              ),
+                            ),
                             selectedItem: snapshot.data,
                             onChanged: (newValue) async {
                               _transaction
@@ -323,7 +343,7 @@ class NewTransactionForm extends StatelessWidget {
                   ),
                 ],
               ),
-
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
@@ -332,10 +352,12 @@ class NewTransactionForm extends StatelessWidget {
                       initialValue: intl.DateFormat('dd-MM-yyyy')
                           .format(_transaction.time),
                       inputFormatters: [MaskedInputFormatter('00-00-0000')],
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.calendar_today),
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.calendar_today),
                         //prefixText: 'USD ',
-                        helperText: 'Date',
+                        labelText: 'Date',
+                        isDense: !_isLargeScreen(context),
+                        border: const OutlineInputBorder(),
                       ),
                       textAlign: TextAlign.end,
                       validator: (value) {
@@ -367,15 +389,18 @@ class NewTransactionForm extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   SizedBox(
-                    width: 100,
+                    width: 120,
                     child: TextFormField(
                       keyboardType: TextInputType.number,
                       initialValue:
                           intl.DateFormat('HH:mm').format(_transaction.time),
                       inputFormatters: [MaskedInputFormatter('00:00')],
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         //prefixText: 'USD ',
-                        helperText: 'Time',
+                        prefixIcon: const Icon(Icons.timer),
+                        labelText: 'Time',
+                        isDense: !_isLargeScreen(context),
+                        border: const OutlineInputBorder(),
                       ),
                       textAlign: TextAlign.end,
                       validator: (value) {
@@ -690,12 +715,13 @@ class NewTransactionForm extends StatelessWidget {
                   ],
                 ),
               ),
-
-              const SizedBox(
-                height: 10,
+              const Divider(
+                height: 40,
+                thickness: 1,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(left: 8, right: 8),
@@ -1049,14 +1075,19 @@ class NewTransactionForm extends StatelessWidget {
       return Container();
     }
 
-    return ListTile(
-      contentPadding: const EdgeInsets.all(0),
-      dense: false,
-      title: Text(
-        item.symbol,
-        //style: const TextStyle(fontSize: 14),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Text(item.symbol),
     );
+
+    // return ListTile(
+    //   contentPadding: const EdgeInsets.all(0),
+    //   dense: !_isLargeScreen(context),
+    //   title: Text(
+    //     item.symbol,
+    //     //style: const TextStyle(fontSize: 14),
+    //   ),
+    // );
   }
 
   Widget _customPopupItemBuilder(
