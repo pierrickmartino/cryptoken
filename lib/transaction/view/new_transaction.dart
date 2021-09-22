@@ -109,7 +109,7 @@ class NewTransactionForm extends StatelessWidget {
     amountFee: 0,
     price: 0,
     time: DateTime.now(),
-    withImpactOnSecondPosition: true,
+    withImpactOnSecondPosition: false,
     transactionRefId: '',
   );
 
@@ -234,8 +234,8 @@ class NewTransactionForm extends StatelessWidget {
                             selectedItem: snapshot.data,
                             onChanged: (newValue) async {
                               _transaction
-                                ..tokenPrice = newValue!.symbol
-                                ..tokenPriceName = newValue.name;
+                                ..tokenMain = newValue!.symbol
+                                ..tokenMainName = newValue.name;
                             },
                           );
                         } else if (snapshot.hasError) {
@@ -430,291 +430,327 @@ class NewTransactionForm extends StatelessWidget {
                 ],
               ),
 
-              ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 6),
-                leading: SizedBox(
-                  width: 100,
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      isDense: true,
-                    ),
-                    initialValue: 'Total',
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ),
-                title: Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        style: const TextStyle(fontSize: 14),
-                        textAlign: TextAlign.end,
-                        initialValue:
-                            _transaction.amountReference.toCurrencyString(
-                          mantissaLength: 6,
-                          thousandSeparator:
-                              ThousandSeparator.SpaceAndPeriodMantissa,
-                        ),
-                        decoration: InputDecoration(
-                          isDense: !_isLargeScreen(context),
-                        ),
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          MoneyInputFormatter(
-                            mantissaLength: 6,
-                            thousandSeparator:
-                                ThousandSeparator.SpaceAndPeriodMantissa,
-                          )
-                        ],
-                        validator: (value) {
-                          try {
-                            double.parse(
-                              value!.toCurrencyString(
-                                  mantissaLength: 6,
-                                  thousandSeparator: ThousandSeparator.None),
-                            );
-                          } catch (e) {
-                            return 'Please enter a whole number';
-                          }
-                          return null;
-                        },
-                        onChanged: (newValue) {
-                          try {
-                            _transaction
-                              ..price = double.parse(
-                                    newValue.toCurrencyString(
-                                        mantissaLength: 6,
-                                        thousandSeparator:
-                                            ThousandSeparator.None),
-                                  ) /
-                                  _transaction.amountMain
-                              ..amountReference = double.parse(
-                                newValue.toCurrencyString(
-                                    mantissaLength: 6,
-                                    thousandSeparator: ThousandSeparator.None),
-                              );
-                          } on FormatException {
-                            debugPrint(
-                                'Transaction cannot contain "$newValue". Expected a number');
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    SizedBox(
-                      width: 85,
-                      child: FutureBuilder<Crypto>(
-                        future: _getCryptoBySymbol(_transaction.tokenReference),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return DropdownSearch<Crypto>(
-                              mode: Mode.BOTTOM_SHEET,
-                              showSearchBox: true,
-                              autoFocusSearchBox: true,
-                              dropdownSearchDecoration: const InputDecoration(
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                isDense: true,
-                              ),
-                              onFind: (String filter) => _getCryptoList(),
-                              compareFn: (i, s) => i.isEqual(s!),
-                              dropdownButtonBuilder: (_) => const Padding(
-                                padding: EdgeInsets.all(6),
-                                child: Icon(
-                                  Icons.arrow_drop_down,
-                                  size: 18,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              popupItemBuilder: _customPopupItemBuilder,
-                              dropdownBuilder: _customDropDown,
-                              selectedItem: snapshot.data,
-                              onChanged: (newValue) async {
-                                _transaction
-                                  ..tokenReference = newValue!.symbol
-                                  ..tokenReferenceName = newValue.name;
-                                // widget.positionReference.token =
-                                //     newValue.symbol;
-                              },
-                            );
-                          } else if (snapshot.hasError) {
-                            return Text('${snapshot.error}');
-                          }
+              // ListTile(
+              //   contentPadding: const EdgeInsets.symmetric(horizontal: 6),
+              //   leading: SizedBox(
+              //     width: 100,
+              //     child: TextFormField(
+              //       decoration: const InputDecoration(
+              //         border: InputBorder.none,
+              //         focusedBorder: InputBorder.none,
+              //         enabledBorder: InputBorder.none,
+              //         errorBorder: InputBorder.none,
+              //         disabledBorder: InputBorder.none,
+              //         isDense: true,
+              //       ),
+              //       initialValue: 'Total',
+              //       style: const TextStyle(fontSize: 14),
+              //     ),
+              //   ),
+              //   title: Row(
+              //     children: [
+              //       Expanded(
+              //         child: TextFormField(
+              //           style: const TextStyle(fontSize: 14),
+              //           textAlign: TextAlign.end,
+              //           initialValue:
+              //               _transaction.amountReference.toCurrencyString(
+              //             mantissaLength: 6,
+              //             thousandSeparator:
+              //                 ThousandSeparator.SpaceAndPeriodMantissa,
+              //           ),
+              //           decoration: InputDecoration(
+              //             isDense: !_isLargeScreen(context),
+              //           ),
+              //           keyboardType: TextInputType.number,
+              //           inputFormatters: [
+              //             MoneyInputFormatter(
+              //               mantissaLength: 6,
+              //               thousandSeparator:
+              //                   ThousandSeparator.SpaceAndPeriodMantissa,
+              //             )
+              //           ],
+              //           validator: (value) {
+              //             try {
+              //               double.parse(
+              //                 value!.toCurrencyString(
+              //                     mantissaLength: 6,
+              //                     thousandSeparator: ThousandSeparator.None),
+              //               );
+              //             } catch (e) {
+              //               return 'Please enter a whole number';
+              //             }
+              //             return null;
+              //           },
+              //           onChanged: (newValue) {
+              //             try {
+              //               _transaction
+              //                 ..price = double.parse(
+              //                       newValue.toCurrencyString(
+              //                           mantissaLength: 6,
+              //                           thousandSeparator:
+              //                               ThousandSeparator.None),
+              //                     ) /
+              //                     _transaction.amountMain
+              //                 ..amountReference = double.parse(
+              //                   newValue.toCurrencyString(
+              //                       mantissaLength: 6,
+              //                       thousandSeparator: ThousandSeparator.None),
+              //                 );
+              //             } on FormatException {
+              //               debugPrint(
+              //                   'Transaction cannot contain "$newValue". Expected a number');
+              //             }
+              //           },
+              //         ),
+              //       ),
+              //       const SizedBox(
+              //         width: 10,
+              //       ),
+              //       SizedBox(
+              //         width: 85,
+              //         child: FutureBuilder<Crypto>(
+              //           future: _getCryptoBySymbol(_transaction.tokenReference),
+              //           builder: (context, snapshot) {
+              //             if (snapshot.hasData) {
+              //               return DropdownSearch<Crypto>(
+              //                 mode: Mode.BOTTOM_SHEET,
+              //                 showSearchBox: true,
+              //                 autoFocusSearchBox: true,
+              //                 dropdownSearchDecoration: const InputDecoration(
+              //                   border: InputBorder.none,
+              //                   focusedBorder: InputBorder.none,
+              //                   enabledBorder: InputBorder.none,
+              //                   errorBorder: InputBorder.none,
+              //                   disabledBorder: InputBorder.none,
+              //                   isDense: true,
+              //                 ),
+              //                 onFind: (String filter) => _getCryptoList(),
+              //                 compareFn: (i, s) => i.isEqual(s!),
+              //                 dropdownButtonBuilder: (_) => const Padding(
+              //                   padding: EdgeInsets.all(6),
+              //                   child: Icon(
+              //                     Icons.arrow_drop_down,
+              //                     size: 18,
+              //                     color: Colors.black,
+              //                   ),
+              //                 ),
+              //                 popupItemBuilder: _customPopupItemBuilder,
+              //                 dropdownBuilder: _customDropDown,
+              //                 selectedItem: snapshot.data,
+              //                 onChanged: (newValue) async {
+              //                   _transaction
+              //                     ..tokenReference = newValue!.symbol
+              //                     ..tokenReferenceName = newValue.name;
+              //                   // widget.positionReference.token =
+              //                   //     newValue.symbol;
+              //                 },
+              //               );
+              //             } else if (snapshot.hasError) {
+              //               return Text('${snapshot.error}');
+              //             }
 
-                          return const Text('');
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 6),
-                leading: SizedBox(
-                  width: 100,
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      isDense: true,
-                    ),
-                    initialValue: 'Fees (incl.)',
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ),
-                title: Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        textAlign: TextAlign.end,
-                        initialValue: _transaction.amountFee.toCurrencyString(
-                          mantissaLength: 6,
-                          thousandSeparator:
-                              ThousandSeparator.SpaceAndPeriodMantissa,
-                        ),
-                        style: const TextStyle(fontSize: 14),
-                        decoration: InputDecoration(
-                          isDense: !_isLargeScreen(context),
-                        ),
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          MoneyInputFormatter(
-                            mantissaLength: 6,
-                            thousandSeparator:
-                                ThousandSeparator.SpaceAndPeriodMantissa,
-                          )
-                        ],
-                        validator: (value) {
-                          try {
-                            double.parse(
-                              value!.toCurrencyString(
-                                  mantissaLength: 6,
-                                  thousandSeparator: ThousandSeparator.None),
-                            );
-                          } catch (e) {
-                            return 'Please enter a whole number';
-                          }
-                          return null;
-                        },
-                        onChanged: (newValue) {
-                          try {
-                            _transaction.amountFee = double.parse(
-                              newValue.toCurrencyString(
-                                  mantissaLength: 6,
-                                  thousandSeparator: ThousandSeparator.None),
-                            );
-                          } on FormatException {
-                            debugPrint(
-                                'Transaction cannot contain "$newValue". Expected a number');
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    SizedBox(
-                      width: 85,
-                      child: FutureBuilder<Crypto>(
-                        future: _getCryptoBySymbol(_transaction.tokenFee),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return DropdownSearch<Crypto>(
-                              mode: Mode.BOTTOM_SHEET,
-                              showSearchBox: true,
-                              autoFocusSearchBox: true,
-                              dropdownSearchDecoration: const InputDecoration(
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                isDense: true,
-                              ),
-                              onFind: (String filter) => _getCryptoList(),
-                              compareFn: (i, s) => i.isEqual(s!),
-                              dropdownButtonBuilder: (_) => const Padding(
-                                padding: EdgeInsets.all(6),
-                                child: Icon(
-                                  Icons.arrow_drop_down,
-                                  size: 18,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              popupItemBuilder: _customPopupItemBuilder,
-                              dropdownBuilder: _customDropDown,
-                              selectedItem: snapshot.data,
-                              onChanged: (newValue) async {
-                                _transaction
-                                  ..tokenFee = newValue!.symbol
-                                  ..tokenFeeName = newValue.name;
-                              },
-                            );
-                          } else if (snapshot.hasError) {
-                            return Text('${snapshot.error}');
-                          }
+              //             return const Text('');
+              //           },
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              // ListTile(
+              //   contentPadding: const EdgeInsets.symmetric(horizontal: 6),
+              //   leading: SizedBox(
+              //     width: 100,
+              //     child: TextFormField(
+              //       decoration: const InputDecoration(
+              //         border: InputBorder.none,
+              //         focusedBorder: InputBorder.none,
+              //         enabledBorder: InputBorder.none,
+              //         errorBorder: InputBorder.none,
+              //         disabledBorder: InputBorder.none,
+              //         isDense: true,
+              //       ),
+              //       initialValue: 'Fees (incl.)',
+              //       style: const TextStyle(fontSize: 14),
+              //     ),
+              //   ),
+              //   title: Row(
+              //     children: [
+              //       Expanded(
+              //         child: TextFormField(
+              //           textAlign: TextAlign.end,
+              //           initialValue: _transaction.amountFee.toCurrencyString(
+              //             mantissaLength: 6,
+              //             thousandSeparator:
+              //                 ThousandSeparator.SpaceAndPeriodMantissa,
+              //           ),
+              //           style: const TextStyle(fontSize: 14),
+              //           decoration: InputDecoration(
+              //             isDense: !_isLargeScreen(context),
+              //           ),
+              //           keyboardType: TextInputType.number,
+              //           inputFormatters: [
+              //             MoneyInputFormatter(
+              //               mantissaLength: 6,
+              //               thousandSeparator:
+              //                   ThousandSeparator.SpaceAndPeriodMantissa,
+              //             )
+              //           ],
+              //           validator: (value) {
+              //             try {
+              //               double.parse(
+              //                 value!.toCurrencyString(
+              //                     mantissaLength: 6,
+              //                     thousandSeparator: ThousandSeparator.None),
+              //               );
+              //             } catch (e) {
+              //               return 'Please enter a whole number';
+              //             }
+              //             return null;
+              //           },
+              //           onChanged: (newValue) {
+              //             try {
+              //               _transaction.amountFee = double.parse(
+              //                 newValue.toCurrencyString(
+              //                     mantissaLength: 6,
+              //                     thousandSeparator: ThousandSeparator.None),
+              //               );
+              //             } on FormatException {
+              //               debugPrint(
+              //                   'Transaction cannot contain "$newValue". Expected a number');
+              //             }
+              //           },
+              //         ),
+              //       ),
+              //       const SizedBox(
+              //         width: 10,
+              //       ),
+              //       SizedBox(
+              //         width: 85,
+              //         child: FutureBuilder<Crypto>(
+              //           future: _getCryptoBySymbol(_transaction.tokenFee),
+              //           builder: (context, snapshot) {
+              //             if (snapshot.hasData) {
+              //               return DropdownSearch<Crypto>(
+              //                 mode: Mode.BOTTOM_SHEET,
+              //                 showSearchBox: true,
+              //                 autoFocusSearchBox: true,
+              //                 dropdownSearchDecoration: const InputDecoration(
+              //                   border: InputBorder.none,
+              //                   focusedBorder: InputBorder.none,
+              //                   enabledBorder: InputBorder.none,
+              //                   errorBorder: InputBorder.none,
+              //                   disabledBorder: InputBorder.none,
+              //                   isDense: true,
+              //                 ),
+              //                 onFind: (String filter) => _getCryptoList(),
+              //                 compareFn: (i, s) => i.isEqual(s!),
+              //                 dropdownButtonBuilder: (_) => const Padding(
+              //                   padding: EdgeInsets.all(6),
+              //                   child: Icon(
+              //                     Icons.arrow_drop_down,
+              //                     size: 18,
+              //                     color: Colors.black,
+              //                   ),
+              //                 ),
+              //                 popupItemBuilder: _customPopupItemBuilder,
+              //                 dropdownBuilder: _customDropDown,
+              //                 selectedItem: snapshot.data,
+              //                 onChanged: (newValue) async {
+              //                   _transaction
+              //                     ..tokenFee = newValue!.symbol
+              //                     ..tokenFeeName = newValue.name;
+              //                 },
+              //               );
+              //             } else if (snapshot.hasError) {
+              //               return Text('${snapshot.error}');
+              //             }
 
-                          return const Text('');
-                        },
-                      ),
+              //             return const Text('');
+              //           },
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'with impact on the Total token',
+                      style: TextStyle(fontSize: 14),
+                      textAlign: TextAlign.end,
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  SizedBox(
+                    width: 90,
+                    child: ToggleSwitch(
+                      // 0 Yes | 1 No
+                      labels: const ['Y', 'N'],
+                      minHeight: 30,
+                      minWidth: 44,
+                      fontSize: 12,
+                      activeBgColor: primaryColor,
+                      activeFgColor: Colors.white,
+                      initialLabelIndex:
+                          _transaction.withImpactOnSecondPosition ? 0 : 1,
+                      onToggle: (index) {
+                        if (index == 0) {
+                          _transaction.withImpactOnSecondPosition = true;
+                        } else {
+                          _transaction.withImpactOnSecondPosition = false;
+                        }
+                      },
+                    ),
+                  ),
+                ],
               ),
-              ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 6),
-                leading: const SizedBox(
-                  width: 50,
-                  child: Icon(Icons.info),
-                ),
-                title: Row(
-                  children: [
-                    const Expanded(
-                      child: Text(
-                        'with impact on the Total token',
-                        style: TextStyle(fontSize: 14),
-                        textAlign: TextAlign.end,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    SizedBox(
-                      width: 90,
-                      child: ToggleSwitch(
-                        // 0 Yes | 1 No
-                        labels: const ['Y', 'N'],
-                        minHeight: 30,
-                        minWidth: 44,
-                        fontSize: 12,
-                        activeBgColor: primaryColor,
-                        activeFgColor: Colors.white,
-                        initialLabelIndex:
-                            _transaction.withImpactOnSecondPosition ? 0 : 1,
-                        onToggle: (index) {
-                          if (index == 0) {
-                            _transaction.withImpactOnSecondPosition = true;
-                          } else {
-                            _transaction.withImpactOnSecondPosition = false;
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // ListTile(
+              //   contentPadding: const EdgeInsets.symmetric(horizontal: 6),
+              //   leading: const SizedBox(
+              //     width: 50,
+              //     child: Icon(Icons.info),
+              //   ),
+              //   title: Row(
+              //     children: [
+              //       const Expanded(
+              //         child: Text(
+              //           'with impact on the Total token',
+              //           style: TextStyle(fontSize: 14),
+              //           textAlign: TextAlign.end,
+              //         ),
+              //       ),
+              //       const SizedBox(
+              //         width: 10,
+              //       ),
+              //       SizedBox(
+              //         width: 90,
+              //         child: ToggleSwitch(
+              //           // 0 Yes | 1 No
+              //           labels: const ['Y', 'N'],
+              //           minHeight: 30,
+              //           minWidth: 44,
+              //           fontSize: 12,
+              //           activeBgColor: primaryColor,
+              //           activeFgColor: Colors.white,
+              //           initialLabelIndex:
+              //               _transaction.withImpactOnSecondPosition ? 0 : 1,
+              //           onToggle: (index) {
+              //             if (index == 0) {
+              //               _transaction.withImpactOnSecondPosition = true;
+              //             } else {
+              //               _transaction.withImpactOnSecondPosition = false;
+              //             }
+              //           },
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               const Divider(
                 height: 40,
                 thickness: 1,

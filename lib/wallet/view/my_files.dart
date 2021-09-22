@@ -58,7 +58,7 @@ class MyFiles extends StatelessWidget {
                     icon: const Icon(Icons.add),
                     label: const Text('Add Wallet'),
                   ),
-                const Text('v1.1.4')
+                const Text('v1.1.5')
               ],
             )
           ],
