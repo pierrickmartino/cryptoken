@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:web_dashboard/settings/view/settings.dart';
 
 import '../../../constant.dart';
+import '../../../wallet/view/new_wallet.dart';
 import '../../responsive.dart';
 
 class Header extends StatelessWidget {
@@ -21,14 +22,53 @@ class Header extends StatelessWidget {
             onPressed: () {}, //context.read<MenuController>().controlMenu,
           ),
         if (!Responsive.isMobile(context))
-          Text(
-            'Dashboard',
-            style: Theme.of(context).textTheme.headline6,
+          Wrap(
+            spacing: 5,
+            children: [
+              Text(
+                'Dashboard',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              const Text('v1.1.5', textScaleFactor: 0.8),
+            ],
           ),
         if (!Responsive.isMobile(context))
           Spacer(flex: Responsive.isDesktop(context) ? 2 : 1),
         const Expanded(
             child: Text('') /*SearchField()*/), // not necessary at the moment
+
+        // if we are on Mobile we only want to show icon to keep space on screen
+        if (Responsive.isMobile(context))
+          IconButton(
+            onPressed: () {
+              showDialog<NewWalletDialog>(
+                context: context,
+                builder: (context) => const NewWalletDialog(),
+              );
+            },
+            icon: const Icon(Icons.add),
+          ),
+
+        // otherwise we can show a lable with the button icon
+        if (!Responsive.isMobile(context))
+          ElevatedButton.icon(
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.symmetric(
+                horizontal: defaultPadding * 1.5,
+                vertical:
+                    defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
+              ),
+            ),
+            onPressed: () {
+              showDialog<NewWalletDialog>(
+                context: context,
+                builder: (context) => const NewWalletDialog(),
+              );
+            },
+            icon: const Icon(Icons.add),
+            label: const Text('Add Wallet'),
+          ),
+
         const ProfileCard()
       ],
     );

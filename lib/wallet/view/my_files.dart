@@ -24,43 +24,6 @@ class MyFiles extends StatelessWidget {
               'My Wallets',
               style: Theme.of(context).textTheme.subtitle1,
             ),
-            Wrap(
-              spacing: 5,
-              children: [
-                // if we are on Mobile we only want to show icon to keep space on screen
-                if (Responsive.isMobile(context))
-                  IconButton(
-                    onPressed: () {
-                      showDialog<NewWalletDialog>(
-                        context: context,
-                        builder: (context) => const NewWalletDialog(),
-                      );
-                    },
-                    icon: const Icon(Icons.add),
-                  ),
-
-                // otherwise we can show a lable with the button icon
-                if (!Responsive.isMobile(context))
-                  ElevatedButton.icon(
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: defaultPadding * 1.5,
-                        vertical: defaultPadding /
-                            (Responsive.isMobile(context) ? 2 : 1),
-                      ),
-                    ),
-                    onPressed: () {
-                      showDialog<NewWalletDialog>(
-                        context: context,
-                        builder: (context) => const NewWalletDialog(),
-                      );
-                    },
-                    icon: const Icon(Icons.add),
-                    label: const Text('Add Wallet'),
-                  ),
-                const Text('v1.1.5')
-              ],
-            )
           ],
         ),
         const SizedBox(height: defaultPadding),
