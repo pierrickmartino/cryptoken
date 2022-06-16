@@ -78,7 +78,7 @@ class SignUpUI extends StatelessWidget {
                   const FormVerticalSpace(),
                   LabelButton(
                     labelText: 'Sign in',
-                    onPressed: () => Get.to(SignInUI()),
+                    onPressed: () => Get.to<SignInUI>(SignInUI()),
                   ),
                 ],
               ),

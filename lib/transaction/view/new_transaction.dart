@@ -212,32 +212,42 @@ class NewTransactionForm extends StatelessWidget {
                       future: _getCryptoBySymbol(_transaction.tokenMain),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          // return DropdownSearch<Crypto>(
-                          //   showSearchBox: true,
-                          //   autoFocusSearchBox: true,
-                          //   dropdownSearchDecoration: InputDecoration(
-                          //     labelText: '',
-                          //     border: InputBorder.none,
-                          //     isDense: !_isLargeScreen(context),
-                          //   ),
-                          //   onFind: (String filter) => _getCryptoList(),
-                          //   compareFn: (i, s) => i.isEqual(s!),
-                          //   popupItemBuilder: _customPopupItemBuilder,
-                          //   dropdownBuilder: _customDropDown,
-                          //   dropdownButtonBuilder: (_) => const Padding(
-                          //     padding: EdgeInsets.only(bottom: 16),
-                          //     child: Icon(
-                          //       Icons.arrow_drop_down,
-                          //       size: 18,
-                          //     ),
-                          //   ),
-                          //   selectedItem: snapshot.data,
-                          //   onChanged: (newValue) async {
-                          //     _transaction
-                          //       ..tokenMain = newValue!.symbol
-                          //       ..tokenMainName = newValue.name;
-                          //   },
-                          // );
+                          return DropdownSearch<Crypto>(
+                            asyncItems: (String? filter) => _getCryptoList(),
+                            popupProps: PopupProps.dialog(
+                              showSelectedItems: true,
+                              itemBuilder: _customPopupItemBuilder,
+                              showSearchBox: true,
+                              searchFieldProps: TextFieldProps(
+                                //controller: _userEditTextController,
+                                decoration: InputDecoration(
+                                  suffixIcon: IconButton(
+                                    icon: const Icon(Icons.clear),
+                                    onPressed: () {
+                                      //_userEditTextController.clear();
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                            compareFn: (item, selectedItem) =>
+                                item.id == selectedItem.id,
+                            dropdownDecoratorProps: DropDownDecoratorProps(
+                              dropdownSearchDecoration: InputDecoration(
+                                labelText: 'Token',
+                                filled: true,
+                                fillColor: Theme.of(context)
+                                    .inputDecorationTheme
+                                    .fillColor,
+                              ),
+                            ),
+                            dropdownBuilder: _customDropDown,
+                            onChanged: (newValue) async {
+                              _transaction
+                                ..tokenMain = newValue!.symbol
+                                ..tokenMainName = newValue.name;
+                            },
+                          );
                         } else if (snapshot.hasError) {
                           return Text('${snapshot.error}');
                         }
@@ -248,6 +258,7 @@ class NewTransactionForm extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
@@ -307,32 +318,42 @@ class NewTransactionForm extends StatelessWidget {
                       future: _getCryptoBySymbol(_transaction.tokenPrice),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          // return DropdownSearch<Crypto>(
-                          //   showSearchBox: true,
-                          //   autoFocusSearchBox: true,
-                          //   dropdownSearchDecoration: InputDecoration(
-                          //     labelText: '',
-                          //     isDense: !_isLargeScreen(context),
-                          //     border: InputBorder.none,
-                          //   ),
-                          //   onFind: (String filter) => _getCryptoList(),
-                          //   compareFn: (i, s) => i.isEqual(s!),
-                          //   popupItemBuilder: _customPopupItemBuilder,
-                          //   dropdownBuilder: _customDropDown,
-                          //   dropdownButtonBuilder: (_) => const Padding(
-                          //     padding: EdgeInsets.only(bottom: 16),
-                          //     child: Icon(
-                          //       Icons.arrow_drop_down,
-                          //       size: 18,
-                          //     ),
-                          //   ),
-                          //   selectedItem: snapshot.data,
-                          //   onChanged: (newValue) async {
-                          //     _transaction
-                          //       ..tokenPrice = newValue!.symbol
-                          //       ..tokenPriceName = newValue.name;
-                          //   },
-                          // );
+                          return DropdownSearch<Crypto>(
+                            asyncItems: (String? filter) => _getCryptoList(),
+                            popupProps: PopupProps.dialog(
+                              showSelectedItems: true,
+                              itemBuilder: _customPopupItemBuilder,
+                              showSearchBox: true,
+                              searchFieldProps: TextFieldProps(
+                                //controller: _userEditTextController,
+                                decoration: InputDecoration(
+                                  suffixIcon: IconButton(
+                                    icon: const Icon(Icons.clear),
+                                    onPressed: () {
+                                      //_userEditTextController.clear();
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                            compareFn: (item, selectedItem) =>
+                                item.id == selectedItem.id,
+                            dropdownDecoratorProps: DropDownDecoratorProps(
+                              dropdownSearchDecoration: InputDecoration(
+                                labelText: 'Token',
+                                filled: true,
+                                fillColor: Theme.of(context)
+                                    .inputDecorationTheme
+                                    .fillColor,
+                              ),
+                            ),
+                            dropdownBuilder: _customDropDown,
+                            onChanged: (newValue) async {
+                              _transaction
+                                ..tokenPrice = newValue!.symbol
+                                ..tokenPriceName = newValue.name;
+                            },
+                          );
                         } else if (snapshot.hasError) {
                           return Text('${snapshot.error}');
                         }
@@ -1105,7 +1126,7 @@ class NewTransactionForm extends StatelessWidget {
   }
 
   Widget _customDropDown(
-      BuildContext context, Crypto? item, String itemDesignation) {
+      BuildContext context, Crypto? item /*, String itemDesignation*/) {
     if (item == null) {
       return Container();
     }

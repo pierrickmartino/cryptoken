@@ -7,7 +7,6 @@ import '../../constant.dart';
 
 import '../../src/responsive.dart';
 import 'file_info_card.dart';
-import 'new_wallet.dart';
 
 class MyFiles extends StatelessWidget {
   const MyFiles({Key? key}) : super(key: key);
