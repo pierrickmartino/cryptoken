@@ -89,9 +89,9 @@ class RecentFiles extends StatelessWidget {
                         DataColumn(
                           label: Text('Total'),
                         ),
-                        DataColumn(
-                          label: Text('Fees (incl.)'),
-                        ),
+                        // DataColumn(
+                        //   label: Text('Fees (incl.)'),
+                        // ),
                         DataColumn(
                           label: Text(''),
                         ),
@@ -124,7 +124,18 @@ DataRow recentFileDataRow(
       // Wallet
       DataCell(Text('${transactionInfo.walletId.substring(0, 5)}...')),
       // Type
-      DataCell(_getTransactionTypeLabel(transactionInfo.transactionType)),
+      DataCell(Container(
+          padding: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            color: _getTransactionTypeColor(transactionInfo.transactionType)
+                .withOpacity(.2),
+            border: Border.all(
+                color:
+                    _getTransactionTypeColor(transactionInfo.transactionType)),
+            borderRadius: const BorderRadius.all(Radius.circular(5) //
+                ),
+          ),
+          child: _getTransactionTypeLabel(transactionInfo.transactionType))),
       // Date
       DataCell(Text(_dateFormat.format(transactionInfo.time))),
       // Token
@@ -140,8 +151,8 @@ DataRow recentFileDataRow(
       DataCell(Text(
           '${_numberFormat.format(transactionCost)} ${transactionInfo.tokenReference}')),
       // Fees (incl.)
-      DataCell(Text(
-          '${_numberFormat.format(transactionInfo.amountFee)} ${transactionInfo.tokenFee}')),
+      // DataCell(Text(
+      //     '${_numberFormat.format(transactionInfo.amountFee)} ${transactionInfo.tokenFee}')),
       // Action
       DataCell(Wrap(
         children: [
@@ -214,5 +225,16 @@ Widget _getTransactionTypeLabel(int index) {
       return const Text('Sell');
     default:
       return const Text('');
+  }
+}
+
+Color _getTransactionTypeColor(int index) {
+  switch (index) {
+    case 0:
+      return Colors.green;
+    case 1:
+      return Colors.red;
+    default:
+      return Colors.black;
   }
 }
