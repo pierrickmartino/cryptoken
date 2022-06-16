@@ -76,7 +76,7 @@ class PositionInfoCard extends StatelessWidget {
                                 left: 8, right: 8, top: 16),
                             child: ElevatedButton(
                               onPressed: Get.back,
-                              child: const Text('Cancel'),
+                              child: const Text('Close'),
                             ),
                           ),
                         ],
