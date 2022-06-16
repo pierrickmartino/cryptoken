@@ -73,6 +73,7 @@ class FileInfoCard extends StatelessWidget {
                             ),
                           ),
                           PopupMenuButton(
+                            iconSize: 18,
                             color: secondaryColor,
                             onSelected: (value) {
                               switch (value) {
@@ -117,16 +118,25 @@ class FileInfoCard extends StatelessWidget {
                             itemBuilder: (context) => [
                               const PopupMenuItem(
                                 value: 1,
-                                child: Text('Edit'),
+                                child: Text(
+                                  'Edit',
+                                  textScaleFactor: 0.9,
+                                ),
                               ),
                               PopupMenuItem(
                                 value: 2,
                                 enabled: authController.admin.value,
-                                child: const Text('Delete'),
+                                child: const Text(
+                                  'Delete',
+                                  textScaleFactor: 0.9,
+                                ),
                               ),
                               const PopupMenuItem(
                                 value: 3,
-                                child: Text('Add transaction'),
+                                child: Text(
+                                  'Add transaction',
+                                  textScaleFactor: 0.9,
+                                ),
                               ),
                             ],
                           )
