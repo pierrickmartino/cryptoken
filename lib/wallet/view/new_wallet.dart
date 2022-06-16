@@ -87,7 +87,7 @@ class NewWalletForm extends StatelessWidget {
                       walletController.insertFirestoreWallet(_newWallet).then(
                           (value) => Get
                             ..back<void>()
-                            ..snackbar<void>('Successful',
+                            ..snackbar('Successful',
                                 'Portfolio ${_portfolio.name} inserted !',
                                 snackPosition: SnackPosition.BOTTOM,
                                 duration: const Duration(seconds: 5),

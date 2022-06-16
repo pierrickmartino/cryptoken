@@ -96,7 +96,7 @@ class EditWalletForm extends StatelessWidget {
                           .updateFirestoreWallet(_newWallet, wallet.id)
                           .then((value) => Get
                             ..back<void>()
-                            ..snackbar<void>(
+                            ..snackbar(
                                 'Successful', 'wallet ${wallet.name} updated !',
                                 snackPosition: SnackPosition.BOTTOM,
                                 duration: const Duration(seconds: 5),

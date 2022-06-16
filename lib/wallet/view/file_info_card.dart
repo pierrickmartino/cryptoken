@@ -90,7 +90,7 @@ class FileInfoCard extends StatelessWidget {
                                   walletController
                                       .deleteFirestoreWallet(wallet.id)
                                       .then((value) => Get
-                                        ..snackbar<void>('Successful',
+                                        ..snackbar('Successful',
                                             'wallet ${wallet.name} deleted !',
                                             snackPosition: SnackPosition.BOTTOM,
                                             duration:

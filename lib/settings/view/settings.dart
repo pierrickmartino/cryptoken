@@ -37,12 +37,12 @@ class _SettingsScreenState extends State<SettingsUI> {
       builder: (controller) => SettingsList(
         sections: [
           SettingsSection(
-            title: 'Common',
+            title: const Text('Common'),
             tiles: [
               SettingsTile.switchTile(
-                title: 'Show position with zero amount',
+                title: const Text('Show position with zero amount'),
                 leading: const Icon(Icons.visibility),
-                switchValue: controller.currentZeroPosition,
+                initialValue: controller.currentZeroPosition,
                 onToggle: (bool value) {
                   //setState(() {
                   controller.setZeroPositionDisplay(value);
@@ -50,32 +50,37 @@ class _SettingsScreenState extends State<SettingsUI> {
                 },
               ),
               SettingsTile(
-                title: 'Refresh token data',
+                title: const Text('Refresh token data'),
                 leading: const Icon(Icons.refresh),
                 onPressed: _processRefreshData,
               ),
-              const SettingsTile(
-                title: 'Environment',
-                subtitle: 'Production',
-                leading: Icon(Icons.cloud_queue),
+              SettingsTile(
+                title: const Text('Environment'),
+                //subtitle: const Text('Production'),
+                leading: const Icon(Icons.cloud_queue),
               ),
             ],
           ),
           SettingsSection(
-            title: 'Account',
-            tiles: const [
-              SettingsTile(title: 'Phone number', leading: Icon(Icons.phone)),
-              SettingsTile(title: 'Email', leading: Icon(Icons.email)),
-              SettingsTile(title: 'Sign out', leading: Icon(Icons.exit_to_app)),
+            title: const Text('Account'),
+            tiles: [
+              SettingsTile(
+                  title: const Text('Phone number'),
+                  leading: const Icon(Icons.phone)),
+              SettingsTile(
+                  title: const Text('Email'), leading: const Icon(Icons.email)),
+              SettingsTile(
+                  title: const Text('Sign out'),
+                  leading: const Icon(Icons.exit_to_app)),
             ],
           ),
           SettingsSection(
-            title: 'Security',
+            title: const Text('Security'),
             tiles: [
               SettingsTile.switchTile(
-                title: 'Lock app in background',
+                title: const Text('Lock app in background'),
                 leading: const Icon(Icons.phonelink_lock),
-                switchValue: lockInBackground,
+                initialValue: lockInBackground,
                 onToggle: (bool value) {
                   setState(() {
                     lockInBackground = value;
@@ -84,23 +89,23 @@ class _SettingsScreenState extends State<SettingsUI> {
                 },
               ),
               SettingsTile.switchTile(
-                  title: 'Use fingerprint',
-                  subtitle:
-                      'Allow application to access stored fingerprint IDs.',
+                  title: const Text('Use fingerprint'),
+                  // subtitle:
+                  //     'Allow application to access stored fingerprint IDs.',
                   leading: const Icon(Icons.fingerprint),
                   onToggle: (bool value) {},
-                  switchValue: false),
+                  initialValue: false),
               SettingsTile.switchTile(
-                title: 'Change password',
+                title: const Text('Change password'),
                 leading: const Icon(Icons.lock),
-                switchValue: true,
+                initialValue: true,
                 onToggle: (bool value) {},
               ),
               SettingsTile.switchTile(
-                title: 'Enable Notifications',
+                title: const Text('Enable Notifications'),
                 enabled: notificationsEnabled,
                 leading: const Icon(Icons.notifications_active),
-                switchValue: true,
+                initialValue: true,
                 onToggle: (value) {},
               ),
             ],
@@ -115,7 +120,7 @@ class _SettingsScreenState extends State<SettingsUI> {
           //         leading: Icon(Icons.collections_bookmark)),
           //   ],
           // ),
-          CustomSection(
+          CustomSettingsSection(
             child: Column(
               children: [
                 Padding(
@@ -180,7 +185,7 @@ class _SettingsScreenState extends State<SettingsUI> {
             futureVariation24,
           ]).whenComplete(() {
             if (_positionPriceCounter == 0 && _positionVar24Counter == 0) {
-              Get.snackbar<void>(
+              Get.snackbar(
                   'Refresh', 'Token market data successfully udpdated !',
                   snackPosition: SnackPosition.BOTTOM,
                   duration: const Duration(seconds: 5),

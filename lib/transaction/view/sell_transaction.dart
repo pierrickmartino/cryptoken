@@ -215,44 +215,44 @@ class SellTransactionForm extends StatelessWidget {
                         future: _getCryptoBySymbol(_transaction.tokenMain),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
-                            return DropdownSearch<Crypto>(
-                              mode: Mode.BOTTOM_SHEET,
-                              enabled: false,
-                              showSearchBox: true,
-                              autoFocusSearchBox: true,
-                              dropdownSearchDecoration: const InputDecoration(
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                isDense: true,
-                              ),
-                              onFind: (String filter) => _getCryptoList(),
-                              compareFn: (i, s) => i.isEqual(s!),
-                              dropdownButtonBuilder: (_) => const Padding(
-                                padding: EdgeInsets.all(6),
-                                child: Icon(
-                                  Icons.arrow_drop_down,
-                                  size: 18,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              popupItemBuilder: _customPopupItemBuilder,
-                              dropdownBuilder: _customDropDown,
-                              selectedItem: snapshot.data,
-                              onChanged: (newValue) async {
-                                //setState(() {
-                                _transaction
-                                  ..tokenMain = newValue!.symbol
-                                  ..tokenMainName = newValue.name;
-                                //widget.positionMain.token = newValue.symbol;
+                            // return DropdownSearch<Crypto>(
+                            //   mode: Mode.BOTTOM_SHEET,
+                            //   enabled: false,
+                            //   showSearchBox: true,
+                            //   autoFocusSearchBox: true,
+                            //   dropdownSearchDecoration: const InputDecoration(
+                            //     border: InputBorder.none,
+                            //     focusedBorder: InputBorder.none,
+                            //     enabledBorder: InputBorder.none,
+                            //     errorBorder: InputBorder.none,
+                            //     disabledBorder: InputBorder.none,
+                            //     isDense: true,
+                            //   ),
+                            //   onFind: (String filter) => _getCryptoList(),
+                            //   compareFn: (i, s) => i.isEqual(s!),
+                            //   dropdownButtonBuilder: (_) => const Padding(
+                            //     padding: EdgeInsets.all(6),
+                            //     child: Icon(
+                            //       Icons.arrow_drop_down,
+                            //       size: 18,
+                            //       color: Colors.black,
+                            //     ),
+                            //   ),
+                            //   popupItemBuilder: _customPopupItemBuilder,
+                            //   dropdownBuilder: _customDropDown,
+                            //   selectedItem: snapshot.data,
+                            //   onChanged: (newValue) async {
+                            //     //setState(() {
+                            //     _transaction
+                            //       ..tokenMain = newValue!.symbol
+                            //       ..tokenMainName = newValue.name;
+                            //     //widget.positionMain.token = newValue.symbol;
 
-                                //tokenMainCrypto = await _getCryptoBySymbol(
-                                //    widget.transaction.tokenMain);
-                                //});
-                              },
-                            );
+                            //     //tokenMainCrypto = await _getCryptoBySymbol(
+                            //     //    widget.transaction.tokenMain);
+                            //     //});
+                            //   },
+                            // );
                           } else if (snapshot.hasError) {
                             return Text('${snapshot.error}');
                           }
@@ -338,38 +338,38 @@ class SellTransactionForm extends StatelessWidget {
                         future: _getCryptoBySymbol(_transaction.tokenPrice),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
-                            return DropdownSearch<Crypto>(
-                              mode: Mode.BOTTOM_SHEET,
-                              enabled: false,
-                              showSearchBox: true,
-                              autoFocusSearchBox: true,
-                              dropdownSearchDecoration: const InputDecoration(
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                isDense: true,
-                              ),
-                              onFind: (String filter) => _getCryptoList(),
-                              compareFn: (i, s) => i.isEqual(s!),
-                              dropdownButtonBuilder: (_) => const Padding(
-                                padding: EdgeInsets.all(6),
-                                child: Icon(
-                                  Icons.arrow_drop_down,
-                                  size: 18,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              popupItemBuilder: _customPopupItemBuilder,
-                              dropdownBuilder: _customDropDown,
-                              selectedItem: snapshot.data,
-                              onChanged: (newValue) async {
-                                _transaction
-                                  ..tokenPrice = newValue!.symbol
-                                  ..tokenPriceName = newValue.name;
-                              },
-                            );
+                            // return DropdownSearch<Crypto>(
+                            //   mode: Mode.BOTTOM_SHEET,
+                            //   enabled: false,
+                            //   showSearchBox: true,
+                            //   autoFocusSearchBox: true,
+                            //   dropdownSearchDecoration: const InputDecoration(
+                            //     border: InputBorder.none,
+                            //     focusedBorder: InputBorder.none,
+                            //     enabledBorder: InputBorder.none,
+                            //     errorBorder: InputBorder.none,
+                            //     disabledBorder: InputBorder.none,
+                            //     isDense: true,
+                            //   ),
+                            //   onFind: (String filter) => _getCryptoList(),
+                            //   compareFn: (i, s) => i.isEqual(s!),
+                            //   dropdownButtonBuilder: (_) => const Padding(
+                            //     padding: EdgeInsets.all(6),
+                            //     child: Icon(
+                            //       Icons.arrow_drop_down,
+                            //       size: 18,
+                            //       color: Colors.black,
+                            //     ),
+                            //   ),
+                            //   popupItemBuilder: _customPopupItemBuilder,
+                            //   dropdownBuilder: _customDropDown,
+                            //   selectedItem: snapshot.data,
+                            //   onChanged: (newValue) async {
+                            //     _transaction
+                            //       ..tokenPrice = newValue!.symbol
+                            //       ..tokenPriceName = newValue.name;
+                            //   },
+                            // );
                           } else if (snapshot.hasError) {
                             return Text('${snapshot.error}');
                           }
@@ -464,40 +464,40 @@ class SellTransactionForm extends StatelessWidget {
                         future: _getCryptoBySymbol(_transaction.tokenReference),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
-                            return DropdownSearch<Crypto>(
-                              mode: Mode.BOTTOM_SHEET,
-                              enabled: false,
-                              showSearchBox: true,
-                              autoFocusSearchBox: true,
-                              dropdownSearchDecoration: const InputDecoration(
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                isDense: true,
-                              ),
-                              onFind: (String filter) => _getCryptoList(),
-                              compareFn: (i, s) => i.isEqual(s!),
-                              dropdownButtonBuilder: (_) => const Padding(
-                                padding: EdgeInsets.all(6),
-                                child: Icon(
-                                  Icons.arrow_drop_down,
-                                  size: 18,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              popupItemBuilder: _customPopupItemBuilder,
-                              dropdownBuilder: _customDropDown,
-                              selectedItem: snapshot.data,
-                              onChanged: (newValue) async {
-                                _transaction
-                                  ..tokenReference = newValue!.symbol
-                                  ..tokenReferenceName = newValue.name;
-                                // widget.positionReference.token =
-                                //     newValue.symbol;
-                              },
-                            );
+                            // return DropdownSearch<Crypto>(
+                            //   mode: Mode.BOTTOM_SHEET,
+                            //   enabled: false,
+                            //   showSearchBox: true,
+                            //   autoFocusSearchBox: true,
+                            //   dropdownSearchDecoration: const InputDecoration(
+                            //     border: InputBorder.none,
+                            //     focusedBorder: InputBorder.none,
+                            //     enabledBorder: InputBorder.none,
+                            //     errorBorder: InputBorder.none,
+                            //     disabledBorder: InputBorder.none,
+                            //     isDense: true,
+                            //   ),
+                            //   onFind: (String filter) => _getCryptoList(),
+                            //   compareFn: (i, s) => i.isEqual(s!),
+                            //   dropdownButtonBuilder: (_) => const Padding(
+                            //     padding: EdgeInsets.all(6),
+                            //     child: Icon(
+                            //       Icons.arrow_drop_down,
+                            //       size: 18,
+                            //       color: Colors.black,
+                            //     ),
+                            //   ),
+                            //   popupItemBuilder: _customPopupItemBuilder,
+                            //   dropdownBuilder: _customDropDown,
+                            //   selectedItem: snapshot.data,
+                            //   onChanged: (newValue) async {
+                            //     _transaction
+                            //       ..tokenReference = newValue!.symbol
+                            //       ..tokenReferenceName = newValue.name;
+                            //     // widget.positionReference.token =
+                            //     //     newValue.symbol;
+                            //   },
+                            // );
                           } else if (snapshot.hasError) {
                             return Text('${snapshot.error}');
                           }
@@ -583,37 +583,37 @@ class SellTransactionForm extends StatelessWidget {
                         future: _getCryptoBySymbol(_transaction.tokenFee),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
-                            return DropdownSearch<Crypto>(
-                              mode: Mode.BOTTOM_SHEET,
-                              showSearchBox: true,
-                              autoFocusSearchBox: true,
-                              dropdownSearchDecoration: const InputDecoration(
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                isDense: true,
-                              ),
-                              onFind: (String filter) => _getCryptoList(),
-                              compareFn: (i, s) => i.isEqual(s!),
-                              dropdownButtonBuilder: (_) => const Padding(
-                                padding: EdgeInsets.all(6),
-                                child: Icon(
-                                  Icons.arrow_drop_down,
-                                  size: 18,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              popupItemBuilder: _customPopupItemBuilder,
-                              dropdownBuilder: _customDropDown,
-                              selectedItem: snapshot.data,
-                              onChanged: (newValue) async {
-                                _transaction
-                                  ..tokenFee = newValue!.symbol
-                                  ..tokenFeeName = newValue.name;
-                              },
-                            );
+                            // return DropdownSearch<Crypto>(
+                            //   mode: Mode.BOTTOM_SHEET,
+                            //   showSearchBox: true,
+                            //   autoFocusSearchBox: true,
+                            //   dropdownSearchDecoration: const InputDecoration(
+                            //     border: InputBorder.none,
+                            //     focusedBorder: InputBorder.none,
+                            //     enabledBorder: InputBorder.none,
+                            //     errorBorder: InputBorder.none,
+                            //     disabledBorder: InputBorder.none,
+                            //     isDense: true,
+                            //   ),
+                            //   onFind: (String filter) => _getCryptoList(),
+                            //   compareFn: (i, s) => i.isEqual(s!),
+                            //   dropdownButtonBuilder: (_) => const Padding(
+                            //     padding: EdgeInsets.all(6),
+                            //     child: Icon(
+                            //       Icons.arrow_drop_down,
+                            //       size: 18,
+                            //       color: Colors.black,
+                            //     ),
+                            //   ),
+                            //   popupItemBuilder: _customPopupItemBuilder,
+                            //   dropdownBuilder: _customDropDown,
+                            //   selectedItem: snapshot.data,
+                            //   onChanged: (newValue) async {
+                            //     _transaction
+                            //       ..tokenFee = newValue!.symbol
+                            //       ..tokenFeeName = newValue.name;
+                            //   },
+                            // );
                           } else if (snapshot.hasError) {
                             return Text('${snapshot.error}');
                           }
@@ -651,7 +651,7 @@ class SellTransactionForm extends StatelessWidget {
                         minHeight: 30,
                         minWidth: 44,
                         fontSize: 12,
-                        activeBgColor: primaryColor,
+                        //activeBgColor: primaryColor,
                         activeFgColor: Colors.white,
                         initialLabelIndex:
                             _transaction.withImpactOnSecondPosition ? 0 : 1,
@@ -1007,8 +1007,7 @@ class SellTransactionForm extends StatelessWidget {
                                 .insertFirestoreTransaction(_newTransaction);
                           }).then((value) => Get
                             ..back<void>()
-                            ..snackbar<void>(
-                                'Successful', 'Transaction inserted !',
+                            ..snackbar('Successful', 'Transaction inserted !',
                                 snackPosition: SnackPosition.BOTTOM,
                                 duration: const Duration(seconds: 5),
                                 backgroundColor:

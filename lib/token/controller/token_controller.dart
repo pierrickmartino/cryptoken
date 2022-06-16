@@ -145,7 +145,7 @@ class TokenController extends GetxController {
             futureVariation24,
           ]).whenComplete(() {
             if (_positionPriceCounter == 0 && _positionVar24Counter == 0) {
-              Get.snackbar<void>(
+              Get.snackbar(
                   'Refresh', 'Token market data successfully udpdated !',
                   snackPosition: SnackPosition.BOTTOM,
                   duration: const Duration(seconds: 5),

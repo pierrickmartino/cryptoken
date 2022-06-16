@@ -27,7 +27,8 @@ class Header extends StatelessWidget {
           ),
         if (!Responsive.isMobile(context))
           Spacer(flex: Responsive.isDesktop(context) ? 2 : 1),
-        const Expanded(child: SearchField()),
+        const Expanded(
+            child: Text('') /*SearchField()*/), // not necessary at the moment
         const ProfileCard()
       ],
     );
@@ -65,7 +66,7 @@ class ProfileCard extends StatelessWidget {
             onSelected: (value) async {
               switch (value) {
                 case 1:
-                  final data = await Get.to(const SettingsUI());
+                  final data = await Get.to<SettingsUI>(const SettingsUI());
                   if (data == 'success') {
                     debugPrint('refresh');
                   }
